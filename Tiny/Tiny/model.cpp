@@ -98,22 +98,22 @@ Face Model::face(int index) const
 	return _faces[index];
 }
 
-int Model::vsize() const
+size_t Model::vsize() const
 {
 	return _vertices.size();
 }
 
-int Model::tsize() const
+size_t Model::tsize() const
 {
 	return _textures.size();
 }
 
-int Model::nsize() const
+size_t Model::nsize() const
 {
 	return _normals.size();
 }
 
-int Model::fsize() const
+size_t Model::fsize() const
 {
 	return _faces.size();
 }

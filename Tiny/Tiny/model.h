@@ -16,6 +16,7 @@ struct FaceElementIndex
 
 	int& operator[](int index)
 	{
+
 		switch (index)
 		{
 		case 0:
@@ -27,9 +28,8 @@ struct FaceElementIndex
 		case 2:
 			return index2;
 			break;
-		default:
-			assert(false);
 		}
+		assert(false);
 	}
 };
 
@@ -56,9 +56,9 @@ public:
 	Vec3f normal(int index) const;
 	Face face(int index) const;
 
-	int vsize() const;
-	int tsize() const;
-	int nsize() const;
-	int fsize() const;
+	size_t vsize() const;
+	size_t tsize() const;
+	size_t nsize() const;
+	size_t fsize() const;
 
 };
