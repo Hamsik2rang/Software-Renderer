@@ -23,6 +23,7 @@ struct Vector2D
 	Vector2D<T> operator*(const Vector2D<T>& v) const { return Vector2D(x * v.x, y * v.y); }
 
 	Vector2D<T> operator*(T scalar) const { return Vector2D(x * scalar, y * scalar); }
+	T&			operator[](int index) { return elem[index]; }
 
 	float		normalize() const { return (float)std::sqrt(x * x + y * y); }
 };
@@ -48,8 +49,10 @@ struct Vector3D
 	Vector3D<T> operator+(const Vector3D<T>& v) const { return Vector3D(x + v.x, y + v.y, z + v.z); }
 	Vector3D<T> operator-(const Vector3D<T>& v) const { return Vector3D(x - v.x, y - v.y, z - v.z); }
 	Vector3D<T> operator*(T scalar) const { return Vector3D(x * scalar, y * scalar, z * scalar); }
+	Vector3D<T> operator^(const Vector3D<T>& v) const { return Vector3D(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
 
 	T			operator*(const Vector3D<T>& v) const { return x * v.x + y * v.y + z * v.z; }
+	T&			operator[](int index) { return elem[index]; }
 	float		normalize() const { return (float)std::sqrt(x * x + y * y + z * z); }
 
 };
