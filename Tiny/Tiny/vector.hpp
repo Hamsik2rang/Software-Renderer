@@ -1,6 +1,8 @@
 #pragma once
 #include <cmath>
 
+
+// already be in source directory. if you should use this in a main project, you can't copy it.
 template <typename T>
 struct Vector2D
 {
