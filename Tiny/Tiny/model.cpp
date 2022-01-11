@@ -53,18 +53,17 @@ Model::Model(const char* filename)
 		{
 			iss >> header;
 			// [0] = vertex, [1] = texture, [2] = normal
-			FaceElementIndex faceElem[3];
 			char delimeter;
+			int vertex, texture, model;
+			std::vector<int> v;
 			for (int i = 0; i < 3; i++)
 			{
-				iss >> faceElem[0][i] >> delimeter >> faceElem[1][i]>> delimeter >> faceElem[2][i];
+				iss >> vertex >> delimeter >> texture >> delimeter >> model;
 				// index in *.obj is started with 1.
-				faceElem[0][i]--;
-				faceElem[1][i]--;
-				faceElem[2][i]--;
+				vertex--, texture--, model--;
+				v.push_back(vertex);
 			}
-			Face face{ faceElem[0], faceElem[1], faceElem[2] };
-			_faces.push_back(face);
+			_faces.push_back(v);
 		}
 	}
 	std::cerr << "# v#" << _vertices.size() 
@@ -93,7 +92,7 @@ Vec3f Model::normal(int index) const
 	return _normals[index];
 }
 
-Face Model::face(int index) const
+std::vector<int> Model::face(int index) const
 {
 	return _faces[index];
 }

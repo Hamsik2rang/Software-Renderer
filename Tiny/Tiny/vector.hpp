@@ -54,7 +54,6 @@ struct Vector3D
 	T			operator*(const Vector3D<T>& v) const { return x * v.x + y * v.y + z * v.z; }
 	T&			operator[](int index) { return elem[index]; }
 	float		normalize() const { return (float)std::sqrt(x * x + y * y + z * z); }
-
 };
 
 using Vec2f = Vector2D<float>;
