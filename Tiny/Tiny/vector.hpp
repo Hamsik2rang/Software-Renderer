@@ -57,7 +57,7 @@ namespace hs {
 		T				operator*(const Vector3D<T>& v) const { return x * v.x + y * v.y + z * v.z; }
 		T&				operator[](int index) { return elem[index]; }
 		
-
+		// norm
 		float			size() const { return (float)std::sqrt(x * x + y * y + z * z); }
 		Vector3D<T>&	normalize() { *this = *this * (1 / size()); return *this; }
 	};

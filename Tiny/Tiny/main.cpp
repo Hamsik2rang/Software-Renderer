@@ -3,17 +3,21 @@
 #include "model.h"
 #include "Random.hpp"
 
-#include <queue>
-
+#include <numeric>
+#include <cstring>
 
 const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red = TGAColor(255, 0, 0, 255);
 const TGAColor green = TGAColor(0, 255, 0, 255);
 const TGAColor blue = TGAColor(0, 0, 255, 255);
 
-void line(hs::Vec2i v0, hs::Vec2i v1, TGAImage& image, const TGAColor& color);
-void triangle(hs::Vec2i* v, TGAImage& image, const TGAColor& color);
-hs::Vec3f barycentric(hs::Vec2i* v, hs::Vec2i p, TGAImage& image, TGAColor color);
+const int screenWidth = 800;
+const int screenHeight = 800;
+const bool useZBuffer = true;
+
+void triangle(hs::Vec3f* v, TGAImage& image, const TGAColor& color);
+void line(hs::Vec3f v0, hs::Vec3f v1, TGAImage& image, const TGAColor& color);
+hs::Vec3f barycentric(hs::Vec3f* v, hs::Vec3f p, TGAImage& image, TGAColor color);
 
 enum class DrawMode
 {
@@ -21,44 +25,58 @@ enum class DrawMode
 	FILL,
 };
 
-DrawMode drawMode = DrawMode::FILL;
 Random random;
+DrawMode drawMode = DrawMode::FILL;
+float* zBuffer;
 
 int main(int argc, char** argv)
 {
-	int width = 600;
-	int height = 600;
-	TGAImage image(width, height, TGAImage::RGB);
+	TGAImage image(screenWidth, screenHeight, TGAImage::RGB);
 	Model* model = new Model("./Objects/african_head.obj");
 	hs::Vec3f lightDirection = { 0.0f, 0.0f, -1.0f };
+	
+	if (useZBuffer)
+		zBuffer = new float[screenHeight * screenWidth];
+
+	lightDirection.normalize();
 	for (int i = 0; i < model->fsize(); i++)
 	{
 		std::vector<int> face = model->face(i);
-		hs::Vec2i t[3];
+		hs::Vec3f t[3];
 		for (int j = 0; j < 3; j++)
 		{
-			int x = (model->vertex(face[j]).x + 1.0f) * width / 2.0f;
-			int y = (model->vertex(face[j]).y + 1.0f) * width / 2.0f;
-			t[j] = { x,y };
+			auto v = model->vertex(face[j]);
+			float x = (v.x + 1.0f) * screenWidth / 2.0f;
+			float y = (v.y + 1.0f) * screenHeight / 2.0f;
+			t[j] = { x,y, v.z };
 		}
-		
+
 		hs::Vec3f n = (model->vertex(face[2]) - model->vertex(face[0])) ^ (model->vertex(face[1]) - model->vertex(face[0]));
 		n.normalize();
 		float intensity = n * lightDirection;
-		if(intensity>0)
+		if (intensity > 0)
 			triangle(t, image, TGAColor(255 * intensity, 255 * intensity, 255 * intensity, 255));
 	}
 
-	delete model;
+	if (zBuffer)
+	{
+		delete[] zBuffer;
+		zBuffer = nullptr;
+	}
+	if (model)
+	{
+		delete model;
+		model = nullptr;
+	}
 
 	image.flip_vertically(); // I want to have the origin at the left bottom corner of the image
-	image.write_tga_file("../../output_norm.tga");
+	image.write_tga_file("../../output_using_z-buffer.tga");
 
 	return 0;
 }
 
 // Use Bresenham's line algorithm.
-void line(hs::Vec2i v0, hs::Vec2i v1, TGAImage& image, const TGAColor& color)
+void line(hs::Vec3f v0, hs::Vec3f v1, TGAImage& image, const TGAColor& color)
 {
 	bool steep = false;
 
@@ -98,7 +116,7 @@ void line(hs::Vec2i v0, hs::Vec2i v1, TGAImage& image, const TGAColor& color)
 	}
 }
 
-void triangle(hs::Vec2i* v, TGAImage& image, const TGAColor& color)
+void triangle(hs::Vec3f* v, TGAImage& image, const TGAColor& color)
 {
 	if (drawMode == DrawMode::WIREFRAME)
 	{
@@ -108,8 +126,8 @@ void triangle(hs::Vec2i* v, TGAImage& image, const TGAColor& color)
 	}
 	else if (drawMode == DrawMode::FILL)
 	{
-		hs::Vec2i minBoxPos;
-		hs::Vec2i maxBoxPos;
+		hs::Vec2f minBoxPos;
+		hs::Vec2f maxBoxPos;
 
 		minBoxPos.x = v[0].x < v[1].x ? v[0].x < v[2].x ? v[0].x : v[2].x : v[1].x < v[2].x ? v[1].x : v[2].x;
 		minBoxPos.y = v[0].y < v[1].y ? v[0].y < v[2].y ? v[0].y : v[2].y : v[1].y < v[2].y ? v[1].y : v[2].y;
@@ -122,25 +140,37 @@ void triangle(hs::Vec2i* v, TGAImage& image, const TGAColor& color)
 		{
 			for (p.x = minBoxPos.x; p.x <= maxBoxPos.x; p.x++)
 			{
-				hs::Vec3f bc = barycentric(v, p, image, color);
-				if (bc.x < 0.0f ||
-					bc.y < 0.0f ||
-					bc.z < 0.0f)
+				hs::Vec3f bc = barycentric(v, {(float) p.x, (float)p.y, 0.0f }, image, color);
+				if (bc.x < 0.0f || bc.x >1.0f ||
+					bc.y < 0.0f || bc.y >1.0f ||
+					bc.z < 0.0f || bc.z>1.0f)
 					continue;
-
+				float z = 0.f;
+				for (int i = 0; i < 3; i++)
+					z += v[i].z * bc[i];
+				
+				int bufferIndex = (int)(p.y * screenWidth + p.x);
+				if (useZBuffer && zBuffer[bufferIndex] < z)
+				{
+					zBuffer[bufferIndex] = z;
 					image.set(p.x, p.y, color);
+				}
+				else if(!useZBuffer)
+				{
+					image.set(p.x, p.y, color);
+				}
 			}
 		}
 	}
 }
 
-hs::Vec3f barycentric(hs::Vec2i* v, hs::Vec2i p, TGAImage& image, TGAColor color)
+hs::Vec3f barycentric(hs::Vec3f* v, hs::Vec3f p, TGAImage& image, TGAColor color)
 {
 	hs::Vec3f tx = { (float)v[0].x - p.x, (float)v[1].x - v[0].x, (float)v[2].x - v[0].x };
 	hs::Vec3f ty = { (float)v[0].y - p.y, (float)v[1].y - v[0].y, (float)v[2].y - v[0].y };
 
 	hs::Vec3f eq = tx ^ ty;
-	// [a,b,c] to [u, v, 1]
+	// [a,b,c] to [1, u, v]
 	if (std::abs(eq.x) < 1.0f)
 		return hs::Vec3f(-1.0f, -1.0f, -1.0f);
 
