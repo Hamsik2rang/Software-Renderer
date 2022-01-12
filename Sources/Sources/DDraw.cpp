@@ -174,12 +174,10 @@ bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* 
 	return true;
 }
 
-bool hs::DDraw::DrawImageData()
-{
-	// TODO: Implement this.
-
-	return false;
-}
+//bool hs::DDraw::DrawImageData()
+//{
+//		return false;
+//}
 
 bool hs::DDraw::BeginDraw()
 {

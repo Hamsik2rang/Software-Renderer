@@ -1,119 +1,58 @@
 #include "model.h"
 
-#include <iostream>
-
-Model::Model(const char* filename)
+Model::Model(const char* filename) : _vertices(), _faces()
 {
-	std::ifstream ifs(filename, std::ios::in);
-	if (ifs.fail())
-		return;
-
-	std::string line = "";
-	while (!ifs.eof())
+	std::ifstream in;
+	in.open(filename, std::ifstream::in);
+	if (in.fail()) return;
+	std::string line;
+	while (!in.eof())
 	{
-		std::getline(ifs, line);
+		std::getline(in, line);
 		std::istringstream iss(line.c_str());
-		char header;
-		// vertices
-		if (line.compare(0, 2, "v ") == 0)
+		char trash;
+		if (!line.compare(0, 2, "v "))
 		{
-			iss >> header;
-
-			Vec3f vertex;
-			for (int i = 0; i < 3; i++)
-				iss >> vertex.elem[i];
-			_vertices.push_back(vertex);
+			iss >> trash;
+			hs::Vec3f v;
+			for (int i = 0; i < 3; i++) iss >> v.elem[i];
+			_vertices.push_back(v);
 		}
-		//textures
-		else if (line.compare(0, 3, "vt ") == 0)
+		else if (!line.compare(0, 2, "f "))
 		{
-			// throw header away
-			iss >> header;
-			iss >> header;
-
-			Vec2f texture;
-			for (int i = 0; i < 2; i++)
-				iss >> texture.elem[i];
-			_textures.push_back(texture);
-		}
-		// normals
-		else if (line.compare(0, 3, "vn ") == 0)
-		{
-			// throw header away
-			iss >> header;
-			iss >> header;
-
-			Vec3f normal;
-			for (int i = 0; i < 3; i++)
-				iss >> normal.elem[i];
-			_normals.push_back(normal);
-		}
-		// faces
-		else if (line.compare(0, 2, "f ") == 0)
-		{
-			iss >> header;
-			// [0] = vertex, [1] = texture, [2] = normal
-			char delimeter;
-			int vertex, texture, model;
-			std::vector<int> v;
-			for (int i = 0; i < 3; i++)
+			std::vector<int> f;
+			int itrash, idx;
+			iss >> trash;
+			while (iss >> idx >> trash >> itrash >> trash >> itrash)
 			{
-				iss >> vertex >> delimeter >> texture >> delimeter >> model;
-				// index in *.obj is started with 1.
-				vertex--, texture--, model--;
-				v.push_back(vertex);
+				idx--; // in wavefront obj all indices start at 1, not zero
+				f.push_back(idx);
 			}
-			_faces.push_back(v);
+			_faces.push_back(f);
 		}
 	}
-	std::cerr << "# v#" << _vertices.size() 
-		<< " t#" << _textures.size() 
-		<< " n#" << _normals.size() 
-		<< " f#" << _faces.size() 
-		<< std::endl;
-	
-	ifs.close();
+	std::cerr << "# v# " << _vertices.size() << " f# " << _faces.size() << std::endl;
 }
 
-Model::~Model() {}
+Model::~Model()
+{}
 
-Vec3f Model::vertex(int index) const
+int Model::vsize()
 {
-	return _vertices[index];
+	return (int)_vertices.size();
 }
 
-Vec2f Model::texture(int index) const
+int Model::fsize()
 {
-	return _textures[index];
+	return (int)_faces.size();
 }
 
-Vec3f Model::normal(int index) const
+std::vector<int> Model::face(int idx)
 {
-	return _normals[index];
+	return _faces[idx];
 }
 
-std::vector<int> Model::face(int index) const
+hs::Vec3f Model::vertex(int i)
 {
-	return _faces[index];
+	return _vertices[i];
 }
-
-size_t Model::vsize() const
-{
-	return _vertices.size();
-}
-
-size_t Model::tsize() const
-{
-	return _textures.size();
-}
-
-size_t Model::nsize() const
-{
-	return _normals.size();
-}
-
-size_t Model::fsize() const
-{
-	return _faces.size();
-}
-

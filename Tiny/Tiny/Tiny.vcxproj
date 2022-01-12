@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="model.h" />
+    <ClInclude Include="Random.hpp" />
     <ClInclude Include="tgaimage.h" />
     <ClInclude Include="vector.hpp" />
   </ItemGroup>
