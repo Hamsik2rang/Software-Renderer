@@ -15,7 +15,7 @@ hs::DDraw::~DDraw()
 bool hs::DDraw::Init(HWND hWnd)
 {
 	_hWnd = hWnd;
-	DDSURFACEDESC2 ddsd;
+	DDSURFACEDESC2 ddsd{};
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	ddsd.dwFlags = DDSD_CAPS;
 	ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
@@ -74,7 +74,7 @@ bool hs::DDraw::Init(HWND hWnd)
 
 bool hs::DDraw::CreateBackBuffer(DWORD width, DWORD height)
 {
-	DDSURFACEDESC2 ddsd;
+	DDSURFACEDESC2 ddsd{};
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	ddsd.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
 	ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
@@ -110,6 +110,8 @@ bool hs::DDraw::LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWO
 		*pWidth = ddsd.dwWidth;
 		*pHeight = ddsd.dwHeight;
 		*pPitch = ddsd.lPitch;
+
+		return true;
 	}
 
 	return false;
