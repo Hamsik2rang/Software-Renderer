@@ -12,9 +12,9 @@ hs::DDraw::~DDraw()
 	CleanUp();
 }
 
-bool hs::DDraw::Init(HWND hwnd)
+bool hs::DDraw::Init(HWND hWnd)
 {
-	_hwnd = hwnd;
+	_hWnd = hWnd;
 	DDSURFACEDESC2 ddsd;
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	ddsd.dwFlags = DDSD_CAPS;
@@ -22,38 +22,38 @@ bool hs::DDraw::Init(HWND hwnd)
 
 	if (DD_OK != DirectDrawCreate(nullptr, &_pDDraw, nullptr))
 	{
-		MessageBox(_hwnd, L"Fail to Create DirectDraw", L"Error", MB_OK);
+		MessageBox(_hWnd, L"Fail to Create DirectDraw", L"Error", MB_OK);
 		return false;
 	}
 
-	if (DD_OK != _pDDraw->QueryInterface(IID_IDirectDraw7, (LPVOID*)_pDDraw7))
+	if (DD_OK != _pDDraw->QueryInterface(IID_IDirectDraw7, (LPVOID*)&_pDDraw7))
 	{
-		MessageBox(_hwnd, L"Fail to Create DirectDraw7", L"Error", MB_OK);
+		MessageBox(_hWnd, L"Fail to Create DirectDraw7", L"Error", MB_OK);
 		return false;
 	}
-	HRESULT hr = _pDDraw7->SetCooperativeLevel(hwnd, DDSCL_NORMAL);
+	HRESULT hr = _pDDraw7->SetCooperativeLevel(hWnd, DDSCL_NORMAL);
 
 	if (FAILED(hr))
 	{
-		MessageBox(_hwnd, L"Fail to Set Cooperative Level", L"Error", MB_OK);
+		MessageBox(_hWnd, L"Fail to Set Cooperative Level", L"Error", MB_OK);
 		return false;
 	}
 
 	hr = _pDDraw7->CreateSurface(&ddsd, &_pDDSPrimary, nullptr);
 	if (FAILED(hr))
 	{
-		MessageBox(_hwnd, L"Fail to Create Surface", L"Error", MB_OK);
+		MessageBox(_hWnd, L"Fail to Create Surface", L"Error", MB_OK);
 		return false;
 	}
 
 	hr = _pDDraw7->CreateClipper(0, &_pDDClipper, nullptr);
 	if (FAILED(hr))
 	{
-		MessageBox(_hwnd, L"Fail to Create Clipper", L"Error", MB_OK);
+		MessageBox(_hWnd, L"Fail to Create Clipper", L"Error", MB_OK);
 		return false;
 	}
 
-	_pDDClipper->SetHWnd(0, _hwnd);
+	_pDDClipper->SetHWnd(0, _hWnd);
 	_pDDSPrimary->SetClipper(_pDDClipper);
 
 	UpdateWindowPos();
@@ -84,7 +84,7 @@ bool hs::DDraw::CreateBackBuffer(DWORD width, DWORD height)
 	HRESULT hr = _pDDraw7->CreateSurface(&ddsd, &_pDDSBack, nullptr);
 	if (FAILED(hr))
 	{
-		MessageBox(_hwnd, L"Fail to Create Surface", L"Error", MB_OK);
+		MessageBox(_hWnd, L"Fail to Create Surface", L"Error", MB_OK);
 		return false;
 	}
 
@@ -174,11 +174,6 @@ bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* 
 	return true;
 }
 
-//bool hs::DDraw::DrawImageData()
-//{
-//		return false;
-//}
-
 bool hs::DDraw::BeginDraw()
 {
 	char* pBuffer = nullptr;
@@ -252,9 +247,9 @@ void hs::DDraw::UpdateWindowSize()
 
 void hs::DDraw::UpdateWindowPos()
 {
-	GetClientRect(_hwnd, &_rcView);
-	ClientToScreen(_hwnd, (POINT*)&_rcView.left);
-	ClientToScreen(_hwnd, (POINT*)&_rcView.right);
+	GetClientRect(_hWnd, &_rcView);
+	ClientToScreen(_hWnd, (POINT*)&_rcView.left);
+	ClientToScreen(_hWnd, (POINT*)&_rcView.right);
 }
 
 void hs::DDraw::CleanUp()

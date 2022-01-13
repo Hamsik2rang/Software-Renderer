@@ -140,9 +140,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Bitmap.h" />
     <ClInclude Include="DDraw.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="targetver.h" />
@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="DDraw.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Sources.rc" />

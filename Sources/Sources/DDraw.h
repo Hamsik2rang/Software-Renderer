@@ -20,7 +20,7 @@ namespace hs {
 		DWORD					_lockedBackBufferPitch;
 		DWORD					_width;
 		DWORD					_height;
-		HWND					_hwnd;
+		HWND					_hWnd;
 		RECT					_rcView;
 
 		bool CreateBackBuffer(DWORD width, DWORD height);
@@ -35,7 +35,6 @@ namespace hs {
 
 		bool CalcClipArea(Vec2i* srcStart, Vec2i* destStart, Vec2i* destSize, Vec2i* pos, Vec2i* imageSize);
 		bool DrawBitmap(int startX, int startY, int width, int height, char* pBits);
-		//bool DrawImageData();
 
 		bool BeginDraw();
 		void EndDraw();

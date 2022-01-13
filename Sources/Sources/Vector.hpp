@@ -54,12 +54,33 @@ namespace hs {
 		Vector3D<T> operator^(const Vector3D<T>& v) const { return Vector3D(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
 
 		T			operator*(const Vector3D<T>& v) const { return x * v.x + y * v.y + z * v.z; }
-		T& operator[](int index) { return elem[index]; }
+		T&			operator[](int index) { return elem[index]; }
 		float		normalize() const { return (float)std::sqrt(x * x + y * y + z * z); }
+	};
+
+	template <typename T>
+	struct Vector4D
+	{
+		union
+		{
+			struct { T x; T y; T z; T w; };
+			struct { T r; T g; T b; T a; };
+			T elem[4];
+		};
+
+		Vector4D()
+			:r(0), g(0), b(0), a(0)
+		{}
+		Vector4D(T _x, T _y, T _z, T _w)
+			:x(_x), y(_y), z(_z), w(_w)
+		{}
+			
+		T& operator[](int index) { return elem[index]; }
 	};
 
 	using Vec2f = Vector2D<float>;
 	using Vec2i = Vector2D<int>;
 	using Vec3f = Vector3D<float>;
 	using Vec3i = Vector3D<int>;
+	using Color = Vector4D<int>;
 }
