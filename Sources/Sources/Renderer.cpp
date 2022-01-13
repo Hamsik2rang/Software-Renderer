@@ -36,10 +36,13 @@ hs::Renderer::~Renderer()
 void hs::Renderer::DrawScene()
 {
 	_ddraw->BeginDraw();
-	//TODO: write draw code here.
-	_ddraw->DrawBitmap(0, 0, _width, _height, _renderBuffer);
+	_ddraw->Clear();
+	//write draw code here.
+	_ddraw->DrawBitmap(500, 400, _width, _height, _renderBuffer);
 
+	// end code.
 	_ddraw->EndDraw();
+	_ddraw->Blt();
 }
 
 void hs::Renderer::AddObject(Vec2i v0, Vec2i v1, const Color& color)

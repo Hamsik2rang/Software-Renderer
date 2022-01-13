@@ -46,8 +46,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    renderer = new hs::Renderer(hWnd, 200, 200);
-	renderer->AddObject({ 30,40 }, { 80, 60 }, hs::Color(255, 255, 255, 255));
+    renderer = new hs::Renderer(hWnd, 1000, 800);
+	renderer->AddObject({ 0,0 }, { 800, 600 }, hs::Color(255, 255, 255, 255));
     // Main message loop:
     while (true)
     {

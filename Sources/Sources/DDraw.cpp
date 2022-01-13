@@ -4,7 +4,7 @@
 
 hs::DDraw::DDraw()
 {
-	memset(this, 0, sizeof(*this));
+	memset(this, 0, sizeof(DDraw));
 }
 
 hs::DDraw::~DDraw()
@@ -100,8 +100,7 @@ bool hs::DDraw::LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWO
 {
 	if (_pDDSBack)
 	{
-		DDSURFACEDESC2 ddsd;
-		memset(&ddsd, 0, sizeof(DDSURFACEDESC2));
+		DDSURFACEDESC2 ddsd{};
 		ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	
 		_pDDSBack->Lock(nullptr, &ddsd, DDLOCK_WAIT | DDLOCK_WRITEONLY, nullptr);
@@ -132,15 +131,35 @@ void hs::DDraw::CleanUpBackBuffer()
 	}
 }
 
-bool hs::DDraw::CalcClipArea(Vec2i* srcStart, Vec2i* destStart, Vec2i* destSize, Vec2i* pos, Vec2i* imageSize)
+bool hs::DDraw::CalculateClipArea(Vec2i* pSrcStart, Vec2i* pDestStart, Vec2i* pDestSize, Vec2i* pPos, Vec2i* pImageSize)
 {
-	return false;
+	pDestStart->x = max(pPos->x, 0);
+	pDestStart->y = max(pPos->y, 0);
+	pDestStart->x = min(pDestStart->x, _width);
+	pDestStart->y = min(pDestStart->y, _height);
+
+	Vec2i destEnd = { max(pPos->x + pImageSize->x, 0), max(pPos->y + pImageSize->y, 0) };
+	destEnd.x = min(destEnd.x, _width);
+	destEnd.y = min(destEnd.y, _height);
+
+	int width = destEnd.x - pDestStart->x;
+	int height = destEnd.y - pDestStart->y;
+	if (width < 0 || height < 0)
+		return false;
+
+	pSrcStart->x = pDestStart->x - pPos->x;
+	pSrcStart->y = pDestStart->y - pPos->y;
+
+	pDestSize->x = width;
+	pDestSize->y = height;
+
+	return true;
 }
 
 bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* pBits)
 {
 #ifdef _DEBUG
-	if (_pLockedBackBuffer)
+	if (!_pLockedBackBuffer)
 		__debugbreak();
 #endif
 	Vec2i srcStart;
@@ -150,7 +169,7 @@ bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* 
 	Vec2i imageSize;
 	Vec2i destSize;
 
-	if (!CalcClipArea(&srcStart, &destStart, &destSize, &pos, &imageSize))
+	if (!CalculateClipArea(&srcStart, &destStart, &destSize, &pos, &imageSize))
 	{
 		return false;
 	}

@@ -3,6 +3,7 @@
 #include <ddraw.h>
 #include <crtdbg.h>
 #include <cassert>
+#include <cmath>
 
 #include "Vector.hpp"
 
@@ -33,7 +34,7 @@ namespace hs {
 		bool LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWORD* pPitch);
 		void UnlockBackBuffer();
 
-		bool CalcClipArea(Vec2i* srcStart, Vec2i* destStart, Vec2i* destSize, Vec2i* pos, Vec2i* imageSize);
+		bool CalculateClipArea(Vec2i* srcStart, Vec2i* destStart, Vec2i* destSize, Vec2i* pos, Vec2i* imageSize);
 		bool DrawBitmap(int startX, int startY, int width, int height, char* pBits);
 
 		bool BeginDraw();
