@@ -102,9 +102,9 @@ bool hs::DDraw::LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWO
 	{
 		DDSURFACEDESC2 ddsd{};
 		ddsd.dwSize = sizeof(DDSURFACEDESC2);
-	
+
 		_pDDSBack->Lock(nullptr, &ddsd, DDLOCK_WAIT | DDLOCK_WRITEONLY, nullptr);
-		
+
 		*ppBits = (char*)ddsd.lpSurface;
 		*pWidth = ddsd.dwWidth;
 		*pHeight = ddsd.dwHeight;
@@ -165,8 +165,8 @@ bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* 
 	Vec2i srcStart;
 	Vec2i destStart;
 
-	Vec2i pos;
-	Vec2i imageSize;
+	Vec2i pos{ startX, startY };
+	Vec2i imageSize{ width, height };
 	Vec2i destSize;
 
 	if (!CalculateClipArea(&srcStart, &destStart, &destSize, &pos, &imageSize))
@@ -174,9 +174,10 @@ bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* 
 		return false;
 	}
 
-	char* pSrc = pBits + (srcStart.x + srcStart.y * width) * 4;
-	char* pDest = _pLockedBackBuffer + (destStart.x * 4) + destStart.y * _lockedBackBufferPitch;
 	const DWORD RGBA_SIZE = 4;
+	char* pSrc = pBits + (srcStart.x + srcStart.y * width) * RGBA_SIZE;
+	//TODO: FIX IT
+	char* pDest = _pLockedBackBuffer + (destStart.y * _lockedBackBufferPitch) + (destStart.x * RGBA_SIZE);
 
 	for (int y = 0; y < destSize.y; y++)
 	{
@@ -188,7 +189,7 @@ bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* 
 		}
 		pSrc -= (destSize.x * RGBA_SIZE);
 		pSrc += (width * RGBA_SIZE);
-		pDest -= (destSize.y * RGBA_SIZE);
+		pDest -= (destSize.x * RGBA_SIZE);
 		pDest += _lockedBackBufferPitch;
 	}
 

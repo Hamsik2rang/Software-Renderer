@@ -22,9 +22,9 @@ hs::Renderer* renderer;
 HWND hWnd;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+                      _In_opt_ HINSTANCE hPrevInstance,
+                      _In_ LPWSTR    lpCmdLine,
+                      _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
@@ -37,7 +37,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // Perform application initialization:
-    if (!InitInstance (hInstance, nCmdShow))
+    if (!InitInstance(hInstance, nCmdShow))
     {
         return FALSE;
     }
@@ -46,8 +46,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    renderer = new hs::Renderer(hWnd, 1000, 800);
-	renderer->AddObject({ 0,0 }, { 800, 600 }, hs::Color(255, 255, 255, 255));
+    renderer = new hs::Renderer(hWnd);
+    renderer->Line({ 30, 80 }, { 200, 250 }, { 255, 0, 0, 255 });   //R
+    renderer->Line({ 200, 250 }, { 60, 300 }, { 0, 255, 0, 255 });  //G
+	renderer->Line( { 60, 300 }, { 30,80 }, { 0,0,255, 255 });       //B
     // Main message loop:
     while (true)
     {
@@ -110,13 +112,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, 800, 800, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
       return FALSE;
    }
-
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 

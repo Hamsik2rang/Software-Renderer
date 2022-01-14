@@ -58,29 +58,16 @@ namespace hs {
 		float		normalize() const { return (float)std::sqrt(x * x + y * y + z * z); }
 	};
 
-	template <typename T>
-	struct Vector4D
+	union Color
 	{
-		union
-		{
-			struct { T x; T y; T z; T w; };
-			struct { T r; T g; T b; T a; };
-			T elem[4];
-		};
-
-		Vector4D()
-			:r(0), g(0), b(0), a(0)
-		{}
-		Vector4D(T _x, T _y, T _z, T _w)
-			:x(_x), y(_y), z(_z), w(_w)
-		{}
-			
-		T& operator[](int index) { return elem[index]; }
+		struct { unsigned char r; unsigned char g; unsigned char b; unsigned char a; };
+		struct { unsigned char x; unsigned char y; unsigned char z; unsigned char w; };
+		unsigned char elem[4];
 	};
 
 	using Vec2f = Vector2D<float>;
 	using Vec2i = Vector2D<int>;
 	using Vec3f = Vector3D<float>;
 	using Vec3i = Vector3D<int>;
-	using Color = Vector4D<int>;
+	
 }

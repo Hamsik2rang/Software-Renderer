@@ -15,16 +15,17 @@ namespace hs {
 		HWND _hWnd;
 
 		char* _renderBuffer;
+		char* _swapBuffer;
 		
 		unsigned long _width;
 		unsigned long _height;
-
+		// TODO: Implement this.
 		void FlipBuffer();
 		void Set(int x, int y, const Color& color);
 	public:
-		Renderer(HWND hWnd, unsigned long width, unsigned long height);
+		Renderer(HWND hWnd);
 		~Renderer(); 
 		void DrawScene();
-		void AddObject(Vec2i v0, Vec2i v1, const Color& color);
+		void Line(Vec2i v0, Vec2i v1, const Color& color);
 	};
 }
