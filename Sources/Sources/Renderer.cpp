@@ -64,6 +64,7 @@ void hs::Renderer::DrawScene()
 
 void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 {
+	FlipBuffer();
 	bool steep = false;
 	if (std::abs(v0.x - v1.x) < std::abs(v0.y - v1.y))
 	{
@@ -96,4 +97,5 @@ void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 			ds -= 1.0f;
 		}
 	}
+	FlipBuffer();
 }

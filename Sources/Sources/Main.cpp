@@ -49,7 +49,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     renderer = new hs::Renderer(hWnd);
     renderer->Line({ 30, 80 }, { 200, 250 }, { 255, 0, 0, 255 });   //R
     renderer->Line({ 200, 250 }, { 60, 300 }, { 0, 255, 0, 255 });  //G
-	renderer->Line( { 60, 300 }, { 30,80 }, { 0,0,255, 255 });       //B
+	renderer->Line( { 60, 300 }, { 30,80 }, { 0,0,255, 255 });      //B
+
     // Main message loop:
     while (true)
     {
@@ -68,8 +69,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return (int) msg.wParam;
 }
-
-
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -132,7 +131,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_COMMAND  - process the application menu
 //  WM_PAINT    - Paint the main window
 //  WM_DESTROY  - post a quit message and return
-//
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
