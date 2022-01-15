@@ -36,6 +36,7 @@ namespace hs {
 
 		bool CalculateClipArea(Vec2i* srcStart, Vec2i* destStart, Vec2i* destSize, Vec2i* pos, Vec2i* imageSize);
 		bool DrawBitmap(int startX, int startY, int width, int height, char* pBits);
+		bool DrawBitmap(int width, int height, char* pBits);
 
 		bool BeginDraw();
 		void EndDraw();

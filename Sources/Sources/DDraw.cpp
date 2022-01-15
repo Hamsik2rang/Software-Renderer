@@ -176,7 +176,6 @@ bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* 
 
 	const DWORD RGBA_SIZE = 4;
 	char* pSrc = pBits + (srcStart.x + srcStart.y * width) * RGBA_SIZE;
-	//TODO: FIX IT
 	char* pDest = _pLockedBackBuffer + (destStart.y * _lockedBackBufferPitch) + (destStart.x * RGBA_SIZE);
 
 	for (int y = 0; y < destSize.y; y++)
@@ -194,6 +193,11 @@ bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* 
 	}
 
 	return true;
+}
+
+bool hs::DDraw::DrawBitmap(int width, int height, char* pBits)
+{
+	return DrawBitmap(_rcView.left, _rcView.top, width, height, pBits);
 }
 
 bool hs::DDraw::BeginDraw()

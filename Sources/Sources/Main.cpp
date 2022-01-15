@@ -47,7 +47,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     renderer = new hs::Renderer(hWnd);
-    hs::Vec3f v0(30, 80, 0);
+    hs::Vec3f v0(0, 0, 0);
     hs::Vec3f v1(200, 250, 0);
     hs::Vec3f v2(60, 300, 0);
 
@@ -115,7 +115,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   hWnd = CreateWindowW(szWindowClass, szTitle, WS_CAPTION | WS_SYSMENU,
       CW_USEDEFAULT, 0, 800, 800, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
@@ -164,6 +164,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
             EndPaint(hWnd, &ps);
+        }
+        break;
+    case WM_MOVE:
+        {
+            if(renderer)
+				renderer->UpdateWindowPos();
+        }
+        break;
+    case WM_SIZE:
+        {
+            //Caution. not be implemented yet.
+            if(renderer)
+				renderer->UpdateWindowSize();
         }
         break;
     case WM_DESTROY:

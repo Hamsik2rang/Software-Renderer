@@ -75,7 +75,6 @@ void hs::Renderer::DrawScene()
 
 void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 {
-	FlipBuffer();
 	bool steep = false;
 	if (std::abs(v0.x - v1.x) < std::abs(v0.y - v1.y))
 	{
@@ -108,12 +107,10 @@ void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 			ds -= 1.0f;
 		}
 	}
-	FlipBuffer();
 }
 
 void hs::Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 {
-	FlipBuffer();
 	int minXPos = (int)(v0.x < v1.x ? v0.x < v2.x ? v0.x : v2.x : v1.x < v2.x ? v1.x : v2.x);
 	int minYPos = (int)(v0.y < v1.y ? v0.y < v2.y ? v0.y : v2.y : v1.y < v2.y ? v1.y : v2.y);
 	int maxXPos = (int)(v0.x > v1.x ? v0.x > v2.x ? v0.x : v2.x : v1.x > v2.x ? v1.x : v2.x);
@@ -127,8 +124,17 @@ void hs::Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 			Vec3f bc = Barycentric(v0, v1, v2, p);
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
 				continue;
-			Set(p.x, p.y, color);
+			Set((int)p.x, (int)p.y, color);
 		}
 	}
-	FlipBuffer();
+}
+
+void hs::Renderer::UpdateWindowPos()
+{
+	_ddraw->UpdateWindowPos();
+}
+
+void hs::Renderer::UpdateWindowSize()
+{
+	// TODO: Implement this.
 }

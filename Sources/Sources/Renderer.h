@@ -29,5 +29,8 @@ namespace hs {
 		void DrawScene();
 		void Line(Vec2i v0, Vec2i v1, const Color& color);
 		void Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color);
+
+		void UpdateWindowPos();
+		void UpdateWindowSize();
 	};
 }
