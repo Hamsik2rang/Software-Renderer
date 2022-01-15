@@ -18,6 +18,17 @@ void hs::Renderer::Set(int x, int y, const Color& color)
 	memcpy(_renderBuffer + (y * _width * 4) + x * 4, &color, 4);
 }
 
+hs::Vec3f hs::Renderer::Barycentric(Vec3f v0, Vec3f v1, Vec3f v2, Vec3f p)
+{
+	Vec3f eqx(v2.x - v0.x, v1.x - v0.x, v0.x - p.x);
+	Vec3f eqy(v2.y - v0.y, v1.y - v0.y, v0.y - p.y);
+
+	Vec3f u = eqx ^ eqy;
+	if (std::abs(u.z) < 1.0f)
+		return Vec3f(-1.0f, -1.0f, -1.0f);
+	return Vec3f(1.0f - (u.x + u.y) / u.z, u.x / u.z, u.y / u.z);
+}
+
 hs::Renderer::Renderer(HWND hWnd)
 	:_hWnd(hWnd)
 {
@@ -95,6 +106,28 @@ void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 		{
 			y += dy > 0.0f ? 1 : -1;
 			ds -= 1.0f;
+		}
+	}
+	FlipBuffer();
+}
+
+void hs::Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
+{
+	FlipBuffer();
+	int minXPos = (int)(v0.x < v1.x ? v0.x < v2.x ? v0.x : v2.x : v1.x < v2.x ? v1.x : v2.x);
+	int minYPos = (int)(v0.y < v1.y ? v0.y < v2.y ? v0.y : v2.y : v1.y < v2.y ? v1.y : v2.y);
+	int maxXPos = (int)(v0.x > v1.x ? v0.x > v2.x ? v0.x : v2.x : v1.x > v2.x ? v1.x : v2.x);
+	int maxYPos = (int)(v0.y > v1.y ? v0.y > v2.y ? v0.y : v2.y : v1.y > v2.y ? v1.y : v2.y);
+
+	for (int y = minYPos; y <= maxYPos; y++)
+	{
+		for (int x = minXPos; x <= maxXPos; x++)
+		{
+			Vec3f p = { (float)x, (float)y, 0 };
+			Vec3f bc = Barycentric(v0, v1, v2, p);
+			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
+				continue;
+			Set(p.x, p.y, color);
 		}
 	}
 	FlipBuffer();

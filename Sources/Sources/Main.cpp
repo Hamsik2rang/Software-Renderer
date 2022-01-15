@@ -47,9 +47,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     renderer = new hs::Renderer(hWnd);
-    renderer->Line({ 30, 80 }, { 200, 250 }, { 255, 0, 0, 255 });   //R
-    renderer->Line({ 200, 250 }, { 60, 300 }, { 0, 255, 0, 255 });  //G
-	renderer->Line( { 60, 300 }, { 30,80 }, { 0,0,255, 255 });      //B
+    hs::Vec3f v0(30, 80, 0);
+    hs::Vec3f v1(200, 250, 0);
+    hs::Vec3f v2(60, 300, 0);
+
+    renderer->Triangle(v0, v1, v2, { 255,255,255,255 });
+    //renderer->Line({ 30, 80 }, { 200, 250 }, { 255, 0, 0, 255 });   //R
+    //renderer->Line({ 200, 250 }, { 60, 300 }, { 0, 255, 0, 255 });  //G
+	//renderer->Line( { 60, 300 }, { 30,80 }, { 0,0,255, 255 });      //B
 
     // Main message loop:
     while (true)
