@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-void hs::Renderer::FlipBuffer()
+void hs::Renderer::flipBuffer()
 {
 	//TODO: Implement this.
 	int widthSize = _width * 4;
@@ -12,13 +12,13 @@ void hs::Renderer::FlipBuffer()
 	}
 }
 
-void hs::Renderer::Set(int x, int y, const Color& color)
+void hs::Renderer::setPixel(int x, int y, const Color& color)
 {
 	sizeof(Color);
 	memcpy(_renderBuffer + (y * _width * 4) + x * 4, &color, 4);
 }
 
-hs::Vec3f hs::Renderer::Barycentric(Vec3f v0, Vec3f v1, Vec3f v2, Vec3f p)
+hs::Vec3f hs::Renderer::barycentric(Vec3f v0, Vec3f v1, Vec3f v2, Vec3f p)
 {
 	Vec3f eqx(v2.x - v0.x, v1.x - v0.x, v0.x - p.x);
 	Vec3f eqy(v2.y - v0.y, v1.y - v0.y, v0.y - p.y);
@@ -73,6 +73,11 @@ void hs::Renderer::DrawScene()
 	_ddraw->Blt();
 }
 
+void hs::Renderer::Point(Vec2i v, const Color& color)
+{
+	setPixel(v.x, v.y, color);
+}
+
 void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 {
 	bool steep = false;
@@ -96,9 +101,9 @@ void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 	for (int x = v0.x; x <= v1.x; x++)
 	{
 		if (steep)
-			Set(y, x, color);
+			setPixel(y, x, color);
 		else
-			Set(x, y, color);
+			setPixel(x, y, color);
 
 		ds += slope;
 		if (ds > 0.5f)
@@ -121,10 +126,31 @@ void hs::Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 		for (int x = minXPos; x <= maxXPos; x++)
 		{
 			Vec3f p = { (float)x, (float)y, 0 };
-			Vec3f bc = Barycentric(v0, v1, v2, p);
+			Vec3f bc = hs::Barycentric(v0, v1, v2, p);
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
 				continue;
-			Set((int)p.x, (int)p.y, color);
+			setPixel((int)p.x, (int)p.y, color);
+		}
+	}
+}
+
+void hs::Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color0, const Color& color1, const Color& color2)
+{
+	int minXPos = (int)(v0.x < v1.x ? v0.x < v2.x ? v0.x : v2.x : v1.x < v2.x ? v1.x : v2.x);
+	int minYPos = (int)(v0.y < v1.y ? v0.y < v2.y ? v0.y : v2.y : v1.y < v2.y ? v1.y : v2.y);
+	int maxXPos = (int)(v0.x > v1.x ? v0.x > v2.x ? v0.x : v2.x : v1.x > v2.x ? v1.x : v2.x);
+	int maxYPos = (int)(v0.y > v1.y ? v0.y > v2.y ? v0.y : v2.y : v1.y > v2.y ? v1.y : v2.y);
+
+	for (int y = minYPos; y <= maxYPos; y++)
+	{
+		for (int x = minXPos; x <= maxXPos; x++)
+		{
+			Vec3f p = { (float)x, (float)y, 0 };
+			Vec3f bc = hs::Barycentric(v0, v1, v2, p);
+			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
+				continue;
+			Color lerpColor = color0 * bc.x + color1 * bc.y + color2 * bc.z;
+			setPixel((int)p.x, (int)p.y, lerpColor);
 		}
 	}
 }

@@ -5,7 +5,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "Vector.hpp"
+#include "../Math/Vector.hpp"
 
 namespace hs {
 	class DDraw

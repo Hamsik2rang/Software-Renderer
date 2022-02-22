@@ -140,18 +140,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DDraw.h" />
+    <ClInclude Include="Core\Math\Utility.hpp" />
+    <ClInclude Include="Core\Renderer\DDraw.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Core\Renderer\Renderer.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Vector.hpp" />
+    <ClInclude Include="Core\Math\Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DDraw.cpp" />
+    <ClCompile Include="Core\Renderer\DDraw.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Core\Renderer\Renderer.cpp" />
+    <ClCompile Include="Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Sources.rc" />

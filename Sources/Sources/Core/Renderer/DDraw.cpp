@@ -274,8 +274,8 @@ void hs::DDraw::UpdateWindowSize()
 void hs::DDraw::UpdateWindowPos()
 {
 	GetClientRect(_hWnd, &_rcView);
-	ClientToScreen(_hWnd, (POINT*)&_rcView.left);
-	ClientToScreen(_hWnd, (POINT*)&_rcView.right);
+	::ClientToScreen(_hWnd, (POINT*)&_rcView.left);
+	::ClientToScreen(_hWnd, (POINT*)&_rcView.right);
 }
 
 void hs::DDraw::CleanUp()

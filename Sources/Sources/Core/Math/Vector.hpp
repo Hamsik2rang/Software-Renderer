@@ -25,9 +25,24 @@ namespace hs {
 		Vector2D<T> operator*(const Vector2D<T>& v) const { return Vector2D(x * v.x, y * v.y); }
 
 		Vector2D<T> operator*(T scalar) const { return Vector2D(x * scalar, y * scalar); }
-		T& operator[](int index) { return elem[index]; }
+		T&		operator[](int index) { return elem[index]; }
 
-		float		normalize() const { return (float)std::sqrt(x * x + y * y); }
+		float	normalize() const { return (float)std::sqrt(x * x + y * y); }
+		Vector2D<T> ToPolarCoordinate() const
+		{
+			T radius = std::sqrtf(x * x + y * y);
+			T radian = std::atan2(y, x);
+			return Vector2D<T>(radius, radian);
+		}
+
+		Vector2D<T> ToCartesianCoordinate() const
+		{
+			T radius = x;
+			T radian = y;
+			int x = radius * std::cos(radian);
+			int y = radius * std::sin(radian);
+			return Vector2D<T>(x, y);
+		}
 	};
 
 	template <typename T>
@@ -53,9 +68,9 @@ namespace hs {
 		Vector3D<T> operator*(T scalar) const { return Vector3D(x * scalar, y * scalar, z * scalar); }
 		Vector3D<T> operator^(const Vector3D<T>& v) const { return Vector3D(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x); }
 
-		T			operator*(const Vector3D<T>& v) const { return x * v.x + y * v.y + z * v.z; }
-		T&			operator[](int index) { return elem[index]; }
-		float		normalize() const { return (float)std::sqrt(x * x + y * y + z * z); }
+		T		operator*(const Vector3D<T>& v) const { return x * v.x + y * v.y + z * v.z; }
+		T&		operator[](int index) { return elem[index]; }
+		float	normalize() const { return (float)std::sqrt(x * x + y * y + z * z); }
 	};
 
 	union Color
@@ -63,11 +78,19 @@ namespace hs {
 		struct { unsigned char r; unsigned char g; unsigned char b; unsigned char a; };
 		struct { unsigned char x; unsigned char y; unsigned char z; unsigned char w; };
 		unsigned char elem[4];
+
+		Color operator+(const Color& c) const 
+		{ 
+			return Color{ unsigned char(r + c.r) , unsigned char(g + c.g), unsigned char(b + c.b), unsigned char(w + c.w) }; 
+		}
+		Color operator*(float f) const
+		{
+			return Color{ unsigned char(r * f) , unsigned char(g * f), unsigned char(b * f), unsigned char(w * f) };
+		}
 	};
 
 	using Vec2f = Vector2D<float>;
 	using Vec2i = Vector2D<int>;
 	using Vec3f = Vector3D<float>;
 	using Vec3i = Vector3D<int>;
-	
 }
