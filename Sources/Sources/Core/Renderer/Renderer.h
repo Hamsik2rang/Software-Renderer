@@ -20,9 +20,8 @@ namespace hs {
 		unsigned long _width;
 		unsigned long _height;
 		// TODO: Implement this.
-		void flipBuffer();
-		void setPixel(int x, int y, const Color& color);
-		Vec3f barycentric(Vec3f v0, Vec3f v1, Vec3f v2, Vec3f p);
+		void FilpBuffer();
+		void SetPixel(int x, int y, const Color& color);
 
 	public:
 		Renderer(HWND hWnd);

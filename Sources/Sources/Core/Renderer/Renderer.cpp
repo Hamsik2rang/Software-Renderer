@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-void hs::Renderer::flipBuffer()
+void hs::Renderer::FilpBuffer()
 {
 	//TODO: Implement this.
 	int widthSize = _width * 4;
@@ -12,21 +12,10 @@ void hs::Renderer::flipBuffer()
 	}
 }
 
-void hs::Renderer::setPixel(int x, int y, const Color& color)
+void hs::Renderer::SetPixel(int x, int y, const Color& color)
 {
 	sizeof(Color);
 	memcpy(_renderBuffer + (y * _width * 4) + x * 4, &color, 4);
-}
-
-hs::Vec3f hs::Renderer::barycentric(Vec3f v0, Vec3f v1, Vec3f v2, Vec3f p)
-{
-	Vec3f eqx(v2.x - v0.x, v1.x - v0.x, v0.x - p.x);
-	Vec3f eqy(v2.y - v0.y, v1.y - v0.y, v0.y - p.y);
-
-	Vec3f u = eqx ^ eqy;
-	if (std::abs(u.z) < 1.0f)
-		return Vec3f(-1.0f, -1.0f, -1.0f);
-	return Vec3f(1.0f - (u.x + u.y) / u.z, u.x / u.z, u.y / u.z);
 }
 
 hs::Renderer::Renderer(HWND hWnd)
@@ -75,7 +64,7 @@ void hs::Renderer::DrawScene()
 
 void hs::Renderer::Point(Vec2i v, const Color& color)
 {
-	setPixel(v.x, v.y, color);
+	SetPixel(v.x, v.y, color);
 }
 
 void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
@@ -101,9 +90,9 @@ void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 	for (int x = v0.x; x <= v1.x; x++)
 	{
 		if (steep)
-			setPixel(y, x, color);
+			SetPixel(y, x, color);
 		else
-			setPixel(x, y, color);
+			SetPixel(x, y, color);
 
 		ds += slope;
 		if (ds > 0.5f)
@@ -129,7 +118,7 @@ void hs::Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 			Vec3f bc = hs::Barycentric(v0, v1, v2, p);
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
 				continue;
-			setPixel((int)p.x, (int)p.y, color);
+			SetPixel((int)p.x, (int)p.y, color);
 		}
 	}
 }
@@ -150,7 +139,7 @@ void hs::Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& c
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
 				continue;
 			Color lerpColor = color0 * bc.x + color1 * bc.y + color2 * bc.z;
-			setPixel((int)p.x, (int)p.y, lerpColor);
+			SetPixel((int)p.x, (int)p.y, lerpColor);
 		}
 	}
 }

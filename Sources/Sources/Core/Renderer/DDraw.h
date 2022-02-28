@@ -24,8 +24,8 @@ namespace hs {
 		HWND					_hWnd;
 		RECT					_rcView;
 
-		bool CreateBackBuffer(DWORD width, DWORD height);
-		void CleanUpBackBuffer();
+		bool createBackBuffer(DWORD width, DWORD height);
+		void cleanupBackBuffer();
 	public:
 		DDraw();
 		~DDraw();

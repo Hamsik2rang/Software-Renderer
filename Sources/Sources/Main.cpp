@@ -8,9 +8,9 @@
 #define MAX_LOADSTRING 100
 
 // Global Variables:
-HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+HINSTANCE g_hInst;                                // current instance
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -48,8 +48,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     renderer = new hs::Renderer(hWnd);
     hs::Vec3f v0(300, 150, 0);
-    hs::Vec3f v1(100, 350, 0);
-    hs::Vec3f v2(500, 350, 0);
+    hs::Vec3f v1(200, 550, 0);
+    hs::Vec3f v2(600, 350, 0);
 
     renderer->GradiantTriangle(v0, v1, v2, { 255,0,0,255 }, { 0,255,0,255 }, { 0,0,255,255 });
 
@@ -110,7 +110,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // Store instance handle in our global variable
+   g_hInst = hInstance; // Store instance handle in our global variable
 
    hWnd = CreateWindowW(szWindowClass, szTitle, WS_CAPTION | WS_SYSMENU,
       CW_USEDEFAULT, 0, 800, 800, nullptr, nullptr, hInstance, nullptr);
@@ -145,7 +145,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             switch (wmId)
             {
             case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+                DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);

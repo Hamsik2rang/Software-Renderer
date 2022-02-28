@@ -61,7 +61,7 @@ bool hs::DDraw::Init(HWND hWnd)
 	DWORD width = _rcView.right - _rcView.left;
 	DWORD height = _rcView.bottom - _rcView.top;
 
-	if (!CreateBackBuffer(width, height))
+	if (!createBackBuffer(width, height))
 	{
 #ifdef _DEBUG
 		__debugbreak();
@@ -72,7 +72,7 @@ bool hs::DDraw::Init(HWND hWnd)
 	return true;
 }
 
-bool hs::DDraw::CreateBackBuffer(DWORD width, DWORD height)
+bool hs::DDraw::createBackBuffer(DWORD width, DWORD height)
 {
 	DDSURFACEDESC2 ddsd{};
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
@@ -122,7 +122,7 @@ void hs::DDraw::UnlockBackBuffer()
 		_pDDSBack->Unlock(nullptr);
 }
 
-void hs::DDraw::CleanUpBackBuffer()
+void hs::DDraw::cleanupBackBuffer()
 {
 	if (_pDDSBack)
 	{
@@ -255,14 +255,14 @@ void hs::DDraw::Clear()
 
 void hs::DDraw::UpdateWindowSize()
 {
-	CleanUpBackBuffer();
+	cleanupBackBuffer();
 
 	UpdateWindowPos();
 
 	DWORD width = _rcView.right - _rcView.left;
 	DWORD height = _rcView.bottom - _rcView.top;
 
-	CreateBackBuffer(width, height);
+	createBackBuffer(width, height);
 
 	if (BeginDraw())
 	{
