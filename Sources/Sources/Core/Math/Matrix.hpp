@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Vector.hpp"
+#include <cassert>
 
 template <typename T>
-class Matrix22
+class Matrix2D
 {
 public:
 	union
@@ -12,10 +13,76 @@ public:
 		T elem[2][2];
 	};
 
+	Matrix2D<T> operator+(const Matrix2D<T> m) const
+	{
+		Matrix2D<T> ret;
+		ret.r1 = r1 + m.r1;
+		ret.r2 = r2 + m.r2;
+		return ret;
+	}
+	
+	Matrix2D<T>& operator+=(const Matrix2D<T> m)
+	{
+		r1 += m.r1;
+		r2 += m.r2;
+		return *this;
+	}
+
+	Matrix2D<T>& operator-(const Matrix2D<T> m)
+	{
+		Matrix2D<T> ret;
+		ret.r1 = r1 - m.r2;
+		ret.r2 = r2 - m.r2;
+		return ret;
+	}
+
+	Matrix2D<T>& operator-=(const Matrix2D<T> m)
+	{
+		r1 -= m.r1;
+		r2 -= m.r2;
+		return *this;
+	}
+
+	Matrix2D<T> operator*(const T& k)
+	{
+		Matrix2D<T> ret;
+		ret.r1 = r1 * k;
+		ret.r2 = r2 * k;
+		return ret;
+	}
+
+	Matrix2D<T>& operator*=(const T& k)
+	{
+		r1 *= k;
+		r2 *= k;
+		return *this;
+	}
+
+	Matrix2D<T> operator/(const T& k)
+	{
+		Matrix2D<T> ret;
+		ret.r1 = r1 / k;
+		ret.r2 = r2 / k;
+		return ret;
+	}
+
+	Matrix2D<T>& operator/=(const T& k)
+	{
+		r1 /= k;
+		r2 /= k;
+		return *this;
+	}
+
+
+	T* operator[](int index)
+	{
+		assert(index >= 0 && index <= 1);
+		return elem[index];
+	}
 };
 
 template <typename T>
-class Matrix33
+class Matrix3D
 {
 public:
 	union
@@ -24,11 +91,15 @@ public:
 		T elem[3][3];
 	};
 
-
+	T* operator[](int index)
+	{
+		assert(index >= 0 && index <= 2);
+		return elem[index];
+	}
 };
 
 template <typename T>
-class Matrix44
+class Matrix4D
 {
 public:
 	union
@@ -37,7 +108,7 @@ public:
 		T elem[4][4];
 	};
 
-	Matrix44()
+	Matrix4D()
 		:r1(), r2(), r3(), r4()
 	{}
 
@@ -45,4 +116,9 @@ public:
 		:r1(_r1), r2(_r2), r3(_r3), r4(_r4)
 	{}
 
+	T* operator[](int index)
+	{
+		assert(index >= 0 && index <= 3);
+		return elem[index];
+	}
 };
