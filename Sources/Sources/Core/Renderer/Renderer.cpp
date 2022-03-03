@@ -1,73 +1,86 @@
 #include "Renderer.h"
 
-void hs::Renderer::FilpBuffer()
+void Renderer::FilpBuffer()
 {
 	//TODO: Implement this.
-	int widthSize = _width * 4;
-	for (int row = 0; row < _height/2; row++)
+	int widthSize = m_width * 4;
+	for (uint32_t row = 0; row < m_height / 2; row++)
 	{
-		memcpy(_swapBuffer, _renderBuffer + (widthSize * row), widthSize);
-		memcpy(_renderBuffer + (widthSize * row), _renderBuffer + (widthSize * (_height - row - 1)), widthSize);
-		memcpy(_renderBuffer + (widthSize * (_height - row - 1)), _swapBuffer, widthSize);
+		memcpy(m_pSwapBuffer, m_pViewport + (widthSize * row), widthSize);
+		memcpy(m_pViewport + (widthSize * row), m_pViewport + (widthSize * (m_height - row - 1)), widthSize);
+		memcpy(m_pViewport + (widthSize * (m_height - row - 1)), m_pSwapBuffer, widthSize);
 	}
 }
 
-void hs::Renderer::SetPixel(int x, int y, const Color& color)
+void Renderer::SetPixel(int x, int y, const Color& color)
 {
 	sizeof(Color);
-	memcpy(_renderBuffer + (y * _width * 4) + x * 4, &color, 4);
+	memcpy(m_pViewport + (y * m_width * 4) + x * 4, &color, 4);
 }
 
-hs::Renderer::Renderer(HWND hWnd)
-	:_hWnd(hWnd)
+Renderer::Renderer(HWND hWnd)
+	:m_hWnd(hWnd)
 {
-	_ddraw = new DDraw;
-	_ddraw->Init(_hWnd);
-	_width = _ddraw->width();
-	_height = _ddraw->height();
-	_renderBuffer = new char[_width * _height * 4];
-	_swapBuffer = new char[_width * 4];
+	m_pCamera = new Camera;
+	m_pDDraw = new DDraw;
+	m_pDDraw->Init(m_hWnd);
+	m_width = m_pDDraw->width();
+	m_height = m_pDDraw->height();
+	m_pViewport = new char[m_width * m_height * 4];
+	m_pSwapBuffer = new char[m_width * 4];
 	
-	memset(_renderBuffer, 0, _width * _height * 4);
+	memset(m_pViewport, 0, m_width * m_height * 4);
+	m_pTimer = new Timer;
+	m_pTimer->Start();
 }
 
-hs::Renderer::~Renderer()
+Renderer::~Renderer()
 {
-	if (_ddraw)
+	if (m_pDDraw)
 	{
-		delete _ddraw;
-		_ddraw = nullptr;
+		delete m_pDDraw;
+		m_pDDraw = nullptr;
 	}
-	if (_renderBuffer)
+	if (m_pViewport)
 	{
-		delete[] _renderBuffer;
-		_renderBuffer = nullptr;
+		delete[] m_pViewport;
+		m_pViewport = nullptr;
 	}
-	if (_swapBuffer)
+	if (m_pSwapBuffer)
 	{
-		delete[] _swapBuffer;
-		_swapBuffer = nullptr;
+		delete[] m_pSwapBuffer;
+		m_pSwapBuffer = nullptr;
+	}
+	if (m_pCamera)
+	{
+		delete m_pCamera;
+		m_pCamera = nullptr;
+	}
+	if (m_pTimer)
+	{
+		delete m_pTimer;
+		m_pTimer = nullptr;
 	}
 }
 
-void hs::Renderer::DrawScene()
+void Renderer::DrawScene()
 {
-	_ddraw->BeginDraw();
-	_ddraw->Clear();
+	m_pDDraw->BeginDraw();
+	m_pDDraw->Clear();
 	//write draw code here.
-	_ddraw->DrawBitmap(0, 0, _width, _height, _renderBuffer);
+	m_pDDraw->DrawBitmap(0, 0, m_width, m_height, m_pViewport);
 
 	// end code.
-	_ddraw->EndDraw();
-	_ddraw->Blt();
+	m_pDDraw->EndDraw();
+	m_pDDraw->Blt();
 }
 
-void hs::Renderer::Point(Vec2i v, const Color& color)
+void Renderer::Point(Vec2i v, const Color& color)
 {
 	SetPixel(v.x, v.y, color);
 }
 
-void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
+void Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 {
 	bool steep = false;
 	if (std::abs(v0.x - v1.x) < std::abs(v0.y - v1.y))
@@ -103,7 +116,7 @@ void hs::Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 	}
 }
 
-void hs::Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
+void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 {
 	int minXPos = (int)(v0.x < v1.x ? v0.x < v2.x ? v0.x : v2.x : v1.x < v2.x ? v1.x : v2.x);
 	int minYPos = (int)(v0.y < v1.y ? v0.y < v2.y ? v0.y : v2.y : v1.y < v2.y ? v1.y : v2.y);
@@ -115,7 +128,7 @@ void hs::Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 		for (int x = minXPos; x <= maxXPos; x++)
 		{
 			Vec3f p = { (float)x, (float)y, 0 };
-			Vec3f bc = hs::Barycentric(v0, v1, v2, p);
+			Vec3f bc = Barycentric(v0, v1, v2, p);
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
 				continue;
 			SetPixel((int)p.x, (int)p.y, color);
@@ -123,7 +136,7 @@ void hs::Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 	}
 }
 
-void hs::Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color0, const Color& color1, const Color& color2)
+void Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color0, const Color& color1, const Color& color2)
 {
 	int minXPos = (int)(v0.x < v1.x ? v0.x < v2.x ? v0.x : v2.x : v1.x < v2.x ? v1.x : v2.x);
 	int minYPos = (int)(v0.y < v1.y ? v0.y < v2.y ? v0.y : v2.y : v1.y < v2.y ? v1.y : v2.y);
@@ -135,7 +148,7 @@ void hs::Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& c
 		for (int x = minXPos; x <= maxXPos; x++)
 		{
 			Vec3f p = { (float)x, (float)y, 0 };
-			Vec3f bc = hs::Barycentric(v0, v1, v2, p);
+			Vec3f bc = Barycentric(v0, v1, v2, p);
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
 				continue;
 			Color lerpColor = color0 * bc.x + color1 * bc.y + color2 * bc.z;
@@ -144,12 +157,12 @@ void hs::Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& c
 	}
 }
 
-void hs::Renderer::UpdateWindowPos()
+void Renderer::UpdateWindowPos()
 {
-	_ddraw->UpdateWindowPos();
+	m_pDDraw->UpdateWindowPos();
 }
 
-void hs::Renderer::UpdateWindowSize()
+void Renderer::UpdateWindowSize()
 {
 	// TODO: Implement this.
 }

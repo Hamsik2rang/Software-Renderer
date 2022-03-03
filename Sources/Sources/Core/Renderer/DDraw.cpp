@@ -1,18 +1,19 @@
 #include "DDraw.h"
 #include "DDraw.h"
 
+#include <cmath>
 
-hs::DDraw::DDraw()
+DDraw::DDraw()
 {
 	memset(this, 0, sizeof(DDraw));
 }
 
-hs::DDraw::~DDraw()
+DDraw::~DDraw()
 {
 	CleanUp();
 }
 
-bool hs::DDraw::Init(HWND hWnd)
+bool DDraw::Init(HWND hWnd)
 {
 	_hWnd = hWnd;
 	DDSURFACEDESC2 ddsd{};
@@ -72,7 +73,7 @@ bool hs::DDraw::Init(HWND hWnd)
 	return true;
 }
 
-bool hs::DDraw::createBackBuffer(DWORD width, DWORD height)
+bool DDraw::createBackBuffer(DWORD width, DWORD height)
 {
 	DDSURFACEDESC2 ddsd{};
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
@@ -96,7 +97,7 @@ bool hs::DDraw::createBackBuffer(DWORD width, DWORD height)
 }
 
 
-bool hs::DDraw::LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWORD* pPitch)
+bool DDraw::LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWORD* pPitch)
 {
 	if (_pDDSBack)
 	{
@@ -116,13 +117,13 @@ bool hs::DDraw::LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWO
 	return false;
 }
 
-void hs::DDraw::UnlockBackBuffer()
+void DDraw::UnlockBackBuffer()
 {
 	if (_pDDSBack)
 		_pDDSBack->Unlock(nullptr);
 }
 
-void hs::DDraw::cleanupBackBuffer()
+void DDraw::cleanupBackBuffer()
 {
 	if (_pDDSBack)
 	{
@@ -131,7 +132,7 @@ void hs::DDraw::cleanupBackBuffer()
 	}
 }
 
-bool hs::DDraw::CalculateClipArea(Vec2i* pSrcStart, Vec2i* pDestStart, Vec2i* pDestSize, Vec2i* pPos, Vec2i* pImageSize)
+bool DDraw::CalculateClipArea(Vec2i* pSrcStart, Vec2i* pDestStart, Vec2i* pDestSize, Vec2i* pPos, Vec2i* pImageSize)
 {
 	pDestStart->x = max(pPos->x, 0);
 	pDestStart->y = max(pPos->y, 0);
@@ -156,7 +157,7 @@ bool hs::DDraw::CalculateClipArea(Vec2i* pSrcStart, Vec2i* pDestStart, Vec2i* pD
 	return true;
 }
 
-bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* pBits)
+bool DDraw::DrawBitmap(int startX, int startY, int width, int height, char* pBits)
 {
 #ifdef _DEBUG
 	if (!_pLockedBackBuffer)
@@ -195,12 +196,12 @@ bool hs::DDraw::DrawBitmap(int startX, int startY, int width, int height, char* 
 	return true;
 }
 
-bool hs::DDraw::DrawBitmap(int width, int height, char* pBits)
+bool DDraw::DrawBitmap(int width, int height, char* pBits)
 {
 	return DrawBitmap(_rcView.left, _rcView.top, width, height, pBits);
 }
 
-bool hs::DDraw::BeginDraw()
+bool DDraw::BeginDraw()
 {
 	char* pBuffer = nullptr;
 	DWORD bufferWidth = 0;
@@ -227,19 +228,19 @@ bool hs::DDraw::BeginDraw()
 	return true;
 }
 
-void hs::DDraw::EndDraw()
+void DDraw::EndDraw()
 {
 	UnlockBackBuffer();
 	_pLockedBackBuffer = nullptr;
 	_lockedBackBufferPitch = 0;
 }
 
-void hs::DDraw::Blt()
+void DDraw::Blt()
 {
 	_pDDSPrimary->Blt(&_rcView, _pDDSBack, nullptr, DDBLT_WAIT, nullptr);
 }
 
-void hs::DDraw::Clear()
+void DDraw::Clear()
 {
 	if (!_pLockedBackBuffer)
 	{
@@ -253,7 +254,7 @@ void hs::DDraw::Clear()
 	}
 }
 
-void hs::DDraw::UpdateWindowSize()
+void DDraw::UpdateWindowSize()
 {
 	cleanupBackBuffer();
 
@@ -271,14 +272,14 @@ void hs::DDraw::UpdateWindowSize()
 	}
 }
 
-void hs::DDraw::UpdateWindowPos()
+void DDraw::UpdateWindowPos()
 {
 	GetClientRect(_hWnd, &_rcView);
 	::ClientToScreen(_hWnd, (POINT*)&_rcView.left);
 	::ClientToScreen(_hWnd, (POINT*)&_rcView.right);
 }
 
-void hs::DDraw::CleanUp()
+void DDraw::CleanUp()
 {
 	if (_pDDClipper)
 	{
@@ -302,12 +303,12 @@ void hs::DDraw::CleanUp()
 	}
 }
 
-DWORD hs::DDraw::width() const
+DWORD DDraw::width() const
 {
 	return _width;
 }
 
-DWORD hs::DDraw::height() const
+DWORD DDraw::height() const
 {
 	return _height;
 }

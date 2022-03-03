@@ -1,13 +1,17 @@
 #pragma once
 
-#include "./Interface/Mesh.hpp"
+#include "./Drawable.h"
 
-class Model : public Mesh
+#include <string>
+
+class Model : public Drawable
 {
 private:
 
 public:
-	~Model();
+	Model();
+	virtual ~Model() override;
 
+	bool Load(std::string filename);
 };
 

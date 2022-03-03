@@ -18,8 +18,8 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-hs::Renderer* renderer;
-HWND hWnd;
+Renderer* g_pRenderer;
+HWND g_hWnd;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
@@ -46,12 +46,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    renderer = new hs::Renderer(hWnd);
-    hs::Vec3f v0(300, 150, 0);
-    hs::Vec3f v1(200, 550, 0);
-    hs::Vec3f v2(600, 350, 0);
+    g_pRenderer = new Renderer(g_hWnd);
+    Vec3f v0(300, 150, 0);
+    Vec3f v1(200, 550, 0);
+    Vec3f v2(600, 350, 0);
 
-    renderer->GradiantTriangle(v0, v1, v2, { 255,0,0,255 }, { 0,255,0,255 }, { 0,0,255,255 });
+    g_pRenderer->GradiantTriangle(v0, v1, v2, { 255,0,0,255 }, { 0,255,0,255 }, { 0,0,255,255 });
 
     // Main message loop:
     while (true)
@@ -65,7 +65,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else
         {
-            renderer->DrawScene();
+            g_pRenderer->DrawScene();
         }
     }
 
@@ -112,15 +112,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    g_hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindowW(szWindowClass, szTitle, WS_CAPTION | WS_SYSMENU,
+   g_hWnd = CreateWindowW(szWindowClass, szTitle, WS_CAPTION | WS_SYSMENU,
       CW_USEDEFAULT, 0, 800, 800, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
+   if (!g_hWnd)
    {
       return FALSE;
    }
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+   ShowWindow(g_hWnd, nCmdShow);
+   UpdateWindow(g_hWnd);
 
    return TRUE;
 }
@@ -165,15 +165,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_MOVE:
         {
-            if(renderer)
-				renderer->UpdateWindowPos();
+            if(g_pRenderer)
+				g_pRenderer->UpdateWindowPos();
         }
         break;
     case WM_SIZE:
         {
             //Caution. not be implemented yet.
-            if(renderer)
-				renderer->UpdateWindowSize();
+            if(g_pRenderer)
+				g_pRenderer->UpdateWindowSize();
         }
         break;
     case WM_DESTROY:

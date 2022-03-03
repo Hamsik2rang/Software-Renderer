@@ -39,22 +39,22 @@
     <ClInclude Include="Core\Drawable\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Math\Utility.hpp">
+    <ClInclude Include="Core\Math\Interpolate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Utility\Timer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Drawable\Interface\IDrawable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Drawable\Primitive.h">
+    <ClInclude Include="Core\Drawable\Drawable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Drawable\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Drawable\Interface\Mesh.hpp">
+    <ClInclude Include="Core\Renderer\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Math\Matrix.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,10 +71,10 @@
     <ClCompile Include="Core\Drawable\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Drawable\Primitive.cpp">
+    <ClCompile Include="Core\Drawable\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Drawable\Object.cpp">
+    <ClCompile Include="Core\Renderer\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

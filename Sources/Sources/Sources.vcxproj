@@ -140,15 +140,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Core\Drawable\Interface\Mesh.hpp" />
-    <ClInclude Include="Core\Math\Utility.hpp" />
+    <ClInclude Include="Core\Math\Matrix.hpp" />
+    <ClInclude Include="Core\Renderer\Camera.h" />
+    <ClInclude Include="Core\Math\Interpolate.hpp" />
     <ClInclude Include="Core\Renderer\DDraw.h" />
-    <ClInclude Include="Core\Drawable\Interface\IDrawable.h" />
+    <ClInclude Include="Core\Drawable\Drawable.h" />
     <ClInclude Include="Core\Utility\Timer.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Core\Renderer\Renderer.h" />
     <ClInclude Include="Core\Drawable\Model.h" />
-    <ClInclude Include="Core\Drawable\Primitive.h" />
     <ClInclude Include="Core\Drawable\Object.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Main.h" />
@@ -156,11 +156,11 @@
     <ClInclude Include="Core\Math\Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Renderer\Camera.cpp" />
     <ClCompile Include="Core\Renderer\DDraw.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Core\Renderer\Renderer.cpp" />
     <ClCompile Include="Core\Drawable\Model.cpp" />
-    <ClCompile Include="Core\Drawable\Primitive.cpp" />
     <ClCompile Include="Core\Drawable\Object.cpp" />
   </ItemGroup>
   <ItemGroup>
