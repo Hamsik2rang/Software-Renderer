@@ -5,7 +5,7 @@
 
 class Drawable
 {
-protected:
+public:
 	// Constant
 	static const int VERTEX = 0;
 	static const int TEXTURE = 1;
@@ -15,7 +15,6 @@ protected:
 	std::vector<Vec3f> m_textures;
 	std::vector<Vec3f> m_normals;
 	std::vector<Vector3D<uint32_t>> m_indices[3];	// vertex/texture/normal index
-	
 
 	uint16_t m_stride = 3;
 

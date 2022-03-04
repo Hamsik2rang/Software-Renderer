@@ -22,6 +22,7 @@ void Camera::SetTimer(Timer* timer)
 
 void Camera::Rotate(float pitch, float yaw)
 {
+	//NOTE: Is it work?
 	auto direction = m_at - m_eye;
 	direction.x *= std::sin(yaw);
 	direction.y *= std::sin(pitch);

@@ -3,6 +3,13 @@
 #include <cmath>
 
 template <typename T>
+class Vector2D;
+template <typename T>
+class Vector3D;
+template <typename T>
+class Vector4D;
+
+template <typename T>
 class Vector2D
 {
 public:
@@ -22,28 +29,33 @@ public:
 
 	Vector2D<T> operator+(const Vector2D<T>& v) const { return Vector2D(x + v.x, y + v.y); }
 	Vector2D<T> operator-(const Vector2D<T>& v) const { return Vector2D(x - v.x, y - v.y); }
-	Vector2D<T> operator*(const Vector2D<T>& v) const { return Vector2D(x * v.x, y * v.y); }
-	Vector2D<T> operator/(const Vector2D<T>& v) const { return Vector2D(x / v.x, y / v.y); }
+	T operator*(const Vector2D<T>& v) const { return x * v.x + y * v.y; }
 
 	Vector2D<T> operator/(const T& scalar) const { return Vector2D(x / scalar, y / scalar); }
 	Vector2D<T> operator*(T scalar) const { return Vector2D(x * scalar, y * scalar); }
 	T& operator[](int index) { return elem[index]; }
 
 	float	normalize() const { return (float)std::sqrt(x * x + y * y); }
-	Vector2D<T> ToPolarCoordinate() const
+	Vector2D<T> CartesianToPolar() const
 	{
 		T radius = std::sqrtf(x * x + y * y);
 		T radian = std::atan2(y, x);
 		return Vector2D<T>(radius, radian);
 	}
 
-	Vector2D<T> ToCartesianCoordinate() const
+	Vector2D<T> PolarToCartesian() const
 	{
 		T radius = x;
 		T radian = y;
 		int x = radius * std::cos(radian);
 		int y = radius * std::sin(radian);
 		return Vector2D<T>(x, y);
+	}
+
+	Vector3D<T> CartesianToAffine() const
+	{
+		Vector3D<T> ret(x, y, T(1));
+		return ret;
 	}
 };
 
@@ -114,6 +126,7 @@ public:
 	{
 		return (float)std::sqrt(x * x + y * y + z * z);
 	}
+
 	Vector3D<T>& normalize()
 	{
 		x /= length();
@@ -121,6 +134,19 @@ public:
 		z /= length();
 
 		return *this;
+	}
+
+	Vector2D<T> AffineToCartesian() const
+	{
+		assert(z != 0);
+		Vector3D<T> ret = {x/z, y/z};
+		return ret;
+	}
+
+	Vector4D<T> CartesianToAffine() const
+	{
+		Vector4D<T> ret(x, y, z, T(1));
+		return ret;
 	}
 };
 
@@ -201,7 +227,7 @@ public:
 		return *this;
 	}
 
-	T operator*(const Vector3D<T>& v) const
+	T operator*(const Vector4D<T>& v) const
 	{
 		return x * v.x + y * v.y + z * v.z + w * v.w;
 	}
@@ -215,11 +241,18 @@ public:
 	{
 		return (float)std::sqrt(x * x + y * y + z * z + w * w);
 	}
-	Vector3D<T>& normalize()
+	Vector4D<T>& normalize()
 	{
 		*this /= length();
 
 		return *this;
+	}
+
+	Vector3D<T> AffineToCartesian()
+	{
+		assert(w != 0);
+		Vector3D<T> ret = { x / w, y / w, z / w };
+		return ret;
 	}
 };
 

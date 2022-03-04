@@ -1,5 +1,6 @@
 #include "Renderer.h"
 
+
 void Renderer::FilpBuffer()
 {
 	//TODO: Implement this.
@@ -16,6 +17,35 @@ void Renderer::SetPixel(int x, int y, const Color& color)
 {
 	sizeof(Color);
 	memcpy(m_pViewport + (y * m_width * 4) + x * 4, &color, 4);
+}
+
+void Renderer::VertexShading()
+{
+	/// Vertex Shading
+	/// 정점 변환을 수행한다.
+	/// 각 오브젝트들의 로컬 스페이스를 클립 스페이스까지 변환한다.
+	/// Local space -> world space -> camera space(view space) -> clip space
+	
+	for (auto& v : m_pRenderObjects)
+	{
+		for (int i = 0; i < v->m_vertices.size(); i++)
+		{
+			auto cart = v->m_vertices[i];
+			// 1. Local Space to World Space
+			auto affine = cart.CartesianToAffine();
+			affine = GetTransform(affine.x, affine.y, affine.z)
+				* GetRotate(affine.x, affine.y, affine.z)
+				* GetScale(affine.x, affine.y, affine.z) 
+				* affine;
+
+			// 2. World Space to Camera Space
+			// TODO: Implement this.
+
+			// 3. Camera Space to Clip Space
+			// TODO: Implement this.
+		}
+	}
+	
 }
 
 Renderer::Renderer(HWND hWnd)
