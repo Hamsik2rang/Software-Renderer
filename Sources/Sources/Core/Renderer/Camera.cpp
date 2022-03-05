@@ -51,6 +51,7 @@ void Camera::Move(int front, int right)
 	}
 }
 
+// getter, setter
 Vec3f Camera::GetEye() const
 {
 	return m_eye;
@@ -101,3 +102,17 @@ float Camera::GetFar() const
 	return m_far;
 }
 
+void Camera::SetAspect(float aspect)
+{
+	m_aspect = aspect;
+}
+
+void Camera::SetAspect(DWORD width, DWORD height)
+{
+	m_aspect = (float)width / (float)height;
+}
+
+void Camera::SetFov(float fovY)
+{
+	m_fovY = fovY;
+}

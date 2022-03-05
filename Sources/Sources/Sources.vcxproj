@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Math\Math.hpp" />
     <ClInclude Include="Core\Math\Matrix.hpp" />
     <ClInclude Include="Core\Renderer\Camera.h" />
     <ClInclude Include="Core\Math\Interpolate.hpp" />
