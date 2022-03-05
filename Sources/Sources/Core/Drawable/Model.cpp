@@ -31,14 +31,14 @@ bool Model::Load(std::string filename)
 		{
 			float vx, vy, vz;
 			ss >> vx >> delim >> vy >> delim >> vz;
-			m_vertices.push_back({ vx,vy, vz });
+			m_vertices.push_back({ vx, vy, vz });
 		}
 		// vertex texture
 		else if (type == "vt")
 		{
 			float tx, ty, tz;
 			ss >> tx >> delim >> ty >> delim >> tz;
-			m_textures.push_back({ tx,ty, tz });
+			m_textures.push_back({ tx, ty, tz });
 		}
 		// vertex normal
 		else if (type == "vn")

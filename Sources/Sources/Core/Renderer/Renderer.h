@@ -16,6 +16,9 @@
 class Renderer
 {
 private:
+	const float NDC_MIN_Z{ 0.0f };
+	const float NDC_MAX_Z{ 1.0f };
+
 	HWND m_hWnd;
 	DDraw* m_pDDraw;
 	Camera* m_pCamera;

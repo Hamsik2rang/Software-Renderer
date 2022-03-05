@@ -9,6 +9,13 @@ class Vector3D;
 template <typename T>
 class Vector4D;
 
+using Vec2f = Vector2D<float>;
+using Vec2i = Vector2D<int>;
+using Vec3f = Vector3D<float>;
+using Vec3i = Vector3D<int>;
+using Vec4f = Vector4D<float>;
+using Vec4i = Vector4D<int>;
+
 template <typename T>
 class Vector2D
 {
@@ -165,7 +172,7 @@ public:
 		: x{ 0 }, y{ 0 }, z{ 0 }, w{ 0 }
 	{}
 
-	Vector4D(T _x, T _y, T _z, T _w)
+	Vector4D(T _x, T _y, T _z, T _w = T(1))
 		: x{_x}, y{_y}, z{_z}, w{_w}
 	{}
 
@@ -271,8 +278,3 @@ union Color
 		return Color{ unsigned char(r * f) , unsigned char(g * f), unsigned char(b * f), unsigned char(w * f) };
 	}
 };
-
-using Vec2f = Vector2D<float>;
-using Vec2i = Vector2D<int>;
-using Vec3f = Vector3D<float>;
-using Vec3i = Vector3D<int>;

@@ -5,6 +5,20 @@
 #include <cstring>
 
 template <typename T>
+class Matrix22;
+template <typename T>
+class Matrix33;
+template <typename T>
+class Matrix44;
+
+using Mat2f = Matrix22<float>;
+using Mat2i = Matrix22<int>;
+using Mat3f = Matrix33<float>;
+using Mat3i = Matrix33<int>;
+using Mat4f = Matrix44<float>;
+using Mat4i = Matrix44<int>;
+
+template <typename T>
 class Matrix22
 {
 public:
@@ -14,6 +28,7 @@ public:
 		Vector2D<T> v[2];
 		T elem[2][2];
 	};
+	static const Matrix22 Identity;
 
 	Matrix22<T> operator+(const Matrix22<T> m) const
 	{
@@ -109,9 +124,6 @@ public:
 		elem[1][0] = temp;
 		return *this;
 	}
-
-
-	static const Matrix22 Identity;
 };
 
 template <typename T>
@@ -124,6 +136,7 @@ public:
 		Vector3D<T> v[3];
 		T elem[3][3];
 	};
+	static const Matrix33 Identity;
 
 	Matrix33<T> operator+(const Matrix33<T> m) const
 	{
@@ -231,7 +244,6 @@ public:
 			}
 		}
 	}
-	static const Matrix33<T> Identity;
 };
 
 template <typename T>
@@ -245,12 +257,14 @@ public:
 		T elem[4][4];
 	};
 
+	static const Matrix44 Identity;
+
 	Matrix44()
 		:r1(), r2(), r3(), r4()
 	{}
 
-	Matrix44(const Vector4D<T>& _r1, const Vector4D<T>& _r2, const Vector4D<T>& _r3, const Vector4D<T>& _r4)
-		:r1(_r1), r2(_r2), r3(_r3), r4(_r4)
+	Matrix44(Vector4D<T> _r1, Vector4D<T> _r2, Vector4D<T> _r3, Vector4D<T> _r4)
+		: r1(_r1), r2(_r2), r3(_r3), r4(_r4)
 	{}
 
 	Matrix44<T> operator+(const Matrix44<T> m) const
@@ -347,6 +361,7 @@ public:
 	Vector4D<T> operator*(const Vector4D<T>& v) const
 	{
 		Vector4D<T> ret = { r1 * v, r2 * v, r3 * v ,r4 * v };
+		return ret;
 	}
 
 
@@ -367,10 +382,40 @@ public:
 				elem[j][i] = temp;
 			}
 		}
+		return *this;
 	}
 
-	static const Matrix44<T> Identity;
 };
+
+template <typename T>
+const Matrix22<T> Matrix22<T>::Identity = { {1,0},{0,1} };
+
+template <typename T>
+const Matrix33<T> Matrix33<T>::Identity = { {1,0,0},{0,1,0},{0,0,1} };
+
+template <typename T>
+const Matrix44<T> Matrix44<T>::Identity = { {1,0,0,0},{0,1,0,0},{0,0,1,0}, {0,0,0,1} };
+
+template <typename T>
+inline Matrix22<T> Identity()
+{
+	Matrix22<T> ret{ Vector2D<T>(1,0), Vector2D<T>(0,1) };
+	return ret;
+}
+
+template <typename T>
+inline Matrix33<T> Identity()
+{
+	Matrix33<T> ret{ Vector3D<T>(1, 0, 0), Vector3D<T>(0, 1, 0), Vector3D<T>(0, 0, 1) };
+	return ret;
+}
+
+template <typename T>
+inline Matrix44<T> Identity()
+{
+	Matrix44<T> ret{ Vector4D<T>(1,0,0,0), Vector4D<T>(0,1,0,0), Vector4D<T>(0,0,1,0), Vector4D<T>(0,0,0,1) };
+	return ret;
+}
 
 template <typename T>
 Matrix44<T> GetTransform(T x, T y, T z)

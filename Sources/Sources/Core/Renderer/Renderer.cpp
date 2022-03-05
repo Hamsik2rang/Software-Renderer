@@ -1,5 +1,5 @@
 #include "Renderer.h"
-
+#include <cmath>
 
 void Renderer::FilpBuffer()
 {
@@ -22,29 +22,62 @@ void Renderer::SetPixel(int x, int y, const Color& color)
 void Renderer::VertexShading()
 {
 	/// Vertex Shading
-	/// 정점 변환을 수행한다.
-	/// 각 오브젝트들의 로컬 스페이스를 클립 스페이스까지 변환한다.
+	/// Carry out vertex transformation.
+	/// transform each local objects to objects which is in clip space.
+	/// transformation procedure:
 	/// Local space -> world space -> camera space(view space) -> clip space
 	
 	for (auto& v : m_pRenderObjects)
 	{
+		Model* m = new Model;
 		for (int i = 0; i < v->m_vertices.size(); i++)
 		{
-			auto cart = v->m_vertices[i];
-			// 1. Local Space to World Space
-			auto affine = cart.CartesianToAffine();
-			affine = GetTransform(affine.x, affine.y, affine.z)
+			auto affine = v->m_vertices[i];
+			// 1. Local Space to World Space(world/model transformation)
+			Mat4f model = GetTransform(affine.x, affine.y, affine.z)
 				* GetRotate(affine.x, affine.y, affine.z)
-				* GetScale(affine.x, affine.y, affine.z) 
-				* affine;
+				* GetScale(affine.x, affine.y, affine.z);
 
-			// 2. World Space to Camera Space
-			// TODO: Implement this.
+			// 2. World Space to Camera Space(view transformation)
+			Vec3f cameraPos = m_pCamera->GetEye();
+			Mat4f view = GetTransform(cameraPos.x, cameraPos.y, cameraPos.z)
+				* Matrix44<float>(m_pCamera->GetRight().CartesianToAffine(),
+					m_pCamera->GetUp().CartesianToAffine(),
+					m_pCamera->GetFront().CartesianToAffine(),
+					Vec4f(0.0f, 0.0f, 0.0f, 1.0f))
+				* GetTransform(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
-			// 3. Camera Space to Clip Space
-			// TODO: Implement this.
+			// 3. Camera Space to Clip Space(projection transformation)
+			Mat4f projection(Vec4f(-1.0f / m_pCamera->GetAspect() * std::tan(m_pCamera->GetFovY() / 2), 0.0f, 0.0f, 0.0f),
+				Vec4f(0.0f, m_pCamera->GetAspect() * std::tan(m_pCamera->GetFovY() / 2), 0.0f, 0.0f),
+				Vec4f(0.0f, 0.0f, m_pCamera->GetFar() / (m_pCamera->GetFar() - m_pCamera->GetNear()), m_pCamera->GetNear() * m_pCamera->GetFar() / (m_pCamera->GetFar() - m_pCamera->GetNear())),
+				Vec4f(0.0f, 0.0f, -1.0f, 0.0f));
+
+			affine = projection * view * model * affine;
+			m->m_vertices.push_back(affine);
 		}
+		m_pRasterizerQueue.push(m);
 	}
+
+	assert(m_pRasterizerQueue.size() == m_pRenderObjects.size());
+}
+
+void Renderer::Rasterizer()
+{
+	/// Rasterization
+	/// process about interaction of vertices and view frustum(or view volumes)
+	/// Carry out these processes.
+	/// 1. Clipping
+	/// 2. Perspective devision
+	/// 3. Back-face Culling
+	/// 4. Viewport Transformation
+
+
+
+	//...
+	// Viewport Transformation
+	float aspect = m_pCamera->GetAspect();
+	Mat4f viewport = Mat4f::Identity;
 	
 }
 

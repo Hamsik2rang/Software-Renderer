@@ -8,21 +8,20 @@ class Camera
 private:
 	Timer* m_pTimer;
 
-	Vec3f m_eye = { 0.0f, 1.0f, 3.0f };
-	Vec3f m_at = { 0.0f, 0.0f, 0.0f };
-	Vec3f m_up = { 0.0f, 1.0f, 0.0f };
+	Vec3f m_eye = { 0.0f, 3.0f, 3.0f };
+	Vec3f m_at = { 0.0f, 0.0f, -1.0f };
+	Vec3f m_worldUp = { 0.0f, 1.0f, 0.0f };
 
 	Vec3f m_u;
 	Vec3f m_v;
 	Vec3f m_n;
 
-	float m_fovY;
-	float m_aspect;
-	float m_near;
-	float m_far;
+	float m_fovY = 45;
+	float m_aspect = 16.0f / 9.0f;
+	float m_near = 1;
+	float m_far = 101;
 
-	const float m_moveSpeed = 5.0f;
-	const float m_rotateSpeed = 180.f;
+	const float m_speed = 5.0f;
 
 	void Orthonormalization();
 public:
@@ -32,5 +31,17 @@ public:
 	void Rotate(float pitch, float yaw);
 	void Move(int front, int right);
 
+	Vec3f GetEye() const;
+	Vec3f GetAt() const;
+	Vec3f GetWorldUp() const;
+
+	Vec3f GetRight() const;
+	Vec3f GetUp() const;
+	Vec3f GetFront() const;
+
+	float GetAspect() const;
+	float GetFovY() const;
+	float GetNear() const;
+	float GetFar() const;
 };
 
