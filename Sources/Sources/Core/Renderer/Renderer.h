@@ -22,7 +22,6 @@ private:
 	HWND m_hWnd;
 	DDraw* m_pDDraw;
 	Camera* m_pCamera;
-	Timer* m_pTimer;
 
 	char* m_pRenderBuffer;
 	char* m_pSwapBuffer;
@@ -30,6 +29,9 @@ private:
 	uint32_t m_width;
 	uint32_t m_height;
 	uint8_t m_depth = 1;
+
+	float m_lastTime;
+	float m_deltaTime;
 
 	std::vector<Model*> m_pRenderObjects;
 	std::vector<Model*> m_pVertexQueue;
@@ -55,7 +57,7 @@ public:
 	// 2. rasterizer
 	// 3. fragment shading
 	// 4. output merging
-	void Process();
+	void Render();
 	// Blt viewport buffer
 	void DrawScene();
 
@@ -65,9 +67,9 @@ public:
 	void Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color);
 	void GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color0, const Color& color1, const Color& color2);
 
+	void MoveCamera(int vertical, int horizontal);
+
 	void UpdateWindowPos();
-
-
 	//TODO: Implement this
 	void UpdateWindowSize();
 };

@@ -5,7 +5,7 @@
 Renderer::Renderer(HWND hWnd)
 	:m_hWnd(hWnd)
 {
-	m_pCamera = new Camera;
+	// Init DirectDraw
 	m_pDDraw = new DDraw;
 	m_pDDraw->Init(m_hWnd);
 	m_width = m_pDDraw->width();
@@ -14,12 +14,14 @@ Renderer::Renderer(HWND hWnd)
 	m_pRenderBuffer = new char[m_width * m_height * 4];
 	m_pSwapBuffer = new char[m_width * 4];
 
+	// Init Camera
+	m_pCamera = new Camera;
 	m_pCamera->SetAspect(1.0f);
 	m_pCamera->SetFov(45.0f);
 
 	memset(m_pRenderBuffer, 0, m_width * m_height * 4);
-	m_pTimer = new Timer;
-	m_pTimer->Start();
+
+	Timer::Elapsed();
 }
 
 Renderer::~Renderer()
@@ -43,11 +45,6 @@ Renderer::~Renderer()
 	{
 		delete m_pCamera;
 		m_pCamera = nullptr;
-	}
-	if (m_pTimer)
-	{
-		delete m_pTimer;
-		m_pTimer = nullptr;
 	}
 }
 
@@ -209,8 +206,11 @@ void Renderer::AddModel(Model* model)
 	m_pRenderObjects.push_back(model);
 }
 
-void Renderer::Process()
+void Renderer::Render()
 {
+	float curTime = Timer::Elapsed();
+	m_deltaTime = curTime - m_lastTime;
+	m_lastTime = curTime;
 	VertexShading();
 	Rasterizer();
 	FragmentShading();
@@ -254,7 +254,7 @@ void Renderer::DrawScene()
 	m_pDDraw->EndDraw();
 	m_pDDraw->Blt();
 
-
+	memset(m_pRenderBuffer, 0, m_width * m_height * 4);
 	m_pOutputQueue.clear();
 }
 
@@ -338,6 +338,11 @@ void Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color
 			SetPixel((int)p.x, (int)p.y, lerpColor);
 		}
 	}
+}
+
+void Renderer::MoveCamera(int vertical, int horizontal)
+{
+	m_pCamera->Move(vertical, horizontal, m_deltaTime);
 }
 
 void Renderer::UpdateWindowPos()

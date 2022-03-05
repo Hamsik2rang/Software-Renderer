@@ -15,12 +15,12 @@ Camera::Camera()
 	Orthonormalization();
 }
 
-void Camera::SetTimer(Timer* timer)
-{
-	m_pTimer = timer;
-}
+//void Camera::SetTimer(Timer* timer)
+//{
+//	m_pTimer = timer;
+//}
 
-void Camera::Rotate(float pitch, float yaw)
+void Camera::Rotate(float pitch, float yaw, float deltaTime)
 {
 	//NOTE: Is it work?
 	auto direction = m_at - m_eye;
@@ -31,9 +31,8 @@ void Camera::Rotate(float pitch, float yaw)
 	Orthonormalization();
 }
 
-void Camera::Move(int front, int right)
+void Camera::Move(int front, int right, float deltaTime)
 {
-	auto deltaTime = m_pTimer->Elapsed();
 	if (front)
 	{
 		auto direction = m_at - m_eye;

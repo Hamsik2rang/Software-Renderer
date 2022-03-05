@@ -8,11 +8,9 @@
 class Camera
 {
 private:
-	Timer* m_pTimer;
-
+	Vec3f m_worldUp = { 0.0f, 1.0f, 0.0f };	// Actually it is const.
 	Vec3f m_eye = { 0.0f, 1.0f, 3.0f };
 	Vec3f m_at = { 0.0f, 0.0f, -1.0f };
-	Vec3f m_worldUp = { 0.0f, 1.0f, 0.0f };
 
 	Vec3f m_u;
 	Vec3f m_v;
@@ -21,17 +19,16 @@ private:
 	float m_fovY = 45.0f;
 	float m_aspect = 16.0f / 9.0f;
 	float m_near = 1.0f;
-	float m_far = 101.0f;
+	float m_far = 100.0f;
 
-	const float m_speed = 5.0f;
+	const float m_speed = 0.005f;
 
 	void Orthonormalization();
 public:
 	Camera();
 
-	void SetTimer(Timer* timer);
-	void Rotate(float pitch, float yaw);
-	void Move(int front, int right);
+	void Rotate(float pitch, float yaw, float deltaTime);
+	void Move(int front, int right, float deltaTime);
 
 	// getter, setter
 	Vec3f GetEye() const;

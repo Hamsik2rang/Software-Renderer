@@ -61,6 +61,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     g_pRenderer->AddModel(model);
     // Main message loop:
+    
+    // for initialize timer
+    Timer::Elapsed();
     while (true)
     {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -73,7 +76,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         else
         {
             //g_pRenderer->DrawScene();
-            g_pRenderer->Process();
+            g_pRenderer->Render();
         }
     }
 
@@ -169,6 +172,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
             EndPaint(hWnd, &ps);
+        }
+        break;
+    case WM_KEYDOWN:
+        {
+            int vertical = 0;
+            int horizontal = 0;
+            if ((TCHAR)wParam == 'W' )
+            {
+                vertical += 1;
+            }
+            if ((TCHAR)wParam == 'S')
+            {
+                vertical -= 1;
+            }
+            if ((TCHAR)wParam == 'A')
+            {
+                horizontal -= 1;
+            }
+            if ((TCHAR)wParam == 'D')
+            {
+                horizontal += 1;
+            }
+            g_pRenderer->MoveCamera(vertical, horizontal);
+        }
+        break;
+    case WM_MOUSEMOVE:
+        {
+
         }
         break;
     case WM_MOVE:
