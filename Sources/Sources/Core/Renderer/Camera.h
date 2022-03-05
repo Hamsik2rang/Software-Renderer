@@ -8,7 +8,7 @@ class Camera
 private:
 	Timer* m_pTimer;
 
-	Vec3f m_eye = { 0.0f, 3.0f, 3.0f };
+	Vec3f m_eye = { 0.0f, 0.0f, 3.0f };
 	Vec3f m_at = { 0.0f, 0.0f, -1.0f };
 	Vec3f m_worldUp = { 0.0f, 1.0f, 0.0f };
 

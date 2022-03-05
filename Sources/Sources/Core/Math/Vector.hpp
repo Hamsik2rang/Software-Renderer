@@ -269,6 +269,10 @@ union Color
 	struct { unsigned char x; unsigned char y; unsigned char z; unsigned char w; };
 	unsigned char elem[4];
 
+	Color(unsigned char _r = 255, unsigned char _g = 255, unsigned char _b = 255, unsigned char _a = 255)
+		:r(_r), g(_g), b(_b), a(_a)
+	{}
+
 	Color operator+(const Color& c) const
 	{
 		return Color{ unsigned char(r + c.r) , unsigned char(g + c.g), unsigned char(b + c.b), unsigned char(w + c.w) };

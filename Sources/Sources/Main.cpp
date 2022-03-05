@@ -1,5 +1,8 @@
-// Sources.cpp : Defines the entry point for the application.
-//
+#ifdef UNICODE
+#pragma comment (linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#elif
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#endif
 
 #include "framework.h"
 #include "Main.h"
@@ -47,12 +50,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     g_pRenderer = new Renderer(g_hWnd);
-    Vec3f v0(300, 150, 0);
-    Vec3f v1(200, 550, 0);
-    Vec3f v2(600, 350, 0);
+    //Vec3f v0(300, 150, 0);
+    //Vec3f v1(200, 550, 0);
+    //Vec3f v2(600, 350, 0);
+    //
+    //g_pRenderer->GradiantTriangle(v0, v1, v2, { 255,0,0,255 }, { 0,255,0,255 }, { 0,0,255,255 });
 
-    g_pRenderer->GradiantTriangle(v0, v1, v2, { 255,0,0,255 }, { 0,255,0,255 }, { 0,0,255,255 });
+    Model* model = new Model;
+    model->Load("./TestModel.obj");
 
+    g_pRenderer->AddModel(model);
     // Main message loop:
     while (true)
     {
@@ -65,7 +72,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else
         {
-            g_pRenderer->DrawScene();
+            //g_pRenderer->DrawScene();
+            g_pRenderer->Process();
         }
     }
 

@@ -427,7 +427,10 @@ Matrix44<T> GetTransform(T x, T y, T z)
 template <typename T>
 Matrix44<T> GetRotate(T x, T y, T z)
 {
-	return Matrix44<T>();
+	// TODO: Implement This.
+
+
+	return Matrix44<T>::Identity;
 }
 
 template <typename T>

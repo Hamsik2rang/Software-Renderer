@@ -24,7 +24,7 @@ private:
 	Camera* m_pCamera;
 	Timer* m_pTimer;
 
-	char* m_pViewport;
+	char* m_pRenderBuffer;
 	char* m_pSwapBuffer;
 
 	uint32_t m_width;
@@ -32,10 +32,10 @@ private:
 	uint8_t m_depth = 1;
 
 	std::vector<Model*> m_pRenderObjects;
-	std::queue<Model*> m_pVertexQueue;
-	std::queue<Model*> m_pRasterizerQueue;
-	std::queue<Model*> m_pFragmentQueue;
-	std::queue<Model*> m_pOutputQueue;
+	std::vector<Model*> m_pVertexQueue;
+	std::vector<Model*> m_pRasterizerQueue;
+	std::vector<Model*> m_pFragmentQueue;
+	std::vector<Model*> m_pOutputQueue;
 
 	void FilpBuffer();
 	void SetPixel(int x, int y, const Color& color);
@@ -48,6 +48,8 @@ private:
 public:
 	Renderer(HWND hWnd);
 	~Renderer();
+
+	void AddModel(Model* model);
 
 	// 1. vertex shading
 	// 2. rasterizer

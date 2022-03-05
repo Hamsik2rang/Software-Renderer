@@ -7,16 +7,15 @@ void Renderer::FilpBuffer()
 	int widthSize = m_width * 4;
 	for (uint32_t row = 0; row < m_height / 2; row++)
 	{
-		memcpy(m_pSwapBuffer, m_pViewport + (widthSize * row), widthSize);
-		memcpy(m_pViewport + (widthSize * row), m_pViewport + (widthSize * (m_height - row - 1)), widthSize);
-		memcpy(m_pViewport + (widthSize * (m_height - row - 1)), m_pSwapBuffer, widthSize);
+		memcpy(m_pSwapBuffer, m_pRenderBuffer + (widthSize * row), widthSize);
+		memcpy(m_pRenderBuffer + (widthSize * row), m_pRenderBuffer + (widthSize * (m_height - row - 1)), widthSize);
+		memcpy(m_pRenderBuffer + (widthSize * (m_height - row - 1)), m_pSwapBuffer, widthSize);
 	}
 }
 
 void Renderer::SetPixel(int x, int y, const Color& color)
 {
-	sizeof(Color);
-	memcpy(m_pViewport + (y * m_width * 4) + x * 4, &color, 4);
+	memcpy(m_pRenderBuffer + (y * m_width * 4) + x * 4, &color, 4);
 }
 
 void Renderer::VertexShading()
@@ -26,7 +25,7 @@ void Renderer::VertexShading()
 	/// transform each local objects to objects which is in clip space.
 	/// transformation procedure:
 	/// Local space -> world space -> camera space(view space) -> clip space
-	
+
 	for (auto& v : m_pRenderObjects)
 	{
 		Model* m = new Model;
@@ -34,9 +33,9 @@ void Renderer::VertexShading()
 		{
 			auto affine = v->m_vertices[i];
 			// 1. Local Space to World Space(world/model transformation)
-			Mat4f model = GetTransform(affine.x, affine.y, affine.z)
-				* GetRotate(affine.x, affine.y, affine.z)
-				* GetScale(affine.x, affine.y, affine.z);
+			Mat4f model = GetTransform(v->m_position.x, v->m_position.y, v->m_position.z)
+				* GetRotate(v->m_rotation.x, v->m_rotation.y, v->m_rotation.z)
+				* GetScale(v->m_scale.x, v->m_scale.y, v->m_scale.z);
 
 			// 2. World Space to Camera Space(view transformation)
 			Vec3f cameraPos = m_pCamera->GetEye();
@@ -56,7 +55,7 @@ void Renderer::VertexShading()
 			affine = projection * view * model * affine;
 			m->m_vertices.push_back(affine);
 		}
-		m_pRasterizerQueue.push(m);
+		m_pRasterizerQueue.push_back(m);
 	}
 
 	assert(m_pRasterizerQueue.size() == m_pRenderObjects.size());
@@ -64,6 +63,7 @@ void Renderer::VertexShading()
 
 void Renderer::Rasterizer()
 {
+
 	/// Rasterization
 	/// process about interaction of vertices and view frustum(or view volumes)
 	/// Carry out these processes.
@@ -71,14 +71,79 @@ void Renderer::Rasterizer()
 	/// 2. Perspective devision
 	/// 3. Back-face Culling
 	/// 4. Viewport Transformation
+	/// 5. Scan conversion
+
+	for (auto& v : m_pRasterizerQueue)
+	{
+		for (int i = 0; i < v->m_vertices.size(); i++)
+		{
+			Vec4f& affine = v->m_vertices[i];
+			//...
+
+			// Perspective devision
+			affine.x /= affine.w;
+			affine.y /= affine.w;
+			affine.z /= affine.w;
+			affine.w /= affine.w;
+
+			// Viewport Transformation
+			float aspect = m_pCamera->GetAspect();
+			Mat4f viewport = Mat4f::Identity;
+			// 1. Invert y axis
+			viewport[1][1] = -1.0f;
+
+			// Scale to axis size( (1, 1, 0) to (width, height, 1) )
+			viewport = Mat4f(
+				{ (float)m_width / 2, 0.0f, 0.0f, 0.0f },
+				{ 0.0f, (float)m_height / 2, 0.0f,  0.0f },
+				{ 0.0f, 0.0f, 1.0f, 0.0f },
+				{ 0.0f, 0.0f, 0.0f, 1.0f }
+			) * viewport;
+
+			// Transform center to left-top point
+			viewport = Mat4f(
+				{ 1.0f, 0.0f, 0.0f, 0.0f + (float)m_width / 2 },
+				{ 0.0f, 1.0f, 0.0f, (float)m_height / 2 },
+				{ 0.0f, 0.0f, 1.0f, NDC_MIN_Z },
+				{ 0.0f, 0.0f, 0.0f, 1.0f }) * viewport;
+
+			affine = viewport * affine;
+			// Scan Coversion
+			// ...
 
 
+		}
+		m_pFragmentQueue.push_back(v);
+	}
+	assert(m_pFragmentQueue.size() == m_pRasterizerQueue.size());
+	// TODO: change later
+	m_pRasterizerQueue.clear();
+}
 
-	//...
-	// Viewport Transformation
-	float aspect = m_pCamera->GetAspect();
-	Mat4f viewport = Mat4f::Identity;
+void Renderer::FragmentShading()
+{
+	// Fragment Shading
+	// 1. Texturing
 	
+	// TODO: Implement this
+	// NOTE: For Test Code
+	for (auto& v : m_pFragmentQueue)
+	{
+		m_pOutputQueue.push_back(v);
+	}
+
+	m_pFragmentQueue.clear();
+}
+
+void Renderer::OutputMerging()
+{
+	// Output Merging
+	// 1. z-buffering
+	// 2. alpha blending
+	// 3. z-culling(If you can)
+
+	// TODO: Implement this
+
 }
 
 Renderer::Renderer(HWND hWnd)
@@ -89,10 +154,10 @@ Renderer::Renderer(HWND hWnd)
 	m_pDDraw->Init(m_hWnd);
 	m_width = m_pDDraw->width();
 	m_height = m_pDDraw->height();
-	m_pViewport = new char[m_width * m_height * 4];
+	m_pRenderBuffer = new char[m_width * m_height * 4];
 	m_pSwapBuffer = new char[m_width * 4];
-	
-	memset(m_pViewport, 0, m_width * m_height * 4);
+
+	memset(m_pRenderBuffer, 0, m_width * m_height * 4);
 	m_pTimer = new Timer;
 	m_pTimer->Start();
 }
@@ -104,10 +169,10 @@ Renderer::~Renderer()
 		delete m_pDDraw;
 		m_pDDraw = nullptr;
 	}
-	if (m_pViewport)
+	if (m_pRenderBuffer)
 	{
-		delete[] m_pViewport;
-		m_pViewport = nullptr;
+		delete[] m_pRenderBuffer;
+		m_pRenderBuffer = nullptr;
 	}
 	if (m_pSwapBuffer)
 	{
@@ -126,12 +191,51 @@ Renderer::~Renderer()
 	}
 }
 
+void Renderer::AddModel(Model* model)
+{
+	m_pRenderObjects.push_back(model);
+}
+
+void Renderer::Process()
+{
+	VertexShading();
+	Rasterizer();
+	FragmentShading();
+	OutputMerging();
+
+	DrawScene();
+}
+
 void Renderer::DrawScene()
 {
 	m_pDDraw->BeginDraw();
 	m_pDDraw->Clear();
 	//write draw code here.
-	m_pDDraw->DrawBitmap(0, 0, m_width, m_height, m_pViewport);
+	for (const auto& v : m_pOutputQueue)
+	{
+		if (v->m_stride == 2)
+		{
+			for (int i = 0; i < v->m_vertices.size() / v->m_stride; i++)
+			{
+				Vec2i v0{ (int)v->m_vertices[i].x, (int)v->m_vertices[i].y };
+				Vec2i v1{ (int)v->m_vertices[i + 1].x, (int)v->m_vertices[i + 1].y };
+
+				Line(v0, v1, Color(255, 255, 255, 255));
+			}
+		}
+		else if (v->m_stride == 3)
+		{
+			for (int i = 0; i < v->m_vertices.size() / v->m_stride; i++)
+			{
+				Vec3f v0 = v->m_vertices[i].AffineToCartesian();
+				Vec3f v1 = v->m_vertices[i + 1].AffineToCartesian();
+				Vec3f v2 = v->m_vertices[i + 2].AffineToCartesian();
+
+				Triangle(v0, v1, v2, Color(255, 255, 255, 255));
+			}
+		}
+	}
+	m_pDDraw->DrawBitmap(0, 0, m_width, m_height, m_pRenderBuffer);
 
 	// end code.
 	m_pDDraw->EndDraw();
