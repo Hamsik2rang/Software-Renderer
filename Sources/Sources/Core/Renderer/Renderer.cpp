@@ -62,6 +62,12 @@ void Renderer::FilpBuffer()
 
 void Renderer::SetPixel(int x, int y, const Color& color)
 {
+	// simple clipping
+	// TODO: Fix bug
+	if (x < 0 || x >= m_width || y < 0|| y >= m_height)
+	{
+		return;
+	}
 	memcpy(m_pRenderBuffer + (y * m_width * 4) + x * 4, &color, 4);
 }
 
@@ -342,7 +348,13 @@ void Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color
 
 void Renderer::MoveCamera(int vertical, int horizontal)
 {
-	m_pCamera->Move(vertical, horizontal, m_deltaTime);
+	float alpha = 1.0f;
+	if (m_deltaTime < FPS)
+	{
+		alpha *= m_deltaTime / FPS;
+	}
+	std::cout << "alpha : " << alpha << std::endl;
+	m_pCamera->Move(vertical, horizontal, alpha);
 }
 
 void Renderer::UpdateWindowPos()

@@ -18,6 +18,7 @@ class Renderer
 private:
 	const float NDC_MIN_Z{ 0.0f };
 	const float NDC_MAX_Z{ 1.0f };
+	const float FPS{ 1000.0f / 60.0f };
 
 	HWND m_hWnd;
 	DDraw* m_pDDraw;

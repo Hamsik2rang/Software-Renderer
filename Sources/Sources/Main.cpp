@@ -50,11 +50,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     g_pRenderer = new Renderer(g_hWnd);
-    //Vec3f v0(300, 150, 0);
-    //Vec3f v1(200, 550, 0);
-    //Vec3f v2(600, 350, 0);
-    //
-    //g_pRenderer->GradiantTriangle(v0, v1, v2, { 255,0,0,255 }, { 0,255,0,255 }, { 0,0,255,255 });
 
     Model* model = new Model;
     model->Load("./TestModel.obj");

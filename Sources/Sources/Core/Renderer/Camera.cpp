@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "../Utility/Timer.hpp"
 #include <cmath>
-
+#include <iostream>
 
 void Camera::Orthonormalization()
 {
@@ -15,11 +15,6 @@ Camera::Camera()
 	Orthonormalization();
 }
 
-//void Camera::SetTimer(Timer* timer)
-//{
-//	m_pTimer = timer;
-//}
-
 void Camera::Rotate(float pitch, float yaw, float deltaTime)
 {
 	//NOTE: Is it work?
@@ -31,22 +26,27 @@ void Camera::Rotate(float pitch, float yaw, float deltaTime)
 	Orthonormalization();
 }
 
-void Camera::Move(int front, int right, float deltaTime)
+void Camera::Move(int front, int right, float alpha)
 {
 	if (front)
 	{
-		auto direction = m_at - m_eye;
+		//Vec3f direction = m_at - m_eye;
+		Vec3f direction = m_n * -1.0f;
 		direction.normalize();
-		m_eye += direction * m_speed * deltaTime * (float)front;
-		m_at += direction * m_speed * deltaTime * (float)front;
+		m_eye += direction * m_speed * alpha * (float)front;
+		m_at += direction * m_speed * alpha * (float)front;
 	}
 	if (right)
 	{
 		// right-handed coordinate
-		auto direction = (m_at - m_eye) ^ m_worldUp;
+		//auto direction = (m_at - m_eye) ^ m_worldUp;
+		Vec3f direction = m_u;
 		direction.normalize();
-		m_eye += direction * m_speed * deltaTime * (float)right;
-		m_at += direction * m_speed * deltaTime * (float)right;
+		m_eye += direction * m_speed * alpha * (float)right;
+		m_at += direction * m_speed * alpha * (float)right;
+#ifdef _DEBUG
+		std::cout << "EYE: " << m_eye.x << ", " << m_eye.y << ", " << m_eye.z << " AT: " << m_at.x << ", " << m_at.y << ", " << m_at.z << std::endl;
+#endif
 	}
 }
 
