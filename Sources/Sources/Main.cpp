@@ -181,7 +181,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_MOUSEMOVE:
         {
-            
+            g_pRenderer->OnMouseMove();
         }
         break;
     case WM_MOVE:

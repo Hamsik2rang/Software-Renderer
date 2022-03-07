@@ -45,6 +45,12 @@ private:
 	bool m_isKeyDownRight;
 	bool m_isKeyDownLeft;
 
+	int m_cursorDeltaXPos;
+	int m_cursorDeltaYPos;
+
+	unsigned int m_cursorLastXPos;
+	unsigned int m_cursorLastYPos;
+
 	void FilpBuffer();
 	void SetPixel(int x, int y, const Color& color);
 
@@ -75,9 +81,10 @@ public:
 
 	void OnKeyDown(WPARAM wParam);
 	void OnKeyUP(WPARAM wParam);
+	void OnMouseMove();
 
 	void MoveCamera();
-	
+	void RotateCamera();
 
 	void UpdateWindowPos();
 	//TODO: Implement this

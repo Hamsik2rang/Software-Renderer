@@ -19,6 +19,11 @@ Renderer::Renderer(HWND hWnd)
 	m_pCamera->SetAspect(1.0f);
 	m_pCamera->SetFov(45.0f);
 
+	POINT cursorPos;
+	::GetCursorPos(&cursorPos);
+	m_cursorLastXPos = cursorPos.x;
+	m_cursorLastYPos = cursorPos.y;
+
 	memset(m_pRenderBuffer, 0, m_width * m_height * 4);
 
 	Timer::Elapsed();
@@ -218,6 +223,8 @@ void Renderer::Render()
 	m_deltaTime = curTime - m_lastTime;
 	m_lastTime = curTime;
 	MoveCamera();
+	//RotateCamera();
+
 	VertexShading();
 	Rasterizer();
 	FragmentShading();
@@ -387,6 +394,17 @@ void Renderer::OnKeyUP(WPARAM wParam)
 	}
 }
 
+void Renderer::OnMouseMove()
+{
+	POINT cursorPos;
+	::GetCursorPos(&cursorPos);
+	m_cursorDeltaXPos += cursorPos.x - m_cursorLastXPos;
+	m_cursorDeltaYPos += cursorPos.y - m_cursorLastYPos;
+
+	m_cursorLastXPos = cursorPos.x;
+	m_cursorLastYPos = cursorPos.y;
+}
+
 void Renderer::MoveCamera()
 {
 	float alpha = 1.0f;
@@ -394,9 +412,7 @@ void Renderer::MoveCamera()
 	{
 		alpha *= m_deltaTime / FPS;
 	}
-#ifdef _DEBUG
-	//std::cout << "alpha : " << alpha << std::endl;
-#endif
+
 	int vertical = 0;
 	int horizontal = 0;
 	if (m_isKeyDownUp)
@@ -416,6 +432,19 @@ void Renderer::MoveCamera()
 		horizontal += 1;
 	}
 	m_pCamera->Move(vertical, horizontal, alpha);
+}
+
+void Renderer::RotateCamera()
+{
+	float alpha = 1.0f;
+	if (m_deltaTime < FPS)
+	{
+		alpha *= m_deltaTime / FPS;
+	}
+	
+	m_pCamera->Rotate(m_cursorDeltaYPos, m_cursorDeltaXPos, alpha);
+	m_cursorDeltaXPos = 0;
+	m_cursorDeltaYPos = 0;
 }
 
 void Renderer::UpdateWindowPos()

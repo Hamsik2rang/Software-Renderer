@@ -27,7 +27,7 @@ private:
 public:
 	Camera();
 
-	void Rotate(float pitch, float yaw, float deltaTime);
+	void Rotate(float pitch, float yaw, float alpha);
 	void Move(int front, int right, float alpha);
 
 	// getter, setter

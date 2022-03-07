@@ -15,13 +15,13 @@ Camera::Camera()
 	Orthonormalization();
 }
 
-void Camera::Rotate(float pitch, float yaw, float deltaTime)
+void Camera::Rotate(float pitch, float yaw, float alpha)
 {
 	//NOTE: Is it work?
 	auto direction = m_at - m_eye;
-	direction.x *= std::sin(yaw)* std::cos(pitch);
-	direction.y *= std::sin(pitch);
-	direction.z *= std::cos(yaw) * std::cos(pitch);
+	direction.x *= std::sin(yaw) * std::cos(pitch) * alpha;
+	direction.y *= std::sin(pitch) * alpha;
+	direction.z *= std::cos(yaw) * std::cos(pitch) * alpha;
 	m_at = (m_eye + direction).normalize() * (m_at - m_eye).length();
 	Orthonormalization();
 }
