@@ -44,9 +44,6 @@ void Camera::Move(int front, int right, float alpha)
 		direction.normalize();
 		m_eye += direction * m_speed * alpha * (float)right;
 		m_at += direction * m_speed * alpha * (float)right;
-#ifdef _DEBUG
-		std::cout << "EYE: " << m_eye.x << ", " << m_eye.y << ", " << m_eye.z << " AT: " << m_at.x << ", " << m_at.y << ", " << m_at.z << std::endl;
-#endif
 	}
 }
 

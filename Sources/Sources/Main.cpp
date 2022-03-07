@@ -171,30 +171,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_KEYDOWN:
         {
-            int vertical = 0;
-            int horizontal = 0;
-            if ((TCHAR)wParam == 'W' )
-            {
-                vertical += 1;
-            }
-            if ((TCHAR)wParam == 'S')
-            {
-                vertical -= 1;
-            }
-            if ((TCHAR)wParam == 'A')
-            {
-                horizontal -= 1;
-            }
-            if ((TCHAR)wParam == 'D')
-            {
-                horizontal += 1;
-            }
-            g_pRenderer->MoveCamera(vertical, horizontal);
+            g_pRenderer->OnKeyDown(wParam);
+        }
+        break;
+    case WM_KEYUP:
+        {
+            g_pRenderer->OnKeyUP(wParam);
         }
         break;
     case WM_MOUSEMOVE:
         {
-
+            
         }
         break;
     case WM_MOVE:

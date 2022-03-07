@@ -217,6 +217,7 @@ void Renderer::Render()
 	float curTime = Timer::Elapsed();
 	m_deltaTime = curTime - m_lastTime;
 	m_lastTime = curTime;
+	MoveCamera();
 	VertexShading();
 	Rasterizer();
 	FragmentShading();
@@ -346,14 +347,74 @@ void Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color
 	}
 }
 
-void Renderer::MoveCamera(int vertical, int horizontal)
+void Renderer::OnKeyDown(WPARAM wParam)
+{
+	if (wParam == 'W')
+	{
+		m_isKeyDownUp = true;
+	}
+	if (wParam == 'S')
+	{
+		m_isKeyDownDown = true;
+	}
+	if (wParam == 'A')
+	{
+		m_isKeyDownLeft = true;
+	}
+	if (wParam == 'D')
+	{
+		m_isKeyDownRight = true;
+	}
+}
+
+void Renderer::OnKeyUP(WPARAM wParam)
+{
+	if (wParam == 'W')
+	{
+		m_isKeyDownUp = false;
+	}
+	if (wParam == 'S')
+	{
+		m_isKeyDownDown = false;
+	}
+	if (wParam == 'A')
+	{
+		m_isKeyDownLeft = false;
+	}
+	if (wParam == 'D')
+	{
+		m_isKeyDownRight = false;
+	}
+}
+
+void Renderer::MoveCamera()
 {
 	float alpha = 1.0f;
 	if (m_deltaTime < FPS)
 	{
 		alpha *= m_deltaTime / FPS;
 	}
-	std::cout << "alpha : " << alpha << std::endl;
+#ifdef _DEBUG
+	//std::cout << "alpha : " << alpha << std::endl;
+#endif
+	int vertical = 0;
+	int horizontal = 0;
+	if (m_isKeyDownUp)
+	{
+		vertical += 1;
+	}
+	if (m_isKeyDownDown)
+	{
+		vertical -= 1;
+	}
+	if (m_isKeyDownLeft)
+	{
+		horizontal -= 1;
+	}
+	if (m_isKeyDownRight)
+	{
+		horizontal += 1;
+	}
 	m_pCamera->Move(vertical, horizontal, alpha);
 }
 

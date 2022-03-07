@@ -40,6 +40,11 @@ private:
 	std::vector<Model*> m_pFragmentQueue;
 	std::vector<Model*> m_pOutputQueue;
 
+	bool m_isKeyDownUp;
+	bool m_isKeyDownDown;
+	bool m_isKeyDownRight;
+	bool m_isKeyDownLeft;
+
 	void FilpBuffer();
 	void SetPixel(int x, int y, const Color& color);
 
@@ -68,7 +73,11 @@ public:
 	void Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color);
 	void GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color0, const Color& color1, const Color& color2);
 
-	void MoveCamera(int vertical, int horizontal);
+	void OnKeyDown(WPARAM wParam);
+	void OnKeyUP(WPARAM wParam);
+
+	void MoveCamera();
+	
 
 	void UpdateWindowPos();
 	//TODO: Implement this
