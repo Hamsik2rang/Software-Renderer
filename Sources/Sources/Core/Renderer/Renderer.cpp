@@ -15,7 +15,7 @@ Renderer::Renderer(HWND hWnd)
 
 	// Init Camera
 	m_pCamera = new Camera;
-	m_pCamera->SetAspect(1.0f);
+	m_pCamera->SetAspect(m_width, m_height);
 	m_pCamera->SetFov(45.0f);
 
 	POINT cursorPos;
@@ -440,8 +440,7 @@ void Renderer::RotateCamera()
 	{
 		alpha *= m_deltaTime / FPS;
 	}
-	//std::cout << "delta x: " << m_cursorDeltaXPos << " delta y: " << m_cursorDeltaYPos << std::endl;
-	m_pCamera->Rotate(m_cursorDeltaYPos, m_cursorDeltaXPos, alpha);
+	m_pCamera->Rotate((float)m_cursorDeltaYPos, (float)m_cursorDeltaXPos, alpha);
 	m_cursorDeltaXPos = 0;
 	m_cursorDeltaYPos = 0;
 }
