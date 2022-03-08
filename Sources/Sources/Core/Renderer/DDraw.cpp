@@ -64,7 +64,7 @@ bool DDraw::Init(HWND hWnd)
 
 	::SetCursorPos(m_rcView.left + width / 2, m_rcView.top + height / 2);
 
-	if (!createBackBuffer(width, height))
+	if (!CreateBackBuffer(width, height))
 	{
 #ifdef _DEBUG
 		__debugbreak();
@@ -75,7 +75,7 @@ bool DDraw::Init(HWND hWnd)
 	return true;
 }
 
-bool DDraw::createBackBuffer(DWORD width, DWORD height)
+bool DDraw::CreateBackBuffer(DWORD width, DWORD height)
 {
 	DDSURFACEDESC2 ddsd{};
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
@@ -125,7 +125,7 @@ void DDraw::UnlockBackBuffer()
 		m_pDDSBack->Unlock(nullptr);
 }
 
-void DDraw::cleanupBackBuffer()
+void DDraw::CleanupBackBuffer()
 {
 	if (m_pDDSBack)
 	{
@@ -258,14 +258,14 @@ void DDraw::Clear()
 
 void DDraw::UpdateWindowSize()
 {
-	cleanupBackBuffer();
+	CleanupBackBuffer();
 
 	UpdateWindowPos();
 
 	DWORD width = m_rcView.right - m_rcView.left;
 	DWORD height = m_rcView.bottom - m_rcView.top;
 
-	createBackBuffer(width, height);
+	CreateBackBuffer(width, height);
 
 	if (BeginDraw())
 	{
@@ -305,12 +305,12 @@ void DDraw::CleanUp()
 	}
 }
 
-DWORD DDraw::width() const
+DWORD DDraw::GetWidth() const
 {
 	return m_width;
 }
 
-DWORD DDraw::height() const
+DWORD DDraw::GetHeight() const
 {
 	return m_height;
 }
