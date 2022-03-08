@@ -23,7 +23,7 @@ Renderer::Renderer(HWND hWnd)
 	m_cursorLastXPos = cursorPos.x;
 	m_cursorLastYPos = cursorPos.y;
 
-	memset(m_pRenderBuffer, 0, m_width * m_height * 4);
+	memset(m_pRenderBuffer, BACKGROUND_COLOR, m_width * m_height * 4);
 
 	Timer::Elapsed();
 }
@@ -263,8 +263,7 @@ void Renderer::DrawScene()
 				Vec3f v0 = v->m_vertices[i].AffineToCartesian();
 				Vec3f v1 = v->m_vertices[i + 1].AffineToCartesian();
 				Vec3f v2 = v->m_vertices[i + 2].AffineToCartesian();
-
-				Triangle(v0, v1, v2, Color(255, 208, 0, 255));
+				Triangle(v0, v1, v2, Color(255, 208, 0, 0));
 			}
 		}
 	}
@@ -273,7 +272,7 @@ void Renderer::DrawScene()
 	m_pDDraw->EndDraw();
 	m_pDDraw->Blt();
 
-	memset(m_pRenderBuffer, 56, m_width * m_height * 4);
+	memset(m_pRenderBuffer, BACKGROUND_COLOR, m_width * m_height * 4);
 	m_pOutputQueue.clear();
 }
 

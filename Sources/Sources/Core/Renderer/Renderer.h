@@ -19,6 +19,7 @@ private:
 	const float NDC_MIN_Z{ 0.0f };
 	const float NDC_MAX_Z{ 1.0f };
 	const float FPS{ 1000.0f / 60.0f };
+	const unsigned char BACKGROUND_COLOR{ 88 };
 
 	HWND m_hWnd;
 	DDraw* m_pDDraw;

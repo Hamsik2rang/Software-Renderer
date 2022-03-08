@@ -147,7 +147,7 @@ public:
 	Vector2D<T> AffineToCartesian() const
 	{
 		assert(z != 0);
-		Vector3D<T> ret = {x/z, y/z};
+		Vector3D<T> ret = { x / z, y / z };
 		return ret;
 	}
 
@@ -174,7 +174,7 @@ public:
 	{}
 
 	Vector4D(T _x, T _y, T _z, T _w = T(1))
-		: x{_x}, y{_y}, z{_z}, w{_w}
+		: x{ _x }, y{ _y }, z{ _z }, w{ _w }
 	{}
 
 
@@ -182,12 +182,12 @@ public:
 	{
 		return Vector4D<T>(x + v.x, y + v.y, z + v.z, w + v.w);
 	}
-	
+
 	Vector4D<T> operator-(const Vector4D<T>& v) const
 	{
 		return Vector4D<T>(x - v.x, y - v.y, z - v.z, w - v.w);
 	}
-	
+
 	Vector4D<T>& operator+=(const Vector4D<T>& v)
 	{
 		x += v.x;
@@ -264,12 +264,13 @@ public:
 	}
 };
 
-// TODO: 왜 순서가 bgra로 적용되는지 확인
+// Little-Endian으로 값이 저장되게 되므로 0xAARRGGBB-> BGRA 순으로 변수가 선언되어야 함.
 union Color
 {
 	struct { unsigned char b; unsigned char g; unsigned char r; unsigned char a; };
 	struct { unsigned char z; unsigned char y; unsigned char x; unsigned char w; };
 	unsigned char elem[4];
+	unsigned int bit;
 
 	Color(unsigned char _r = 255, unsigned char _g = 255, unsigned char _b = 255, unsigned char _a = 255)
 		:r(_r), g(_g), b(_b), a(_a)
