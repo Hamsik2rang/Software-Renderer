@@ -10,18 +10,18 @@
 class DDraw
 {
 private:
-	LPDIRECTDRAW			_pDDraw;
-	LPDIRECTDRAW7			_pDDraw7;
-	LPDIRECTDRAWSURFACE7	_pDDSPrimary;
-	LPDIRECTDRAWSURFACE7	_pDDSBack;
-	LPDIRECTDRAWCLIPPER		_pDDClipper;
+	LPDIRECTDRAW			m_pDDraw;
+	LPDIRECTDRAW7			m_pDDraw7;
+	LPDIRECTDRAWSURFACE7	m_pDDSPrimary;
+	LPDIRECTDRAWSURFACE7	m_pDDSBack;
+	LPDIRECTDRAWCLIPPER		m_pDDClipper;
 
-	char* _pLockedBackBuffer;
-	DWORD					_lockedBackBufferPitch;
-	DWORD					_width;
-	DWORD					_height;
-	HWND					_hWnd;
-	RECT					_rcView;
+	char*	m_pLockedBackBuffer;
+	DWORD	m_lockedBackBufferPitch;
+	DWORD	m_width;
+	DWORD	m_height;
+	HWND	m_hWnd;
+	RECT	m_rcView;
 
 	bool createBackBuffer(DWORD width, DWORD height);
 	void cleanupBackBuffer();

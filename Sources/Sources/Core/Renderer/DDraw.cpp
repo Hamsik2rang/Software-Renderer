@@ -15,52 +15,52 @@ DDraw::~DDraw()
 
 bool DDraw::Init(HWND hWnd)
 {
-	_hWnd = hWnd;
+	m_hWnd = hWnd;
 	DDSURFACEDESC2 ddsd{};
 	ddsd.dwSize = sizeof(DDSURFACEDESC2);
 	ddsd.dwFlags = DDSD_CAPS;
 	ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 
-	if (DD_OK != DirectDrawCreate(nullptr, &_pDDraw, nullptr))
+	if (DD_OK != DirectDrawCreate(nullptr, &m_pDDraw, nullptr))
 	{
-		MessageBox(_hWnd, L"Fail to Create DirectDraw", L"Error", MB_OK);
+		MessageBox(m_hWnd, L"Fail to Create DirectDraw", L"Error", MB_OK);
 		return false;
 	}
 
-	if (DD_OK != _pDDraw->QueryInterface(IID_IDirectDraw7, (LPVOID*)&_pDDraw7))
+	if (DD_OK != m_pDDraw->QueryInterface(IID_IDirectDraw7, (LPVOID*)&m_pDDraw7))
 	{
-		MessageBox(_hWnd, L"Fail to Create DirectDraw7", L"Error", MB_OK);
+		MessageBox(m_hWnd, L"Fail to Create DirectDraw7", L"Error", MB_OK);
 		return false;
 	}
-	HRESULT hr = _pDDraw7->SetCooperativeLevel(hWnd, DDSCL_NORMAL);
+	HRESULT hr = m_pDDraw7->SetCooperativeLevel(hWnd, DDSCL_NORMAL);
 
 	if (FAILED(hr))
 	{
-		MessageBox(_hWnd, L"Fail to Set Cooperative Level", L"Error", MB_OK);
+		MessageBox(m_hWnd, L"Fail to Set Cooperative Level", L"Error", MB_OK);
 		return false;
 	}
 
-	hr = _pDDraw7->CreateSurface(&ddsd, &_pDDSPrimary, nullptr);
+	hr = m_pDDraw7->CreateSurface(&ddsd, &m_pDDSPrimary, nullptr);
 	if (FAILED(hr))
 	{
-		MessageBox(_hWnd, L"Fail to Create Surface", L"Error", MB_OK);
+		MessageBox(m_hWnd, L"Fail to Create Surface", L"Error", MB_OK);
 		return false;
 	}
 
-	hr = _pDDraw7->CreateClipper(0, &_pDDClipper, nullptr);
+	hr = m_pDDraw7->CreateClipper(0, &m_pDDClipper, nullptr);
 	if (FAILED(hr))
 	{
-		MessageBox(_hWnd, L"Fail to Create Clipper", L"Error", MB_OK);
+		MessageBox(m_hWnd, L"Fail to Create Clipper", L"Error", MB_OK);
 		return false;
 	}
 
-	_pDDClipper->SetHWnd(0, _hWnd);
-	_pDDSPrimary->SetClipper(_pDDClipper);
+	m_pDDClipper->SetHWnd(0, m_hWnd);
+	m_pDDSPrimary->SetClipper(m_pDDClipper);
 
 	UpdateWindowPos();
 
-	DWORD width = _rcView.right - _rcView.left;
-	DWORD height = _rcView.bottom - _rcView.top;
+	DWORD width = m_rcView.right - m_rcView.left;
+	DWORD height = m_rcView.bottom - m_rcView.top;
 
 	if (!createBackBuffer(width, height))
 	{
@@ -82,16 +82,16 @@ bool DDraw::createBackBuffer(DWORD width, DWORD height)
 	ddsd.dwWidth = width;
 	ddsd.dwHeight = height;
 
-	HRESULT hr = _pDDraw7->CreateSurface(&ddsd, &_pDDSBack, nullptr);
+	HRESULT hr = m_pDDraw7->CreateSurface(&ddsd, &m_pDDSBack, nullptr);
 	if (FAILED(hr))
 	{
-		MessageBox(_hWnd, L"Fail to Create Surface", L"Error", MB_OK);
+		MessageBox(m_hWnd, L"Fail to Create Surface", L"Error", MB_OK);
 		return false;
 	}
 
-	_pDDSBack->GetSurfaceDesc(&ddsd);
-	_width = ddsd.dwWidth;
-	_height = ddsd.dwHeight;
+	m_pDDSBack->GetSurfaceDesc(&ddsd);
+	m_width = ddsd.dwWidth;
+	m_height = ddsd.dwHeight;
 
 	return true;
 }
@@ -99,12 +99,12 @@ bool DDraw::createBackBuffer(DWORD width, DWORD height)
 
 bool DDraw::LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWORD* pPitch)
 {
-	if (_pDDSBack)
+	if (m_pDDSBack)
 	{
 		DDSURFACEDESC2 ddsd{};
 		ddsd.dwSize = sizeof(DDSURFACEDESC2);
 
-		_pDDSBack->Lock(nullptr, &ddsd, DDLOCK_WAIT | DDLOCK_WRITEONLY, nullptr);
+		m_pDDSBack->Lock(nullptr, &ddsd, DDLOCK_WAIT | DDLOCK_WRITEONLY, nullptr);
 
 		*ppBits = (char*)ddsd.lpSurface;
 		*pWidth = ddsd.dwWidth;
@@ -119,16 +119,16 @@ bool DDraw::LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWORD* 
 
 void DDraw::UnlockBackBuffer()
 {
-	if (_pDDSBack)
-		_pDDSBack->Unlock(nullptr);
+	if (m_pDDSBack)
+		m_pDDSBack->Unlock(nullptr);
 }
 
 void DDraw::cleanupBackBuffer()
 {
-	if (_pDDSBack)
+	if (m_pDDSBack)
 	{
-		_pDDSBack->Release();
-		_pDDSBack = nullptr;
+		m_pDDSBack->Release();
+		m_pDDSBack = nullptr;
 	}
 }
 
@@ -136,12 +136,12 @@ bool DDraw::CalculateClipArea(Vec2i* pSrcStart, Vec2i* pDestStart, Vec2i* pDestS
 {
 	pDestStart->x = max(pPos->x, 0);
 	pDestStart->y = max(pPos->y, 0);
-	pDestStart->x = min(pDestStart->x, _width);
-	pDestStart->y = min(pDestStart->y, _height);
+	pDestStart->x = min(pDestStart->x, m_width);
+	pDestStart->y = min(pDestStart->y, m_height);
 
 	Vec2i destEnd = { max(pPos->x + pImageSize->x, 0), max(pPos->y + pImageSize->y, 0) };
-	destEnd.x = min(destEnd.x, _width);
-	destEnd.y = min(destEnd.y, _height);
+	destEnd.x = min(destEnd.x, m_width);
+	destEnd.y = min(destEnd.y, m_height);
 
 	int width = destEnd.x - pDestStart->x;
 	int height = destEnd.y - pDestStart->y;
@@ -160,7 +160,7 @@ bool DDraw::CalculateClipArea(Vec2i* pSrcStart, Vec2i* pDestStart, Vec2i* pDestS
 bool DDraw::DrawBitmap(int startX, int startY, int width, int height, char* pBits)
 {
 #ifdef _DEBUG
-	if (!_pLockedBackBuffer)
+	if (!m_pLockedBackBuffer)
 		__debugbreak();
 #endif
 	Vec2i srcStart;
@@ -177,7 +177,7 @@ bool DDraw::DrawBitmap(int startX, int startY, int width, int height, char* pBit
 
 	const DWORD RGBA_SIZE = 4;
 	char* pSrc = pBits + (srcStart.x + srcStart.y * width) * RGBA_SIZE;
-	char* pDest = _pLockedBackBuffer + (destStart.y * _lockedBackBufferPitch) + (destStart.x * RGBA_SIZE);
+	char* pDest = m_pLockedBackBuffer + (destStart.y * m_lockedBackBufferPitch) + (destStart.x * RGBA_SIZE);
 
 	for (int y = 0; y < destSize.y; y++)
 	{
@@ -190,7 +190,7 @@ bool DDraw::DrawBitmap(int startX, int startY, int width, int height, char* pBit
 		pSrc -= (destSize.x * RGBA_SIZE);
 		pSrc += (width * RGBA_SIZE);
 		pDest -= (destSize.x * RGBA_SIZE);
-		pDest += _lockedBackBufferPitch;
+		pDest += m_lockedBackBufferPitch;
 	}
 
 	return true;
@@ -198,7 +198,7 @@ bool DDraw::DrawBitmap(int startX, int startY, int width, int height, char* pBit
 
 bool DDraw::DrawBitmap(int width, int height, char* pBits)
 {
-	return DrawBitmap(_rcView.left, _rcView.top, width, height, pBits);
+	return DrawBitmap(m_rcView.left, m_rcView.top, width, height, pBits);
 }
 
 bool DDraw::BeginDraw()
@@ -217,13 +217,13 @@ bool DDraw::BeginDraw()
 	}
 
 #ifdef _DEBUG
-	if (bufferWidth != _width || bufferHeight != _height)
+	if (bufferWidth != m_width || bufferHeight != m_height)
 	{
 		__debugbreak();
 	}
 #endif
-	_pLockedBackBuffer = pBuffer;
-	_lockedBackBufferPitch = bufferPitch;
+	m_pLockedBackBuffer = pBuffer;
+	m_lockedBackBufferPitch = bufferPitch;
 
 	return true;
 }
@@ -231,26 +231,26 @@ bool DDraw::BeginDraw()
 void DDraw::EndDraw()
 {
 	UnlockBackBuffer();
-	_pLockedBackBuffer = nullptr;
-	_lockedBackBufferPitch = 0;
+	m_pLockedBackBuffer = nullptr;
+	m_lockedBackBufferPitch = 0;
 }
 
 void DDraw::Blt()
 {
-	_pDDSPrimary->Blt(&_rcView, _pDDSBack, nullptr, DDBLT_WAIT, nullptr);
+	m_pDDSPrimary->Blt(&m_rcView, m_pDDSBack, nullptr, DDBLT_WAIT, nullptr);
 }
 
 void DDraw::Clear()
 {
-	if (!_pLockedBackBuffer)
+	if (!m_pLockedBackBuffer)
 	{
 #ifdef _DEBUG
 		__debugbreak();
 #endif
 	}
-	for (DWORD y = 0; y < _height; y++)
+	for (DWORD y = 0; y < m_height; y++)
 	{
-		memset(_pLockedBackBuffer + y * _lockedBackBufferPitch, 0, 4 * _width);
+		memset(m_pLockedBackBuffer + y * m_lockedBackBufferPitch, 0, 4 * m_width);
 	}
 }
 
@@ -260,8 +260,8 @@ void DDraw::UpdateWindowSize()
 
 	UpdateWindowPos();
 
-	DWORD width = _rcView.right - _rcView.left;
-	DWORD height = _rcView.bottom - _rcView.top;
+	DWORD width = m_rcView.right - m_rcView.left;
+	DWORD height = m_rcView.bottom - m_rcView.top;
 
 	createBackBuffer(width, height);
 
@@ -274,41 +274,41 @@ void DDraw::UpdateWindowSize()
 
 void DDraw::UpdateWindowPos()
 {
-	GetClientRect(_hWnd, &_rcView);
-	::ClientToScreen(_hWnd, (POINT*)&_rcView.left);
-	::ClientToScreen(_hWnd, (POINT*)&_rcView.right);
+	GetClientRect(m_hWnd, &m_rcView);
+	::ClientToScreen(m_hWnd, (POINT*)&m_rcView.left);
+	::ClientToScreen(m_hWnd, (POINT*)&m_rcView.right);
 }
 
 void DDraw::CleanUp()
 {
-	if (_pDDClipper)
+	if (m_pDDClipper)
 	{
-		_pDDClipper->Release();
-		_pDDClipper = nullptr;
+		m_pDDClipper->Release();
+		m_pDDClipper = nullptr;
 	}
-	if (_pDDSBack)
+	if (m_pDDSBack)
 	{
-		_pDDSBack->Release();
-		_pDDSBack = nullptr;
+		m_pDDSBack->Release();
+		m_pDDSBack = nullptr;
 	}
-	if (_pDDSPrimary)
+	if (m_pDDSPrimary)
 	{
-		_pDDSPrimary->Release();
-		_pDDSPrimary = nullptr;
+		m_pDDSPrimary->Release();
+		m_pDDSPrimary = nullptr;
 	}
-	if (_pDDraw7)
+	if (m_pDDraw7)
 	{
-		_pDDraw7->Release();
-		_pDDraw7 = nullptr;
+		m_pDDraw7->Release();
+		m_pDDraw7 = nullptr;
 	}
 }
 
 DWORD DDraw::width() const
 {
-	return _width;
+	return m_width;
 }
 
 DWORD DDraw::height() const
 {
-	return _height;
+	return m_height;
 }
