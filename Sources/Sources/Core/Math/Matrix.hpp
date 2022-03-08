@@ -384,7 +384,6 @@ public:
 		}
 		return *this;
 	}
-
 };
 
 template <typename T>
@@ -431,22 +430,21 @@ Matrix44<T> GetRotate(T x, T y, T z)
 	Matrix44<T> rotate = Matrix44<T>::Identity;
 
 	rotate = Matrix44<T>(
-		{ std::cos(z), -std::sin(z), 0.0f, 0.0f },
-		{ std::sin(z), std::cos(z), 0.0f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f, 0.0f },
-		{ 0.0f, 0.0f, 0.0f, 1.0f }) * rotate;
-
-	rotate = Matrix44<T>(
 		{ std::cos(y),0.0f, std::sin(y), 0.0f },
 		{ 0.0f, 1.0f, 0.0f, 0.0f },
 		{ -std::sin(y), 0.0f, std::cos(y), 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f }) * rotate;
-
 	rotate = Matrix44<T>(
 		{ 1.0f ,0.0f, 0.0f, 0.0f },
 		{ 0.0f, std::cos(x), -std::sin(x), 0.0f },
 		{ 0.0f, std::sin(x), std::cos(x), 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f }) * rotate;
+	rotate = Matrix44<T>(
+		{ std::cos(z), -std::sin(z), 0.0f, 0.0f },
+		{ std::sin(z), std::cos(z), 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 1.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }) * rotate;
+
 	return rotate;
 }
 
