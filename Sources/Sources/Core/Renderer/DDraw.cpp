@@ -62,6 +62,8 @@ bool DDraw::Init(HWND hWnd)
 	DWORD width = m_rcView.right - m_rcView.left;
 	DWORD height = m_rcView.bottom - m_rcView.top;
 
+	::SetCursorPos(m_rcView.left + width / 2, m_rcView.top + height / 2);
+
 	if (!createBackBuffer(width, height))
 	{
 #ifdef _DEBUG

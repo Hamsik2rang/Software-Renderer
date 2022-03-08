@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+// Re-calculate Camera basis(n, u, v) when it rotate
 void Camera::Orthonormalization()
 {
 	m_n = (m_eye - m_at).normalize();

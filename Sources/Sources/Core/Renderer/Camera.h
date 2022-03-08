@@ -53,4 +53,3 @@ public:
 	void SetAspect(DWORD width, DWORD height);
 	void SetFov(float fovY);
 };
-

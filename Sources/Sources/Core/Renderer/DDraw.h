@@ -23,8 +23,8 @@ private:
 	HWND	m_hWnd;
 	RECT	m_rcView;
 
-	bool createBackBuffer(DWORD width, DWORD height);
-	void cleanupBackBuffer();
+	bool CreateBackBuffer(DWORD width, DWORD height);
+	void CleanupBackBuffer();
 public:
 	DDraw();
 	~DDraw();
@@ -48,6 +48,6 @@ public:
 	void CleanUp();
 
 	// getter, setter
-	DWORD width() const;
-	DWORD height() const;
+	DWORD GetWidth() const;
+	DWORD GetHeight() const;
 };
