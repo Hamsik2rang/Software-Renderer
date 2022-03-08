@@ -7,8 +7,8 @@ Renderer::Renderer(HWND hWnd)
 	// Init DirectDraw
 	m_pDDraw = new DDraw;
 	m_pDDraw->Init(m_hWnd);
-	m_width = m_pDDraw->width();
-	m_height = m_pDDraw->height();
+	m_width = m_pDDraw->GetWidth();
+	m_height = m_pDDraw->GetHeight();
 
 	m_pRenderBuffer = new char[m_width * m_height * 4];
 	m_pSwapBuffer = new char[m_width * 4];
@@ -75,6 +75,32 @@ void Renderer::SetPixel(int x, int y, const Color& color)
 	memcpy(m_pRenderBuffer + (y * m_width * 4) + x * 4, &color, 4);
 }
 
+void Renderer::Render()
+{
+	static Model* cameraGizmo = new Model;
+	cameraGizmo->m_position = m_pCamera->GetEye() - (m_pCamera->GetFront() * 5.0f);
+	cameraGizmo->m_vertices.push_back(Vec4f{ m_pCamera->GetRight().x, m_pCamera->GetRight().y, m_pCamera->GetRight().z, 1.0f } * 5.0f);
+	cameraGizmo->m_vertices.push_back(Vec4f{ m_pCamera->GetUp().x, m_pCamera->GetUp().y, m_pCamera->GetUp().z, 1.0f } * 5.0f);
+	cameraGizmo->m_stride = 2;
+	/*if (m_pRenderObjects.size() == 1)
+	{
+		m_pRenderObjects.push_back(cameraGizmo);
+	}*/
+	float curTime = Timer::Elapsed();
+	m_deltaTime = curTime - m_lastTime;
+	m_lastTime = curTime;
+	MoveCamera();
+	RotateCamera();
+
+	VertexShading();
+	Rasterizer();
+	FragmentShading();
+	OutputMerging();
+
+	DrawScene();
+}
+
+
 void Renderer::VertexShading()
 {
 	/// Vertex Shading
@@ -119,12 +145,13 @@ void Renderer::VertexShading()
 				Vec4f(0.0f, 0.0f, -1.0f, 0.0f));
 
 			affine = projection * affine;
+			// Rasterizer 단계를 위한 좌표계 변경(right-hand -> left-hand)
+			affine.z *= -1.0f;
+
 			m->m_vertices.push_back(affine);
 		}
 		m_pRasterizerQueue.push_back(m);
 	}
-
-	assert(m_pRasterizerQueue.size() == m_pRenderObjects.size());
 }
 
 void Renderer::Rasterizer()
@@ -141,6 +168,7 @@ void Renderer::Rasterizer()
 
 	for (auto& v : m_pRasterizerQueue)
 	{
+		bool isClipped = false;
 		for (int i = 0; i < v->m_vertices.size(); i++)
 		{
 			Vec4f& affine = v->m_vertices[i];
@@ -152,6 +180,13 @@ void Renderer::Rasterizer()
 			affine.z /= affine.w;
 			affine.w /= affine.w;
 
+			// simple clipping using z-distance
+			if (affine.z < 0 || affine.z > 1)
+			{
+				std::cout << __FILE__ << " " << __LINE__ << " "<<affine.z << std::endl;
+				isClipped = true;
+				break;
+			}
 			// Viewport Transformation
 			float aspect = m_pCamera->GetAspect();
 			Mat4f viewport = Mat4f::Identity;
@@ -173,14 +208,16 @@ void Renderer::Rasterizer()
 				{ 0.0f, 0.0f, 1.0f, NDC_MIN_Z },
 				{ 0.0f, 0.0f, 0.0f, 1.0f }) * viewport;
 
-			affine = viewport * affine;	//BUG: 벡터 Z값 보정 안됨
+			affine = viewport * affine;
 			// Scan Coversion
 			// ...
 
 		}
-		m_pFragmentQueue.push_back(v);
+		if(!isClipped)
+		{
+			m_pFragmentQueue.push_back(v);
+		}
 	}
-	assert(m_pFragmentQueue.size() == m_pRasterizerQueue.size());
 	// TODO: change later
 	m_pRasterizerQueue.clear();
 }
@@ -216,22 +253,6 @@ void Renderer::AddModel(Model* model)
 	m_pRenderObjects.push_back(model);
 }
 
-void Renderer::Render()
-{
-	float curTime = Timer::Elapsed();
-	m_deltaTime = curTime - m_lastTime;
-	m_lastTime = curTime;
-	MoveCamera();
-	RotateCamera();
-
-	VertexShading();
-	Rasterizer();
-	FragmentShading();
-	OutputMerging();
-
-	DrawScene();
-}
-
 void Renderer::DrawScene()
 {
 	m_pDDraw->BeginDraw();
@@ -262,12 +283,11 @@ void Renderer::DrawScene()
 		}
 	}
 	m_pDDraw->DrawBitmap(0, 0, m_width, m_height, m_pRenderBuffer);
-
 	// end code.
 	m_pDDraw->EndDraw();
 	m_pDDraw->Blt();
 
-	memset(m_pRenderBuffer, 0, m_width * m_height * 4);
+	memset(m_pRenderBuffer, 56, m_width * m_height * 4);
 	m_pOutputQueue.clear();
 }
 
@@ -319,10 +339,22 @@ void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 	int maxXPos = (int)(v0.x > v1.x ? v0.x > v2.x ? v0.x : v2.x : v1.x > v2.x ? v1.x : v2.x);
 	int maxYPos = (int)(v0.y > v1.y ? v0.y > v2.y ? v0.y : v2.y : v1.y > v2.y ? v1.y : v2.y);
 
+	
+
 	for (int y = minYPos; y <= maxYPos; y++)
 	{
+		// for pixel clipping
+		if (y < 0 || y >= m_height)
+		{
+			continue;
+		}
 		for (int x = minXPos; x <= maxXPos; x++)
 		{
+			// for pixel clipping
+			if (x < 0 || x >= m_width)
+			{
+				continue;
+			}
 			Vec3f p = { (float)x, (float)y, 0 };
 			Vec3f bc = Barycentric(v0, v1, v2, p);
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
@@ -399,9 +431,6 @@ void Renderer::OnMouseMove()
 	::GetCursorPos(&cursorPos);
 	m_cursorDeltaXPos += cursorPos.x - m_cursorLastXPos;
 	m_cursorDeltaYPos += cursorPos.y - m_cursorLastYPos;
-
-	m_cursorLastXPos = cursorPos.x;
-	m_cursorLastYPos = cursorPos.y;
 }
 
 void Renderer::MoveCamera()
@@ -441,6 +470,7 @@ void Renderer::RotateCamera()
 		alpha *= m_deltaTime / FPS;
 	}
 	m_pCamera->Rotate((float)m_cursorDeltaYPos, (float)m_cursorDeltaXPos, alpha);
+	m_pDDraw->SetCursorToCenter();
 	m_cursorDeltaXPos = 0;
 	m_cursorDeltaYPos = 0;
 }

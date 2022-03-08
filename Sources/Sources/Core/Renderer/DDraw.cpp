@@ -177,7 +177,7 @@ bool DDraw::DrawBitmap(int startX, int startY, int width, int height, char* pBit
 		return false;
 	}
 
-	const DWORD RGBA_SIZE = 4;
+	constexpr DWORD RGBA_SIZE = 4;
 	char* pSrc = pBits + (srcStart.x + srcStart.y * width) * RGBA_SIZE;
 	char* pDest = m_pLockedBackBuffer + (destStart.y * m_lockedBackBufferPitch) + (destStart.x * RGBA_SIZE);
 
@@ -279,6 +279,11 @@ void DDraw::UpdateWindowPos()
 	GetClientRect(m_hWnd, &m_rcView);
 	::ClientToScreen(m_hWnd, (POINT*)&m_rcView.left);
 	::ClientToScreen(m_hWnd, (POINT*)&m_rcView.right);
+}
+
+void DDraw::SetCursorToCenter()
+{
+	::SetCursorPos(m_rcView.left + m_width / 2, m_rcView.top + m_height / 2);
 }
 
 void DDraw::CleanUp()

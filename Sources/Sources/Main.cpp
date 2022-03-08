@@ -51,10 +51,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     g_pRenderer = new Renderer(g_hWnd);
 
-    Model* model = new Model;
-    model->Load("./TestModel.obj");
-
-    g_pRenderer->AddModel(model);
+    Model* testModel = new Model;
+    testModel->Load("./TestModel.obj");
+    g_pRenderer->AddModel(testModel);
     // Main message loop:
     
     // for initialize timer

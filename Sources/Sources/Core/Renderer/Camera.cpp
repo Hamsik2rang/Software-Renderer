@@ -15,11 +15,10 @@ Camera::Camera()
 
 void Camera::Rotate(float xOffset, float yOffset, float alpha)
 {
-	xOffset *= alpha * m_rotateSensitivity;
-	yOffset *= alpha * m_rotateSensitivity;
-	
+	xOffset *= alpha * m_rotateSensitivity * -1.0f;
+	yOffset *= alpha * m_rotateSensitivity * -1.0f;
+
 	m_at = (GetTransform(m_eye.x, m_eye.y, m_eye.z) * GetRotate(xOffset, yOffset, 0.0f) * GetTransform(-m_eye.x, -m_eye.y, -m_eye.z) * m_at.CartesianToAffine()).AffineToCartesian();
-	//std::cout << "x offset: "<<xOffset<<" y offset: "<<yOffset<<"at.x: "<<m_at.x << " at.y: "<< m_at.y << " at.z: "<<m_at.z << std::endl;
 	Orthonormalization();
 }
 
@@ -27,7 +26,7 @@ void Camera::Move(int front, int right, float alpha)
 {
 	if (front)
 	{
-		//Vec3f direction = m_at - m_eye;
+		// right-handed coordinate
 		Vec3f direction = m_n * -1.0f;
 		direction.normalize();
 		m_eye += direction * m_speed * alpha * (float)front;
@@ -35,8 +34,6 @@ void Camera::Move(int front, int right, float alpha)
 	}
 	if (right)
 	{
-		// right-handed coordinate
-		//auto direction = (m_at - m_eye) ^ m_worldUp;
 		Vec3f direction = m_u;
 		direction.normalize();
 		m_eye += direction * m_speed * alpha * (float)right;
