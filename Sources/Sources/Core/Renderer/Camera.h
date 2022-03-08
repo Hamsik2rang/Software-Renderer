@@ -1,9 +1,12 @@
 #pragma once
 
 #include "../Math/Vector.hpp"
+#include "../Math/Matrix.hpp"
 #include "../Utility/Timer.hpp"
 
 #include <wtypes.h>
+#include <cmath>
+#include <iostream>
 
 class Camera
 {
@@ -12,6 +15,7 @@ private:
 	Vec3f m_eye = { 0.0f, 1.0f, 3.0f };
 	Vec3f m_at = { 0.0f, 0.0f, -1.0f };
 
+	// Basis of camera space
 	Vec3f m_u;
 	Vec3f m_v;
 	Vec3f m_n;
@@ -22,12 +26,13 @@ private:
 	float m_far = 100.0f;
 
 	const float m_speed = 0.05f;
+	const float m_rotateSensitivity = 0.001f;
 
 	void Orthonormalization();
 public:
 	Camera();
 
-	void Rotate(float pitch, float yaw, float alpha);
+	void Rotate(float xOffset, float yOffset, float alpha);
 	void Move(int front, int right, float alpha);
 
 	// getter, setter

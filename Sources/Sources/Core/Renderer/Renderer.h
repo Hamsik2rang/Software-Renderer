@@ -1,17 +1,17 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <thread>
-#include <mutex>
-
 #include "DDraw.h"
 #include "Camera.h"
 #include "../Drawable/Model.h"
 #include "../Math/Matrix.hpp"
 #include "../Math/Interpolate.hpp"
 #include "../Utility/Timer.hpp"
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <cmath>
+
 
 class Renderer
 {

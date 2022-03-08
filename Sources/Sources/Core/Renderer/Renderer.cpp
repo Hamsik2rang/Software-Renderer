@@ -1,5 +1,4 @@
 #include "Renderer.h"
-#include <cmath>
 #include "../Math/Math.hpp"
 
 Renderer::Renderer(HWND hWnd)
@@ -223,7 +222,7 @@ void Renderer::Render()
 	m_deltaTime = curTime - m_lastTime;
 	m_lastTime = curTime;
 	MoveCamera();
-	//RotateCamera();
+	RotateCamera();
 
 	VertexShading();
 	Rasterizer();
@@ -441,7 +440,7 @@ void Renderer::RotateCamera()
 	{
 		alpha *= m_deltaTime / FPS;
 	}
-	
+	//std::cout << "delta x: " << m_cursorDeltaXPos << " delta y: " << m_cursorDeltaYPos << std::endl;
 	m_pCamera->Rotate(m_cursorDeltaYPos, m_cursorDeltaXPos, alpha);
 	m_cursorDeltaXPos = 0;
 	m_cursorDeltaYPos = 0;

@@ -1,7 +1,4 @@
 #include "Camera.h"
-#include "../Utility/Timer.hpp"
-#include <cmath>
-#include <iostream>
 
 void Camera::Orthonormalization()
 {
@@ -15,14 +12,13 @@ Camera::Camera()
 	Orthonormalization();
 }
 
-void Camera::Rotate(float pitch, float yaw, float alpha)
+void Camera::Rotate(float xOffset, float yOffset, float alpha)
 {
-	//NOTE: Is it work?
-	auto direction = m_at - m_eye;
-	direction.x *= std::sin(yaw) * std::cos(pitch) * alpha;
-	direction.y *= std::sin(pitch) * alpha;
-	direction.z *= std::cos(yaw) * std::cos(pitch) * alpha;
-	m_at = (m_eye + direction).normalize() * (m_at - m_eye).length();
+	xOffset *= alpha * m_rotateSensitivity;
+	yOffset *= alpha * m_rotateSensitivity;
+	
+	m_at = (GetTransform(m_eye.x, m_eye.y, m_eye.z) * GetRotate(xOffset, yOffset, 0.0f) * GetTransform(-m_eye.x, -m_eye.y, -m_eye.z) * m_at.CartesianToAffine()).AffineToCartesian();
+	//std::cout << "x offset: "<<xOffset<<" y offset: "<<yOffset<<"at.x: "<<m_at.x << " at.y: "<< m_at.y << " at.z: "<<m_at.z << std::endl;
 	Orthonormalization();
 }
 

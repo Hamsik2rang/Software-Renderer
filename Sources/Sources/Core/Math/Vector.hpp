@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cassert>
 
 template <typename T>
 class Vector2D;
