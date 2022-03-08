@@ -387,34 +387,22 @@ public:
 };
 
 template <typename T>
-const Matrix22<T> Matrix22<T>::Identity = { {1,0},{0,1} };
+const Matrix22<T> Matrix22<T>::Identity = { 
+	{1,0},
+	{0,1} };
 
 template <typename T>
-const Matrix33<T> Matrix33<T>::Identity = { {1,0,0},{0,1,0},{0,0,1} };
+const Matrix33<T> Matrix33<T>::Identity = { 
+	{1,0,0},
+	{0,1,0},
+	{0,0,1} };
 
 template <typename T>
-const Matrix44<T> Matrix44<T>::Identity = { {1,0,0,0},{0,1,0,0},{0,0,1,0}, {0,0,0,1} };
-
-template <typename T>
-inline Matrix22<T> Identity()
-{
-	Matrix22<T> ret{ Vector2D<T>(1,0), Vector2D<T>(0,1) };
-	return ret;
-}
-
-template <typename T>
-inline Matrix33<T> Identity()
-{
-	Matrix33<T> ret{ Vector3D<T>(1, 0, 0), Vector3D<T>(0, 1, 0), Vector3D<T>(0, 0, 1) };
-	return ret;
-}
-
-template <typename T>
-inline Matrix44<T> Identity()
-{
-	Matrix44<T> ret{ Vector4D<T>(1,0,0,0), Vector4D<T>(0,1,0,0), Vector4D<T>(0,0,1,0), Vector4D<T>(0,0,0,1) };
-	return ret;
-}
+const Matrix44<T> Matrix44<T>::Identity = { 
+	{1,0,0,0},
+	{0,1,0,0},
+	{0,0,1,0}, 
+	{0,0,0,1} };
 
 template <typename T>
 Matrix44<T> GetTransform(T x, T y, T z)

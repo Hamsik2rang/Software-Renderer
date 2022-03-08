@@ -189,6 +189,7 @@ bool DDraw::DrawBitmap(int startX, int startY, int width, int height, char* pBit
 			pSrc += RGBA_SIZE;
 			pDest += RGBA_SIZE;
 		}
+		// 2차원 버퍼 줄바꿈
 		pSrc -= (destSize.x * RGBA_SIZE);
 		pSrc += (width * RGBA_SIZE);
 		pDest -= (destSize.x * RGBA_SIZE);

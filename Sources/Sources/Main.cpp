@@ -25,9 +25,9 @@ Renderer* g_pRenderer;
 HWND g_hWnd;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                      _In_opt_ HINSTANCE hPrevInstance,
-                      _In_ LPWSTR    lpCmdLine,
-                      _In_ int       nCmdShow)
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR    lpCmdLine,
+    _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
@@ -54,10 +54,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     Model* testModel = new Model;
     testModel->Load("./TestModel.obj");
     g_pRenderer->AddModel(testModel);
-    // Main message loop:
-    
-    // for initialize timer
-    Timer::Elapsed();
+    // Main Loop
     while (true)
     {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -69,7 +66,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else
         {
-            //g_pRenderer->DrawScene();
             g_pRenderer->Render();
         }
     }

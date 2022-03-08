@@ -264,10 +264,11 @@ public:
 	}
 };
 
+// TODO: 왜 순서가 bgra로 적용되는지 확인
 union Color
 {
-	struct { unsigned char r; unsigned char g; unsigned char b; unsigned char a; };
-	struct { unsigned char x; unsigned char y; unsigned char z; unsigned char w; };
+	struct { unsigned char b; unsigned char g; unsigned char r; unsigned char a; };
+	struct { unsigned char z; unsigned char y; unsigned char x; unsigned char w; };
 	unsigned char elem[4];
 
 	Color(unsigned char _r = 255, unsigned char _g = 255, unsigned char _b = 255, unsigned char _a = 255)

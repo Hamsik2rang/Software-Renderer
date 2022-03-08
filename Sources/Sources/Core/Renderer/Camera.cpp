@@ -18,7 +18,11 @@ void Camera::Rotate(float xOffset, float yOffset, float alpha)
 	xOffset *= alpha * m_rotateSensitivity * -1.0f;
 	yOffset *= alpha * m_rotateSensitivity * -1.0f;
 
-	m_at = (GetTransform(m_eye.x, m_eye.y, m_eye.z) * GetRotate(xOffset, yOffset, 0.0f) * GetTransform(-m_eye.x, -m_eye.y, -m_eye.z) * m_at.CartesianToAffine()).AffineToCartesian();
+	m_at = (GetTransform(m_eye.x, m_eye.y, m_eye.z)
+		* GetRotate(xOffset, yOffset, 0.0f) 
+		* GetTransform(-m_eye.x, -m_eye.y, -m_eye.z) 
+		* m_at.CartesianToAffine()).AffineToCartesian();
+
 	Orthonormalization();
 }
 

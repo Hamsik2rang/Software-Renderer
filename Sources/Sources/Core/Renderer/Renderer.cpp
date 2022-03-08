@@ -66,29 +66,15 @@ void Renderer::FilpBuffer()
 
 void Renderer::SetPixel(int x, int y, const Color& color)
 {
-	// simple clipping
-	// TODO: Fix bug
-	if (x < 0 || x >= m_width || y < 0|| y >= m_height)
-	{
-		return;
-	}
 	memcpy(m_pRenderBuffer + (y * m_width * 4) + x * 4, &color, 4);
 }
 
 void Renderer::Render()
 {
-	static Model* cameraGizmo = new Model;
-	cameraGizmo->m_position = m_pCamera->GetEye() - (m_pCamera->GetFront() * 5.0f);
-	cameraGizmo->m_vertices.push_back(Vec4f{ m_pCamera->GetRight().x, m_pCamera->GetRight().y, m_pCamera->GetRight().z, 1.0f } * 5.0f);
-	cameraGizmo->m_vertices.push_back(Vec4f{ m_pCamera->GetUp().x, m_pCamera->GetUp().y, m_pCamera->GetUp().z, 1.0f } * 5.0f);
-	cameraGizmo->m_stride = 2;
-	/*if (m_pRenderObjects.size() == 1)
-	{
-		m_pRenderObjects.push_back(cameraGizmo);
-	}*/
 	float curTime = Timer::Elapsed();
 	m_deltaTime = curTime - m_lastTime;
 	m_lastTime = curTime;
+
 	MoveCamera();
 	RotateCamera();
 
@@ -132,7 +118,7 @@ void Renderer::VertexShading()
 				{ cameraRight.x, cameraRight.y, cameraRight.z, 0.0f },
 				{ cameraUp.x , cameraUp.y, cameraUp.z, 0.0f },
 				{ cameraFront.x, cameraFront.y, cameraFront.z, 0.0f },
-				{0.0f, 0.0f, 0.0f, 1.0f})
+				{ 0.0f, 0.0f, 0.0f, 1.0f })
 				* GetTransform(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
 			affine = view * affine;
@@ -146,6 +132,7 @@ void Renderer::VertexShading()
 
 			affine = projection * affine;
 			// Rasterizer 단계를 위한 좌표계 변경(right-hand -> left-hand)
+			// 정점 재정렬도 수행해야 하지만 현재 정점 순서를 신경쓰고 있지 않으므로 제외함.
 			affine.z *= -1.0f;
 
 			m->m_vertices.push_back(affine);
@@ -183,7 +170,6 @@ void Renderer::Rasterizer()
 			// simple clipping using z-distance
 			if (affine.z < 0 || affine.z > 1)
 			{
-				std::cout << __FILE__ << " " << __LINE__ << " "<<affine.z << std::endl;
 				isClipped = true;
 				break;
 			}
@@ -213,7 +199,7 @@ void Renderer::Rasterizer()
 			// ...
 
 		}
-		if(!isClipped)
+		if (!isClipped)
 		{
 			m_pFragmentQueue.push_back(v);
 		}
@@ -278,7 +264,7 @@ void Renderer::DrawScene()
 				Vec3f v1 = v->m_vertices[i + 1].AffineToCartesian();
 				Vec3f v2 = v->m_vertices[i + 2].AffineToCartesian();
 
-				Triangle(v0, v1, v2, Color(255, 255, 255, 255));
+				Triangle(v0, v1, v2, Color(255, 208, 0, 255));
 			}
 		}
 	}
@@ -338,8 +324,6 @@ void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 	int minYPos = (int)(v0.y < v1.y ? v0.y < v2.y ? v0.y : v2.y : v1.y < v2.y ? v1.y : v2.y);
 	int maxXPos = (int)(v0.x > v1.x ? v0.x > v2.x ? v0.x : v2.x : v1.x > v2.x ? v1.x : v2.x);
 	int maxYPos = (int)(v0.y > v1.y ? v0.y > v2.y ? v0.y : v2.y : v1.y > v2.y ? v1.y : v2.y);
-
-	
 
 	for (int y = minYPos; y <= maxYPos; y++)
 	{
