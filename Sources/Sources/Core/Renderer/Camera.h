@@ -26,7 +26,7 @@ private:
 
 
 	const float m_speed = 0.05f;
-	const float m_rotateSensitivity = 0.01f;
+	const float m_rotateSensitivity = 0.1f;
 
 	void Orthonormalization();
 public:
