@@ -52,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     g_pRenderer = new Renderer(g_hWnd);
 
     RenderObject* testModel = new RenderObject;
-    testModel->Load("./TestModel.obj");
+    testModel->Load("./TestCube.obj");
     g_pRenderer->AddModel(testModel);
     // Main Loop
     while (true)
