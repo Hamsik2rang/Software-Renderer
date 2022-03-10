@@ -4,13 +4,13 @@
 
 #include <string>
 
-class Model : public Drawable
+class RenderObject : public Drawable
 {
 private:
 
 public:
-	Model();
-	virtual ~Model() override;
+	RenderObject();
+	virtual ~RenderObject() override;
 
 	bool Load(std::string filename);
 };

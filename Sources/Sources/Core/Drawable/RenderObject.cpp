@@ -1,16 +1,16 @@
-#include "Model.h"
+#include "RenderObject.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 
-Model::Model()
+RenderObject::RenderObject()
 {}
 
-Model::~Model()
+RenderObject::~RenderObject()
 {}
 
-bool Model::Load(std::string filename)
+bool RenderObject::Load(std::string filename)
 {
 	std::ifstream ifs(filename, std::ios::in);
 	if (!ifs.is_open())
