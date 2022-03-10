@@ -36,7 +36,7 @@
     <ClInclude Include="Core\Renderer\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Drawable\Model.h">
+    <ClInclude Include="Core\Drawable\RenderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Math\Interpolate.hpp">
@@ -68,7 +68,7 @@
     <ClCompile Include="Core\Renderer\Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Drawable\Model.cpp">
+    <ClCompile Include="Core\Drawable\RenderObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Renderer\Camera.cpp">

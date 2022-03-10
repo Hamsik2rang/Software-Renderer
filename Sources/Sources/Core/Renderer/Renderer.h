@@ -1,11 +1,11 @@
 #pragma once
 
 #include "DDraw.h"
-#include "Camera.h"
-#include "../Drawable/Model.h"
+#include "../Math/Vector.hpp"
 #include "../Math/Matrix.hpp"
-#include "../Math/Interpolate.hpp"
+#include "./Camera.h"
 #include "../Utility/Timer.hpp"
+#include "../Drawable/RenderObject.h"
 
 #include <iostream>
 #include <vector>
@@ -35,11 +35,11 @@ private:
 	float m_lastTime;
 	float m_deltaTime;
 
-	std::vector<Model*> m_pRenderObjects;
-	std::vector<Model*> m_pVertexQueue;
-	std::vector<Model*> m_pRasterizerQueue;
-	std::vector<Model*> m_pFragmentQueue;
-	std::vector<Model*> m_pOutputQueue;
+	std::vector<RenderObject*> m_pRenderObjects;
+	std::vector<RenderObject*> m_pVertexQueue;
+	std::vector<RenderObject*> m_pRasterizerQueue;
+	std::vector<RenderObject*> m_pFragmentQueue;
+	std::vector<RenderObject*> m_pOutputQueue;
 
 	bool m_isKeyDownUp;
 	bool m_isKeyDownDown;
@@ -64,7 +64,7 @@ public:
 	Renderer(HWND hWnd);
 	~Renderer();
 
-	void AddModel(Model* model);
+	void AddModel(RenderObject* model);
 
 	// 1. vertex shading
 	// 2. rasterizer

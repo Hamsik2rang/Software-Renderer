@@ -1,11 +1,11 @@
 #pragma once
 
+#include "../Math/Vector.hpp"
+
 #include <ddraw.h>
 #include <crtdbg.h>
 #include <cassert>
 #include <cmath>
-
-#include "../Math/Vector.hpp"
 
 class DDraw
 {

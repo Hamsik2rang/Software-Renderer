@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <cmath>
 #include <cassert>
 
@@ -35,6 +36,7 @@ public:
 		:x(_x), y(_y)
 	{}
 
+	Vector2D<T> operator-() const { return Vector2D<T>(-x, -y); }
 	Vector2D<T> operator+(const Vector2D<T>& v) const { return Vector2D(x + v.x, y + v.y); }
 	Vector2D<T> operator-(const Vector2D<T>& v) const { return Vector2D(x - v.x, y - v.y); }
 	T operator*(const Vector2D<T>& v) const { return x * v.x + y * v.y; }
@@ -86,6 +88,11 @@ public:
 	Vector3D(T _x, T _y, T _z)
 		:x(_x), y(_y), z(_z)
 	{}
+
+	Vector3D<T> operator-() const
+	{
+		return Vector3D<T>(-x, -y, -z);
+	}
 
 	Vector3D<T> operator+(const Vector3D<T>& v) const
 	{
@@ -177,6 +184,10 @@ public:
 		: x{ _x }, y{ _y }, z{ _z }, w{ _w }
 	{}
 
+	Vector4D<T> operator-() const
+	{
+		return Vector4D<T>(-x, -y, -z, -w);
+	}
 
 	Vector4D<T> operator+(const Vector4D<T>& v) const
 	{
@@ -259,7 +270,7 @@ public:
 	Vector3D<T> AffineToCartesian()
 	{
 		assert(w != 0);
-		Vector3D<T> ret = { x / w, y / w, z / w };
+		Vector3D<T> ret = { x / w, y / w, z / w};
 		return ret;
 	}
 };

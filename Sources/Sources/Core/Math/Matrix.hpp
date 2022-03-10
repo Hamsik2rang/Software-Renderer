@@ -1,8 +1,14 @@
 #pragma once
 
-#include "Vector.hpp"
+#include "./Vector.hpp"
+#include "../Renderer/Camera.h"
+#include "../Drawable/RenderObject.h"
+
 #include <cassert>
 #include <cstring>
+
+class Camera;
+class Model;
 
 template <typename T>
 class Matrix22;
@@ -92,7 +98,7 @@ public:
 
 	Matrix22<T> operator*(Matrix22<T> m)
 	{
-		m.Transparent();
+		m.Transpose();
 		Matrix22<T> ret;
 		for (int i = 0; i < 2; i++)
 		{
@@ -101,7 +107,7 @@ public:
 				ret[i][j] = v[i] * m.v[j];
 			}
 		}
-		m.Transparent();
+		m.Transpose();
 		return ret;
 	}
 
@@ -117,7 +123,7 @@ public:
 		return elem[index];
 	}
 
-	Matrix22<T>& Transparent()
+	Matrix22<T>& Transpose()
 	{
 		auto temp = elem[0][1];
 		elem[0][1] = elem[1][0];
@@ -208,7 +214,7 @@ public:
 
 	Matrix33<T> operator*(Matrix33<T> m)
 	{
-		m.Transparent();
+		m.Transpose();
 		Matrix33<T> ret;
 		for (int i = 0; i < 3; i++)
 		{
@@ -217,7 +223,7 @@ public:
 				ret[i][j] = v[i] * m.v[j];
 			}
 		}
-		m.Transparent();
+		m.Transpose();
 		return ret;
 	}
 
@@ -232,7 +238,7 @@ public:
 		return elem[index];
 	}
 
-	Matrix33<T>& Transparent()
+	Matrix33<T>& Transpose()
 	{
 		for (int i = 0; i < 3; i++)
 		{
@@ -345,7 +351,7 @@ public:
 
 	Matrix44<T> operator*(Matrix44<T> m)
 	{
-		m.Transparent();
+		m.Transpose();
 		Matrix44<T> ret;
 		for (int i = 0; i < 4; i++)
 		{
@@ -354,7 +360,7 @@ public:
 				ret[i][j] = v[i] * m.v[j];
 			}
 		}
-		m.Transparent();
+		m.Transpose();
 		return ret;
 	}
 
@@ -371,7 +377,7 @@ public:
 		return elem[index];
 	}
 
-	Matrix44<T>& Transparent()
+	Matrix44<T>& Transpose()
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -387,22 +393,23 @@ public:
 };
 
 template <typename T>
-const Matrix22<T> Matrix22<T>::Identity = { 
+const Matrix22<T> Matrix22<T>::Identity = {
 	{1,0},
 	{0,1} };
 
 template <typename T>
-const Matrix33<T> Matrix33<T>::Identity = { 
+const Matrix33<T> Matrix33<T>::Identity = {
 	{1,0,0},
 	{0,1,0},
 	{0,0,1} };
 
 template <typename T>
-const Matrix44<T> Matrix44<T>::Identity = { 
+const Matrix44<T> Matrix44<T>::Identity = {
 	{1,0,0,0},
 	{0,1,0,0},
-	{0,0,1,0}, 
+	{0,0,1,0},
 	{0,0,0,1} };
+
 
 template <typename T>
 Matrix44<T> GetTransform(T x, T y, T z)
@@ -416,17 +423,18 @@ Matrix44<T> GetRotate(T x, T y, T z)
 {
 	// TODO: Implement This.
 	Matrix44<T> rotate = Matrix44<T>::Identity;
+	rotate = Matrix44<T>(
+		{ 1.0f ,0.0f, 0.0f, 0.0f },
+		{ 0.0f, std::cos(x), -std::sin(x), 0.0f },
+		{ 0.0f, std::sin(x), std::cos(x), 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }) * rotate;
 
 	rotate = Matrix44<T>(
 		{ std::cos(y),0.0f, std::sin(y), 0.0f },
 		{ 0.0f, 1.0f, 0.0f, 0.0f },
 		{ -std::sin(y), 0.0f, std::cos(y), 0.0f },
 		{ 0.0f, 0.0f, 0.0f, 1.0f }) * rotate;
-	rotate = Matrix44<T>(
-		{ 1.0f ,0.0f, 0.0f, 0.0f },
-		{ 0.0f, std::cos(x), -std::sin(x), 0.0f },
-		{ 0.0f, std::sin(x), std::cos(x), 0.0f },
-		{ 0.0f, 0.0f, 0.0f, 1.0f }) * rotate;
+
 	rotate = Matrix44<T>(
 		{ std::cos(z), -std::sin(z), 0.0f, 0.0f },
 		{ std::sin(z), std::cos(z), 0.0f, 0.0f },
@@ -441,4 +449,40 @@ Matrix44<T> GetScale(T x, T y, T z)
 {
 	Matrix44<T> scale = { Vector4D<T>(x, 0, 0, 0), Vector4D<T>(0, y, 0, 0), Vector4D<T>(0, 0, z, 0), Vector4D<T>(0, 0, 0, 1) };
 	return scale;
+}
+
+inline Mat4f Model(const Drawable* pDrawable)
+{
+	Mat4f model = GetTransform(pDrawable->m_position.x, pDrawable->m_position.y, pDrawable->m_position.z)
+		* GetRotate(pDrawable->m_rotation.x, pDrawable->m_rotation.y, pDrawable->m_rotation.z)
+		* GetScale(pDrawable->m_scale.x, pDrawable->m_scale.y, pDrawable->m_scale.z);
+	return model;
+}
+
+inline Mat4f Projection(float fovY, float aspect, float nDist, float fDist)
+{
+	Mat4f proj(
+		{ 1.0f / (std::tanf(DegreeToRadian(fovY / 2.0f)) * aspect), 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 1.0f / std::tanf(DegreeToRadian(fovY / 2.0f)),0.0f, 0.0f },
+		{ 0.0f, 0.0f, fDist / (fDist - nDist), nDist * fDist / (fDist - nDist) },
+		{ 0.0f, 0.0f, -1.0f, 0.0f }
+	);
+	return proj;
+}
+
+inline Mat4f LookAt(const Vec3f eye, const Vec3f at, const Vec3f worldUp)
+{
+	Vec3f forward = (eye - at).normalize();
+	Vec3f right = (worldUp ^ forward).normalize();
+	Vec3f up = forward ^ right;
+
+	Mat4f lookAt = Mat4f::Identity;
+	lookAt = Mat4f(
+		{ right.x, right.y, right.z, 0.0f },
+		{ up.x,up.y,up.z, 0.0f },
+		{ forward.x, forward.y, forward.z, 0.0f },
+		{ 0.0f, 0.0f,0.0f, 1.0f })
+		* GetTransform(-eye.x, -eye.y, -eye.z);
+
+	return lookAt;
 }

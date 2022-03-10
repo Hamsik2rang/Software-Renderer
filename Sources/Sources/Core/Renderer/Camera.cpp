@@ -1,9 +1,16 @@
 #include "Camera.h"
+#include "../Math/Math.hpp"
+#include "../Math/Matrix.hpp"
 
 // Re-calculate Camera basis(n, u, v) when it rotate
 void Camera::Orthonormalization()
 {
-	m_n = (m_eye - m_at).normalize();
+	Vec3f front;
+	front.x = std::cosf(DegreeToRadian(m_yaw)) * std::cosf(DegreeToRadian(m_pitch));
+	front.y = std::sinf(DegreeToRadian(m_pitch));
+	front.z = std::sinf(DegreeToRadian(m_yaw)) * std::cosf(DegreeToRadian(m_pitch));
+
+	m_n = front.normalize();
 	m_u = (m_worldUp ^ m_n).normalize();
 	m_v = m_n ^ m_u;
 }
@@ -15,13 +22,17 @@ Camera::Camera()
 
 void Camera::Rotate(float xOffset, float yOffset, float alpha)
 {
-	xOffset *= alpha * m_rotateSensitivity * -1.0f;
-	yOffset *= alpha * m_rotateSensitivity * -1.0f;
+	m_pitch += xOffset * m_rotateSensitivity;
+	m_yaw += yOffset * m_rotateSensitivity;
 
-	m_at = (GetTransform(m_eye.x, m_eye.y, m_eye.z)
-		* GetRotate(xOffset, yOffset, 0.0f) 
-		* GetTransform(-m_eye.x, -m_eye.y, -m_eye.z) 
-		* m_at.CartesianToAffine()).AffineToCartesian();
+	if (m_pitch > 89.0f)
+	{
+		m_pitch = 89.0f;
+	}
+	else if (m_pitch < -89.0f)
+	{
+		m_pitch = -89.0f;
+	}
 
 	Orthonormalization();
 }
@@ -32,6 +43,7 @@ void Camera::Move(int front, int right, float alpha)
 	{
 		// right-handed coordinate
 		Vec3f direction = m_n * -1.0f;
+		
 		direction.normalize();
 		m_eye += direction * m_speed * alpha * (float)front;
 		m_at += direction * m_speed * alpha * (float)front;
@@ -75,6 +87,7 @@ Vec3f Camera::GetFront() const
 {
 	return m_n;
 }
+
 
 float Camera::GetAspect() const
 {

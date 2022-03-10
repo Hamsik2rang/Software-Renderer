@@ -1,14 +1,15 @@
 #pragma once
 
-constexpr float PI{ 3.141592f };
+const float PI = std::acosf(-1);
 
-float DegreeToRadian(float degree)
+inline float DegreeToRadian(float degree)
 {
 	// 180' = pi radian
-	return PI * degree / 180.0f;
+	return degree * (PI / 180.0f);
 }
 
-float RadianToDegree(float radian)
+inline float RadianToDegree(float radian)
 {
-	return radian / PI * 180.0f;
+	return radian * (180.0f / PI);
 }
+

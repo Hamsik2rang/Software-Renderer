@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "../Math/Math.hpp"
+#include "../Math/Interpolate.hpp"
 
 Renderer::Renderer(HWND hWnd)
 	:m_hWnd(hWnd)
@@ -52,9 +53,9 @@ Renderer::~Renderer()
 	}
 }
 
+// 좌하단을 원점으로 렌더링했을 때 버퍼를 뒤집어 일반적인 Viewport 렌더로 변경해주는 함수
 void Renderer::FilpBuffer()
 {
-	//TODO: Implement this.
 	int widthSize = m_width * 4;
 	for (uint32_t row = 0; row < m_height / 2; row++)
 	{
@@ -86,55 +87,34 @@ void Renderer::Render()
 	DrawScene();
 }
 
-
 void Renderer::VertexShading()
 {
+	static int count = 240;
 	/// Vertex Shading
 	/// Carry out vertex transformation.
 	/// transform each local objects to objects which is in clip space.
 	/// transformation procedure:
 	/// Local space -> world space -> camera space(view space) -> clip space
-
 	for (auto& v : m_pRenderObjects)
 	{
-		Model* m = new Model;
+		float alpha = m_deltaTime > FPS ? 1.0f : m_deltaTime / FPS;
+		RenderObject* m = new RenderObject;
+
+		// 1. Get Model Matrix which transform Local Space to World Space
+		Mat4f model = Model(m);
+		// 2. Get View Matrix which transform World space to Camera Space
+		Mat4f view = LookAt(m_pCamera->GetEye(), m_pCamera->GetEye() - m_pCamera->GetFront(), {0.0f, 1.0f, 0.0f});
+		// 3. Get Projection Matrix which transform Camera Space to Clip Space
+		Mat4f projection = Projection(m_pCamera->GetFovY(), m_pCamera->GetAspect(), m_pCamera->GetNear(), m_pCamera->GetFar());
+
 		for (int i = 0; i < v->m_vertices.size(); i++)
 		{
 			auto affine = v->m_vertices[i];
-			// 1. Local Space to World Space(world/model transformation)
-			Mat4f model = GetTransform(v->m_position.x, v->m_position.y, v->m_position.z)
-				* GetRotate(v->m_rotation.x, v->m_rotation.y, v->m_rotation.z)
-				* GetScale(v->m_scale.x, v->m_scale.y, v->m_scale.z);
+			affine = projection * view * model * affine;
 
-			affine = model * affine;
-
-			// 2. World Space to Camera Space(view transformation)
-			Vec3f cameraPos = m_pCamera->GetEye();
-			Vec3f cameraRight = m_pCamera->GetRight();
-			Vec3f cameraUp = m_pCamera->GetUp();
-			Vec3f cameraFront = m_pCamera->GetFront();	// !Notice: actually, camerafront is BACK direction vector of camera.
-
-			Mat4f view = Mat4f(
-				{ cameraRight.x, cameraRight.y, cameraRight.z, 0.0f },
-				{ cameraUp.x , cameraUp.y, cameraUp.z, 0.0f },
-				{ cameraFront.x, cameraFront.y, cameraFront.z, 0.0f },
-				{ 0.0f, 0.0f, 0.0f, 1.0f })
-				* GetTransform(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-
-			affine = view * affine;
-
-			// 3. Camera Space to Clip Space(projection transformation)
-			Mat4f projection(
-				Vec4f(1.0f / (m_pCamera->GetAspect() * std::tan(DegreeToRadian(m_pCamera->GetFovY() / 2))), 0.0f, 0.0f, 0.0f),
-				Vec4f(0.0f, 1.0f / std::tan(DegreeToRadian(m_pCamera->GetFovY() / 2)), 0.0f, 0.0f),
-				Vec4f(0.0f, 0.0f, m_pCamera->GetFar() / (m_pCamera->GetFar() - m_pCamera->GetNear()), m_pCamera->GetNear() * m_pCamera->GetFar() / (m_pCamera->GetFar() - m_pCamera->GetNear())),
-				Vec4f(0.0f, 0.0f, -1.0f, 0.0f));
-
-			affine = projection * affine;
 			// Rasterizer 단계를 위한 좌표계 변경(right-hand -> left-hand)
 			// 정점 재정렬도 수행해야 하지만 현재 정점 순서를 신경쓰고 있지 않으므로 제외함.
 			affine.z *= -1.0f;
-
 			m->m_vertices.push_back(affine);
 		}
 		m_pRasterizerQueue.push_back(m);
@@ -234,7 +214,7 @@ void Renderer::OutputMerging()
 
 }
 
-void Renderer::AddModel(Model* model)
+void Renderer::AddModel(RenderObject* model)
 {
 	m_pRenderObjects.push_back(model);
 }
@@ -467,3 +447,4 @@ void Renderer::UpdateWindowSize()
 {
 	// TODO: Implement this.
 }
+

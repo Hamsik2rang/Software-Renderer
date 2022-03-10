@@ -51,7 +51,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     g_pRenderer = new Renderer(g_hWnd);
 
-    Model* testModel = new Model;
+    RenderObject* testModel = new RenderObject;
     testModel->Load("./TestModel.obj");
     g_pRenderer->AddModel(testModel);
     // Main Loop

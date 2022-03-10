@@ -1,8 +1,7 @@
 #pragma once
 
 #include "../Math/Vector.hpp"
-#include "../Math/Matrix.hpp"
-#include "../Utility/Timer.hpp"
+#include "../Math/Math.hpp"
 
 #include <wtypes.h>
 #include <cmath>
@@ -12,8 +11,8 @@ class Camera
 {
 private:
 	Vec3f m_worldUp = { 0.0f, 1.0f, 0.0f };	// Actually it is const.
-	Vec3f m_eye = { 0.0f, 1.0f, 3.0f };
-	Vec3f m_at = { 0.0f, 0.0f, -1.0f };
+	Vec3f m_eye = { 0.0f, 1.0f, -3.0f };
+	Vec3f m_at = { 0.0f, 0.0f, 0.0f };
 
 	// Basis of camera space
 	Vec3f m_u;
@@ -22,14 +21,18 @@ private:
 
 	float m_fovY = 45.0f;
 	float m_aspect = 16.0f / 9.0f;
-	float m_near = 1.0f;
+	float m_near = 1.5f;
 	float m_far = 100.0f;
 
+
 	const float m_speed = 0.05f;
-	const float m_rotateSensitivity = 0.007f;
+	const float m_rotateSensitivity = 0.01f;
 
 	void Orthonormalization();
 public:
+	float m_pitch = 0.0f;
+	float m_yaw = -90.0f;
+	Vec3f camRotation = { 0.0f, 0.0f, 0.0f };
 	Camera();
 
 	void Rotate(float xOffset, float yOffset, float alpha);

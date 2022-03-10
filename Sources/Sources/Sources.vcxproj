@@ -149,7 +149,7 @@
     <ClInclude Include="Core\Utility\Timer.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Core\Renderer\Renderer.h" />
-    <ClInclude Include="Core\Drawable\Model.h" />
+    <ClInclude Include="Core\Drawable\RenderObject.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="targetver.h" />
@@ -160,7 +160,7 @@
     <ClCompile Include="Core\Renderer\DDraw.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Core\Renderer\Renderer.cpp" />
-    <ClCompile Include="Core\Drawable\Model.cpp" />
+    <ClCompile Include="Core\Drawable\RenderObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Sources.rc" />
