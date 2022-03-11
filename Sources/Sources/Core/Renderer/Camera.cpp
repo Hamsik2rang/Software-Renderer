@@ -21,8 +21,8 @@ Camera::Camera()
 
 void Camera::Rotate(float xOffset, float yOffset, float alpha)
 {
-	m_pitch += xOffset * m_rotateSensitivity;
-	m_yaw -= yOffset * m_rotateSensitivity;
+	m_pitch += yOffset * m_rotateSensitivity;
+	m_yaw -= xOffset * m_rotateSensitivity;
 
 	if (m_pitch > 89.0f)
 	{

@@ -11,7 +11,7 @@ class Camera
 {
 private:
 	Vec3f m_worldUp = { 0.0f, 1.0f, 0.0f };	// Actually it is const.
-	Vec3f m_eye = { 0.0f, 1.0f, -3.0f };
+	Vec3f m_eye = { 0.0f, 4.0f, -9.0f };
 
 	// Basis of camera space
 	Vec3f m_u;
@@ -29,7 +29,7 @@ private:
 
 	void Orthonormalization();
 public:
-	float m_pitch = 0.0f;
+	float m_pitch = 25.0f;
 	float m_yaw = 180.0f;
 	Vec3f camRotation = { 0.0f, 0.0f, 0.0f };
 	Camera();

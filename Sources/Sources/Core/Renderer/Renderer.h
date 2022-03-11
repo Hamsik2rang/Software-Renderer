@@ -6,6 +6,8 @@
 #include "./Camera.h"
 #include "../Utility/Timer.hpp"
 #include "../Drawable/RenderObject.h"
+#include "../Utility/InputManager.h"
+#include "../../Dependencies/stb_image.h"
 
 #include <iostream>
 #include <vector>
@@ -24,6 +26,7 @@ private:
 	HWND m_hWnd;
 	DDraw* m_pDDraw;
 	Camera* m_pCamera;
+	InputManager* m_pInputManager;
 
 	char* m_pRenderBuffer;
 	char* m_pSwapBuffer;
@@ -40,19 +43,6 @@ private:
 	std::vector<RenderObject*> m_pRasterizerQueue;
 	std::vector<RenderObject*> m_pFragmentQueue;
 	std::vector<RenderObject*> m_pOutputQueue;
-
-	bool m_isKeyDownForward;
-	bool m_isKeyDownBack;
-	bool m_isKeyDownRight;
-	bool m_isKeyDownLeft;
-	bool m_isKeyDownUp;
-	bool m_isKeyDownDown;
-
-	int m_cursorDeltaXPos;
-	int m_cursorDeltaYPos;
-
-	unsigned int m_cursorLastXPos;
-	unsigned int m_cursorLastYPos;
 
 	void FilpBuffer();
 	void SetPixel(int x, int y, const Color& color);
@@ -81,10 +71,6 @@ public:
 	void Line(Vec2i v0, Vec2i v1, const Color& color);
 	void Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color);
 	void GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color0, const Color& color1, const Color& color2);
-
-	void OnKeyDown(WPARAM wParam);
-	void OnKeyUP(WPARAM wParam);
-	void OnMouseMove();
 
 	void MoveCamera();
 	void RotateCamera();

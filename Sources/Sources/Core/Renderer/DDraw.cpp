@@ -282,11 +282,6 @@ void DDraw::UpdateWindowPos()
 	::ClientToScreen(m_hWnd, (POINT*)&m_rcView.right);
 }
 
-void DDraw::SetCursorToCenter()
-{
-	::SetCursorPos(m_rcView.left + m_width / 2, m_rcView.top + m_height / 2);
-}
-
 void DDraw::CleanUp()
 {
 	if (m_pDDClipper)

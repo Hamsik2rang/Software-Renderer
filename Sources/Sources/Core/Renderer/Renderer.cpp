@@ -21,10 +21,9 @@ Renderer::Renderer(HWND hWnd)
 	m_pCamera->SetAspect(m_width, m_height);
 	m_pCamera->SetFov(45.0f);
 
-	POINT cursorPos;
-	::GetCursorPos(&cursorPos);
-	m_cursorLastXPos = cursorPos.x;
-	m_cursorLastYPos = cursorPos.y;
+	m_pInputManager = InputManager::GetInstance();
+	m_pInputManager->SetScreenSize(m_width, m_height);
+	m_pInputManager->SetCursorToCenter();
 
 	memset(m_pRenderBuffer, BACKGROUND_COLOR, m_width * m_height * 4);
 
@@ -234,7 +233,7 @@ void Renderer::DrawScene()
 				Vec2i v0{ (int)v->m_vertices[i].x, (int)v->m_vertices[i].y };
 				Vec2i v1{ (int)v->m_vertices[i + 1].x, (int)v->m_vertices[i + 1].y };
 
-				Line(v0, v1, Color(255, 255, 255, 255));
+				Line(v0, v1, Color(255, 0, 255, 0));
 			}
 		}
 		else if (v->m_stride == 3)
@@ -245,7 +244,7 @@ void Renderer::DrawScene()
 				Vec3f v1 = v->m_vertices[v->m_indices[1][i].vertex].AffineToCartesian();
 				Vec3f v2 = v->m_vertices[v->m_indices[2][i].vertex].AffineToCartesian();
 				
-				Triangle(v0, v1, v2, Color(0,208,255,0));
+				Triangle(v0, v1, v2, Color(255, 0, 255, 0));
 			}
 		}
 	}
@@ -350,70 +349,6 @@ void Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color
 	}
 }
 
-void Renderer::OnKeyDown(WPARAM wParam)
-{
-	if (wParam == 'W')
-	{
-		m_isKeyDownForward = true;
-	}
-	if (wParam == 'S')
-	{
-		m_isKeyDownBack = true;
-	}
-	if (wParam == 'A')
-	{
-		m_isKeyDownLeft = true;
-	}
-	if (wParam == 'D')
-	{
-		m_isKeyDownRight = true;
-	}
-	if (wParam == 'Q')
-	{
-		m_isKeyDownUp = true;
-	}
-	if (wParam == 'E')
-	{
-		m_isKeyDownDown = true;
-	}
-}
-
-void Renderer::OnKeyUP(WPARAM wParam)
-{
-	if (wParam == 'W')
-	{
-		m_isKeyDownForward = false;
-	}
-	if (wParam == 'S')
-	{
-		m_isKeyDownBack = false;
-	}
-	if (wParam == 'A')
-	{
-		m_isKeyDownLeft = false;
-	}
-	if (wParam == 'D')
-	{
-		m_isKeyDownRight = false;
-	}
-	if (wParam == 'Q')
-	{
-		m_isKeyDownUp = false;
-	}
-	if (wParam == 'E')
-	{
-		m_isKeyDownDown = false;
-	}
-}
-
-void Renderer::OnMouseMove()
-{
-	POINT cursorPos;
-	::GetCursorPos(&cursorPos);
-	m_cursorDeltaXPos += cursorPos.x - m_cursorLastXPos;
-	m_cursorDeltaYPos += cursorPos.y - m_cursorLastYPos;
-}
-
 void Renderer::MoveCamera()
 {
 	float alpha = 1.0f;
@@ -422,34 +357,35 @@ void Renderer::MoveCamera()
 		alpha *= m_deltaTime / FPS;
 	}
 
-	int vertical = 0;
-	int horizontal = 0;
+	int front = 0;
+	int right = 0;
 	int up = 0;
-	if (m_isKeyDownForward)
+
+	if (m_pInputManager->IsPressed(eInput::W))
 	{
-		vertical += 1;
+		front++;
 	}
-	if (m_isKeyDownBack)
+	if (m_pInputManager->IsPressed(eInput::S))
 	{
-		vertical -= 1;
+		front--;
 	}
-	if (m_isKeyDownLeft)
+	if (m_pInputManager->IsPressed(eInput::A))
 	{
-		horizontal -= 1;
+		right--;
 	}
-	if (m_isKeyDownRight)
+	if (m_pInputManager->IsPressed(eInput::D))
 	{
-		horizontal += 1;
+		right++;
 	}
-	if (m_isKeyDownUp)
+	if (m_pInputManager->IsPressed(eInput::Q))
 	{
-		up += 1;
+		up++;
 	}
-	if (m_isKeyDownDown)
+	if (m_pInputManager->IsPressed(eInput::E))
 	{
-		up -= 1;
+		up--;
 	}
-	m_pCamera->Move(vertical, horizontal,up,  alpha);
+	m_pCamera->Move(front, right, up, alpha);
 }
 
 void Renderer::RotateCamera()
@@ -459,10 +395,9 @@ void Renderer::RotateCamera()
 	{
 		alpha *= m_deltaTime / FPS;
 	}
-	m_pCamera->Rotate((float)m_cursorDeltaYPos, (float)m_cursorDeltaXPos, alpha);
-	m_pDDraw->SetCursorToCenter();
-	m_cursorDeltaXPos = 0;
-	m_cursorDeltaYPos = 0;
+	POINT delta = m_pInputManager->GetMouseDelta();
+	m_pCamera->Rotate((float)delta.x, (float)delta.y, alpha);
+	m_pInputManager->SetCursorToCenter();
 }
 
 void Renderer::UpdateWindowPos()

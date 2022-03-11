@@ -44,7 +44,6 @@ public:
 	void Clear();
 	void UpdateWindowSize();
 	void UpdateWindowPos();
-	void SetCursorToCenter();
 	void CleanUp();
 
 	// getter, setter

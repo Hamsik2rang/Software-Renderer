@@ -7,6 +7,7 @@
 #include "framework.h"
 #include "Main.h"
 #include "./Core/Renderer/Renderer.h"
+#include "./Core/Utility/InputManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -166,17 +167,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_KEYDOWN:
         {
-            g_pRenderer->OnKeyDown(wParam);
+            InputManager::GetInstance()->KeyPress(wParam);
         }
         break;
     case WM_KEYUP:
         {
-            g_pRenderer->OnKeyUP(wParam);
+            InputManager::GetInstance()->KeyRelease(wParam);
         }
         break;
     case WM_MOUSEMOVE:
         {
-            g_pRenderer->OnMouseMove();
+            InputManager::GetInstance()->MouseMove();
         }
         break;
     case WM_MOVE:
