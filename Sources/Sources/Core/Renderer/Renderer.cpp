@@ -89,7 +89,6 @@ void Renderer::Render()
 
 void Renderer::VertexShading()
 {
-	static int count = 240;
 	/// Vertex Shading
 	/// Carry out vertex transformation.
 	/// transform each local objects to objects which is in clip space.
@@ -100,6 +99,7 @@ void Renderer::VertexShading()
 		float alpha = m_deltaTime > FPS ? 1.0f : m_deltaTime / FPS;
 		RenderObject* m = new RenderObject;
 
+		////////////////////
 		// 1. Get Model Matrix which transform Local Space to World Space
 		Mat4f model = Model(m);
 		// 2. Get View Matrix which transform World space to Camera Space
@@ -211,7 +211,6 @@ void Renderer::OutputMerging()
 	// 3. z-culling(If you can)
 
 	// TODO: Implement this
-
 }
 
 void Renderer::AddModel(RenderObject* model)
@@ -243,7 +242,7 @@ void Renderer::DrawScene()
 				Vec3f v0 = v->m_vertices[i].AffineToCartesian();
 				Vec3f v1 = v->m_vertices[i + 1].AffineToCartesian();
 				Vec3f v2 = v->m_vertices[i + 2].AffineToCartesian();
-				Triangle(v0, v1, v2, Color(255, 208, 0, 0));
+				Triangle(v0, v1, v2, Color(0,208,255,0));
 			}
 		}
 	}
@@ -352,11 +351,11 @@ void Renderer::OnKeyDown(WPARAM wParam)
 {
 	if (wParam == 'W')
 	{
-		m_isKeyDownUp = true;
+		m_isKeyDownForward = true;
 	}
 	if (wParam == 'S')
 	{
-		m_isKeyDownDown = true;
+		m_isKeyDownBack = true;
 	}
 	if (wParam == 'A')
 	{
@@ -366,17 +365,25 @@ void Renderer::OnKeyDown(WPARAM wParam)
 	{
 		m_isKeyDownRight = true;
 	}
+	if (wParam == 'Q')
+	{
+		m_isKeyDownUp = true;
+	}
+	if (wParam == 'E')
+	{
+		m_isKeyDownDown = true;
+	}
 }
 
 void Renderer::OnKeyUP(WPARAM wParam)
 {
 	if (wParam == 'W')
 	{
-		m_isKeyDownUp = false;
+		m_isKeyDownForward = false;
 	}
 	if (wParam == 'S')
 	{
-		m_isKeyDownDown = false;
+		m_isKeyDownBack = false;
 	}
 	if (wParam == 'A')
 	{
@@ -385,6 +392,14 @@ void Renderer::OnKeyUP(WPARAM wParam)
 	if (wParam == 'D')
 	{
 		m_isKeyDownRight = false;
+	}
+	if (wParam == 'Q')
+	{
+		m_isKeyDownUp = false;
+	}
+	if (wParam == 'E')
+	{
+		m_isKeyDownDown = false;
 	}
 }
 
@@ -406,11 +421,12 @@ void Renderer::MoveCamera()
 
 	int vertical = 0;
 	int horizontal = 0;
-	if (m_isKeyDownUp)
+	int up = 0;
+	if (m_isKeyDownForward)
 	{
 		vertical += 1;
 	}
-	if (m_isKeyDownDown)
+	if (m_isKeyDownBack)
 	{
 		vertical -= 1;
 	}
@@ -422,7 +438,15 @@ void Renderer::MoveCamera()
 	{
 		horizontal += 1;
 	}
-	m_pCamera->Move(vertical, horizontal, alpha);
+	if (m_isKeyDownUp)
+	{
+		up += 1;
+	}
+	if (m_isKeyDownDown)
+	{
+		up -= 1;
+	}
+	m_pCamera->Move(vertical, horizontal,up,  alpha);
 }
 
 void Renderer::RotateCamera()

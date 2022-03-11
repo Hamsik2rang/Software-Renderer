@@ -41,10 +41,12 @@ private:
 	std::vector<RenderObject*> m_pFragmentQueue;
 	std::vector<RenderObject*> m_pOutputQueue;
 
-	bool m_isKeyDownUp;
-	bool m_isKeyDownDown;
+	bool m_isKeyDownForward;
+	bool m_isKeyDownBack;
 	bool m_isKeyDownRight;
 	bool m_isKeyDownLeft;
+	bool m_isKeyDownUp;
+	bool m_isKeyDownDown;
 
 	int m_cursorDeltaXPos;
 	int m_cursorDeltaYPos;

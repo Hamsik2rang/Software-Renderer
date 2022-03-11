@@ -1,14 +1,13 @@
 #include "Camera.h"
-#include "../Math/Math.hpp"
 #include "../Math/Matrix.hpp"
 
 // Re-calculate Camera basis(n, u, v) when it rotate
 void Camera::Orthonormalization()
 {
 	Vec3f front;
-	front.x = std::cosf(DegreeToRadian(m_yaw)) * std::cosf(DegreeToRadian(m_pitch));
+	front.x = std::sinf(DegreeToRadian(m_yaw)) * std::cosf(DegreeToRadian(m_pitch));
 	front.y = std::sinf(DegreeToRadian(m_pitch));
-	front.z = std::sinf(DegreeToRadian(m_yaw)) * std::cosf(DegreeToRadian(m_pitch));
+	front.z = std::cosf(DegreeToRadian(m_yaw)) * std::cosf(DegreeToRadian(m_pitch));
 
 	m_n = front.normalize();
 	m_u = (m_worldUp ^ m_n).normalize();
@@ -23,7 +22,7 @@ Camera::Camera()
 void Camera::Rotate(float xOffset, float yOffset, float alpha)
 {
 	m_pitch += xOffset * m_rotateSensitivity;
-	m_yaw += yOffset * m_rotateSensitivity;
+	m_yaw -= yOffset * m_rotateSensitivity;
 
 	if (m_pitch > 89.0f)
 	{
@@ -37,35 +36,15 @@ void Camera::Rotate(float xOffset, float yOffset, float alpha)
 	Orthonormalization();
 }
 
-void Camera::Move(int front, int right, float alpha)
+void Camera::Move(int front, int right, int up, float alpha)
 {
-	if (front)
-	{
-		// right-handed coordinate
-		Vec3f direction = m_n * -1.0f;
-		
-		direction.normalize();
-		m_eye += direction * m_speed * alpha * (float)front;
-		m_at += direction * m_speed * alpha * (float)front;
-	}
-	if (right)
-	{
-		Vec3f direction = m_u;
-		direction.normalize();
-		m_eye += direction * m_speed * alpha * (float)right;
-		m_at += direction * m_speed * alpha * (float)right;
-	}
+	m_eye += (-m_n.normalize() * (float)front + m_u.normalize() * (float)right + m_v.normalize() * (float)up) * m_speed * alpha;
 }
 
 // getter, setter
 Vec3f Camera::GetEye() const
 {
 	return m_eye;
-}
-
-Vec3f Camera::GetAt() const
-{
-	return m_at;
 }
 
 Vec3f Camera::GetWorldUp() const
@@ -87,7 +66,6 @@ Vec3f Camera::GetFront() const
 {
 	return m_n;
 }
-
 
 float Camera::GetAspect() const
 {
@@ -122,4 +100,9 @@ void Camera::SetAspect(DWORD width, DWORD height)
 void Camera::SetFov(float fovY)
 {
 	m_fovY = fovY;
+}
+
+void Camera::SetEye(Vec3f pos)
+{
+	m_eye = pos;
 }

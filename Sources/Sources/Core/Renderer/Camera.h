@@ -12,7 +12,6 @@ class Camera
 private:
 	Vec3f m_worldUp = { 0.0f, 1.0f, 0.0f };	// Actually it is const.
 	Vec3f m_eye = { 0.0f, 1.0f, -3.0f };
-	Vec3f m_at = { 0.0f, 0.0f, 0.0f };
 
 	// Basis of camera space
 	Vec3f m_u;
@@ -31,16 +30,15 @@ private:
 	void Orthonormalization();
 public:
 	float m_pitch = 0.0f;
-	float m_yaw = -90.0f;
+	float m_yaw = 180.0f;
 	Vec3f camRotation = { 0.0f, 0.0f, 0.0f };
 	Camera();
 
 	void Rotate(float xOffset, float yOffset, float alpha);
-	void Move(int front, int right, float alpha);
+	void Move(int front, int right, int up, float alpha);
 
 	// getter, setter
 	Vec3f GetEye() const;
-	Vec3f GetAt() const;
 	Vec3f GetWorldUp() const;
 
 	Vec3f GetRight() const;
@@ -55,4 +53,5 @@ public:
 	void SetAspect(float aspect);
 	void SetAspect(DWORD width, DWORD height);
 	void SetFov(float fovY);
+	void SetEye(Vec3f pos);
 };
