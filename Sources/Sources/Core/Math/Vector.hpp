@@ -77,7 +77,7 @@ public:
 	{
 		struct { T x; T y; T z; };
 		struct { T r; T g; T b; };
-		struct { T vertex; T uv; T norm; };
+		struct { T vertex; T texture; T normal; };
 		T elem[3];
 	};
 
@@ -117,9 +117,28 @@ public:
 	{
 		return Vector3D(x * scalar, y * scalar, z * scalar);
 	}
+
+	Vector3D<T>& operator*=(const T& scalar)
+	{
+		x *= scalar;
+		y *= scalar;
+		z *= scalar;
+
+		return *this;
+	}
+
 	Vector3D<T> operator/(const T& scalar) const
 	{
 		return Vector3D(x / scalar, y / scalar, z / scalar);
+	}
+
+	Vector3D<T>& operator/=(const T& scalar)
+	{
+		x /= scalar;
+		y /= scalar;
+		z /= scalar;
+
+		return *this;
 	}
 
 	Vector3D<T> operator^(const Vector3D<T>& v) const
@@ -147,10 +166,7 @@ public:
 
 	Vector3D<T>& normalize()
 	{
-		float denom = length();
-		x /= denom;
-		y /= denom;
-		z /= denom;
+		*this /= length();
 
 		return *this;
 	}

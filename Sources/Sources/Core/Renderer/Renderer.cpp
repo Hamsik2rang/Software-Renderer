@@ -2,6 +2,8 @@
 #include "../Math/Math.hpp"
 #include "../Math/Interpolate.hpp"
 
+#include <cstring>
+
 Renderer::Renderer(HWND hWnd)
 	:m_hWnd(hWnd)
 {
@@ -94,11 +96,13 @@ void Renderer::VertexShading()
 	/// transform each local objects to objects which is in clip space.
 	/// transformation procedure:
 	/// Local space -> world space -> camera space(view space) -> clip space
-	for (auto& v : m_pRenderObjects)
+	
+	for (const auto& v : m_pRenderObjects)
 	{
-		float alpha = m_deltaTime > FPS ? 1.0f : m_deltaTime / FPS;
 		RenderObject* m = new RenderObject;
-
+		//memcpy(m, v, sizeof(*v));
+		*m = *v;
+		
 		////////////////////
 		// 1. Get Model Matrix which transform Local Space to World Space
 		Mat4f model = Model(m);
@@ -107,15 +111,15 @@ void Renderer::VertexShading()
 		// 3. Get Projection Matrix which transform Camera Space to Clip Space
 		Mat4f projection = Projection(m_pCamera->GetFovY(), m_pCamera->GetAspect(), m_pCamera->GetNear(), m_pCamera->GetFar());
 
-		for (int i = 0; i < v->m_vertices.size(); i++)
+		for (int i = 0; i < m->m_vertices.size(); i++)
 		{
-			auto affine = v->m_vertices[i];
+			auto affine = m->m_vertices[i];
 			affine = projection * view * model * affine;
 
 			// Rasterizer 단계를 위한 좌표계 변경(right-hand -> left-hand)
 			// 정점 재정렬도 수행해야 하지만 현재 정점 순서를 신경쓰고 있지 않으므로 제외함.
 			affine.z *= -1.0f;
-			m->m_vertices.push_back(affine);
+			m->m_vertices[i] = affine;
 		}
 		m_pRasterizerQueue.push_back(m);
 	}
@@ -123,7 +127,6 @@ void Renderer::VertexShading()
 
 void Renderer::Rasterizer()
 {
-
 	/// Rasterization
 	/// process about interaction of vertices and view frustum(or view volumes)
 	/// Carry out these processes.
@@ -194,7 +197,6 @@ void Renderer::FragmentShading()
 	// 1. Texturing
 
 	// TODO: Implement this
-	// NOTE: For Test Code
 	for (auto& v : m_pFragmentQueue)
 	{
 		m_pOutputQueue.push_back(v);
@@ -237,11 +239,12 @@ void Renderer::DrawScene()
 		}
 		else if (v->m_stride == 3)
 		{
-			for (int i = 0; i < v->m_vertices.size() / v->m_stride; i++)
+			for (int i = 0; i < v->m_indices[0].size(); i++)
 			{
-				Vec3f v0 = v->m_vertices[i].AffineToCartesian();
-				Vec3f v1 = v->m_vertices[i + 1].AffineToCartesian();
-				Vec3f v2 = v->m_vertices[i + 2].AffineToCartesian();
+				Vec3f v0 = v->m_vertices[v->m_indices[0][i].vertex].AffineToCartesian();
+				Vec3f v1 = v->m_vertices[v->m_indices[1][i].vertex].AffineToCartesian();
+				Vec3f v2 = v->m_vertices[v->m_indices[2][i].vertex].AffineToCartesian();
+				
 				Triangle(v0, v1, v2, Color(0,208,255,0));
 			}
 		}

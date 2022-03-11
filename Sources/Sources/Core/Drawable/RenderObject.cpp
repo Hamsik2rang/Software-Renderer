@@ -52,9 +52,9 @@ bool RenderObject::Load(std::string filename)
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				uint32_t x, y, z;
-				ss >> x >> delim >> y >> delim >> z;
-				m_indices[i].push_back({ x,y,z });
+				uint32_t v, t, n;
+				ss >> v >> delim >> t >> delim >> n;
+				m_indices[i].push_back({ v - 1,t - 1,n - 1 });
 			}
 		}
 		else

@@ -7,11 +7,6 @@
 class Drawable
 {
 public:
-	// Constant
-	static const int VERTEX = 0;
-	static const int TEXTURE = 1;
-	static const int NORMAL = 2;
-
 	std::vector<Vec4f> m_vertices;
 	std::vector<Vec4f> m_textures;
 	std::vector<Vec4f> m_normals;
