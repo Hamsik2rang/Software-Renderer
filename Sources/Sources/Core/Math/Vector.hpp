@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <iostream>
 #include <cmath>
 #include <cassert>
 
@@ -137,6 +137,9 @@ public:
 		return elem[index];
 	}
 
+	template <typename T>
+	friend std::ostream& operator<<(std::ostream& os, const Vector3D<T>& v);
+
 	float length() const
 	{
 		return (float)std::sqrt(x * x + y * y + z * z);
@@ -144,9 +147,10 @@ public:
 
 	Vector3D<T>& normalize()
 	{
-		x /= length();
-		y /= length();
-		z /= length();
+		float denom = length();
+		x /= denom;
+		y /= denom;
+		z /= denom;
 
 		return *this;
 	}
@@ -164,6 +168,13 @@ public:
 		return ret;
 	}
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Vector3D<T>& v)
+{
+	os << "[" << v.x << ", " << v.y << ", " << v.z << "]";
+	return os;
+}
 
 template <typename T>
 class Vector4D
@@ -260,6 +271,7 @@ public:
 	{
 		return (float)std::sqrt(x * x + y * y + z * z + w * w);
 	}
+
 	Vector4D<T>& normalize()
 	{
 		*this /= length();
