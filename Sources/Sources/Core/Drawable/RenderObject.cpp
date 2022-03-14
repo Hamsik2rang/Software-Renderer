@@ -17,49 +17,54 @@ bool RenderObject::Load(std::string filename)
 	{
 		return false;
 	}
-	std::stringstream ss;
-	ss << ifs.rdbuf();
 
-	while (!ss.eof())
+	while (!ifs.eof())
 	{
-		std::string type;
-		ss >> type;
-
+		std::string line;
+		std::getline(ifs, line);
+		std::string type = line.substr(0, 2);
+		std::istringstream iss(line);
 		char delim;
 		// vertex
-		if (type == "v")
+		if (type == "v ")
 		{
+			std::string type;
 			float vx, vy, vz;
-			ss >> vx >> delim >> vy >> delim >> vz;
+			iss >> type >> vx >> delim >> vy >> delim >> vz;
 			m_vertices.push_back({ vx, vy, vz });
 		}
 		// vertex texture
 		else if (type == "vt")
 		{
+			std::string type;
 			float tx, ty, tz;
-			ss >> tx >> delim >> ty >> delim >> tz;
+			iss >> type >> tx >> delim >> ty >> delim >> tz;
 			m_textures.push_back({ tx, ty, tz });
 		}
 		// vertex normal
 		else if (type == "vn")
 		{
+			std::string type;
 			float nx, ny, nz;
-			ss >> nx >> delim >> ny >> delim >> nz;
+			iss >> type >> nx >> delim >> ny >> delim >> nz;
 			m_normals.push_back({ nx, ny, nz });
 		}
 		// face(index)
-		else if (type == "f")
+		else if (type == "f ")
 		{
+			std::string type;
+			iss >> type;
 			for (int i = 0; i < 3; i++)
 			{
 				uint32_t v, t, n;
-				ss >> v >> delim >> t >> delim >> n;
+				iss >> v >> delim >> t >> delim >> n;
 				m_indices[i].push_back({ v - 1,t - 1,n - 1 });
 			}
 		}
 		else
 		{
 			// e.g. '#' here
+			std::cout << line << std::endl;
 			continue;
 		}
 	}
