@@ -161,7 +161,7 @@ void Renderer::Rasterizer()
 			// 1. Invert y axis
 			viewport[1][1] = -1.0f;
 
-			// Scale to axis size( (1, 1, 0) to (width, height, 1) )
+			// Scale to axis size - (1, 1, 0) to (width, height, 1)
 			viewport = Mat4f(
 				{ (float)m_width / 2, 0.0f, 0.0f, 0.0f },
 				{ 0.0f, (float)m_height / 2, 0.0f,  0.0f },
@@ -285,9 +285,13 @@ void Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 	for (int x = v0.x; x <= v1.x; x++)
 	{
 		if (steep)
+		{
 			SetPixel(y, x, color);
+		}
 		else
+		{
 			SetPixel(x, y, color);
+		}
 
 		ds += slope;
 		if (ds > 0.5f)
