@@ -21,6 +21,10 @@ Camera::Camera()
 
 void Camera::Rotate(float xOffset, float yOffset, float alpha)
 {
+	if (!m_bCanMove)
+	{
+		return;
+	}
 	m_pitch += yOffset * m_rotateSensitivity;
 	m_yaw -= xOffset * m_rotateSensitivity;
 
@@ -38,6 +42,10 @@ void Camera::Rotate(float xOffset, float yOffset, float alpha)
 
 void Camera::Move(int front, int right, int up, float alpha)
 {
+	if (!m_bCanMove)
+	{
+		return;
+	}
 	m_eye += (-m_n.normalize() * (float)front + m_u.normalize() * (float)right + m_v.normalize() * (float)up) * m_speed * alpha;
 }
 
@@ -105,4 +113,19 @@ void Camera::SetFov(float fovY)
 void Camera::SetEye(Vec3f pos)
 {
 	m_eye = pos;
+}
+
+void Camera::SetIgnoreInput()
+{
+	m_bCanMove = false;
+}
+ 
+void Camera::UnsetIgnoreInput()
+{
+	m_bCanMove = true;
+}
+
+bool Camera::CanMove()
+{
+	return m_bCanMove;
 }

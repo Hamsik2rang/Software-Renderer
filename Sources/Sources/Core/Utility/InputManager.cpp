@@ -4,7 +4,7 @@
 InputManager* InputManager::s_pInstance = nullptr;
 
 InputManager::InputManager()
-	:m_keyMap(0u), m_width(0), m_height(0), m_xDelta(0), m_yDelta(0)
+	:m_keyMap(0lu), m_width(0u), m_height(0u), m_xDelta(0), m_yDelta(0)
 {}
 
 InputManager::~InputManager()
@@ -25,25 +25,36 @@ InputManager* InputManager::GetInstance()
 	return s_pInstance;
 }
 
-uint32_t InputManager::Translate(DWORD wParam)
+uint64_t InputManager::Translate(WPARAM wParam)
 {
 	if (wParam < 'A')
 	{
 		if (wParam >= VK_LEFT && wParam <= VK_DOWN)
 		{
-			return 1u << (wParam - VK_LEFT);
+			return (uint64_t)1u << (wParam - VK_LEFT);
 		}
 		//TODO: Implement this.
 	}
-	else
+	else if (wParam >= 'A' && wParam <= 'Z')
 	{
-		return 1u << (wParam - 'A' + 4);
+		return (uint64_t)1u << (wParam - 'A' + 4);
 	}
+	return 0;
 }
 
 bool InputManager::IsPressed(eInput input)
 {
-	return m_keyMap & 1 << (uint32_t)input;
+	return m_keyMap & (uint64_t)1 << (uint64_t)input;
+}
+
+void InputManager::ShowCursor()
+{
+	::ShowCursor(true);
+}
+
+void InputManager::HideCursor()
+{
+	::ShowCursor(false);
 }
 
 void InputManager::MouseMove()
@@ -65,12 +76,12 @@ POINT InputManager::GetMouseDelta()
 	return delta;
 }
 
-void InputManager::KeyPress(DWORD wParam)
+void InputManager::KeyPress(WPARAM wParam)
 {
 	m_keyMap |= Translate(wParam);
 }
 
-void InputManager::KeyRelease(DWORD wParam)
+void InputManager::KeyRelease(WPARAM wParam)
 {
 	m_keyMap &= ~Translate(wParam);
 }
@@ -84,7 +95,6 @@ void InputManager::SetScreenSize(DWORD width, DWORD height)
 
 void InputManager::SetCursorToCenter()
 {
-	ShowCursor(false);
 	::SetCursorPos(m_width / 2, m_height / 2);
 	m_lastCursorXPos = m_width / 2;
 	m_lastCursorYPos = m_height / 2;

@@ -16,13 +16,15 @@ enum class eInput
 	U,V,W,X,Y,
 	Z,
 	ESCAPE,
+	LMOUSE,
+	RMOUSE,
 };
 
 class InputManager
 {
 private:
 	// For keyboard input
-	uint32_t m_keyMap;
+	uint64_t m_keyMap;
 	// For mouse input
 	int m_xDelta;
 	int m_yDelta;
@@ -34,7 +36,7 @@ private:
 	DWORD m_height;
 
 	InputManager();
-	uint32_t Translate(DWORD wParam);
+	uint64_t Translate(WPARAM wParam);
 	static InputManager* s_pInstance;
 public:
 	static InputManager* GetInstance();
@@ -45,7 +47,10 @@ public:
 	
 	void MouseMove();
 	POINT GetMouseDelta();
-	void KeyPress(DWORD wParam);
-	void KeyRelease(DWORD wParam);
+	void KeyPress(WPARAM wParam);
+	void KeyRelease(WPARAM wParam);
 	bool IsPressed(eInput input);
+
+	void ShowCursor();
+	void HideCursor();
 };

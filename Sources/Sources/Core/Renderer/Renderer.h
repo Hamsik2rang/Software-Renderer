@@ -14,6 +14,8 @@
 #include <queue>
 #include <cmath>
 
+#define DRAWMODE_WIREFRAME
+
 
 class Renderer
 {
@@ -72,6 +74,7 @@ public:
 	void Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color);
 	void GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color0, const Color& color1, const Color& color2);
 
+	void SetCamera(Camera* pCamera);
 	void MoveCamera();
 	void RotateCamera();
 

@@ -10,8 +10,11 @@
 class Camera
 {
 private:
+	const float m_speed = 0.05f;
+	const float m_rotateSensitivity = 0.1f;
+	
 	Vec3f m_worldUp = { 0.0f, 1.0f, 0.0f };	// Actually it is const.
-	Vec3f m_eye = { 0.0f, 4.0f, -9.0f };
+	Vec3f m_eye = { 0.0f,4.0f, -6.0f };
 
 	// Basis of camera space
 	Vec3f m_u;
@@ -23,9 +26,7 @@ private:
 	float m_near = 1.5f;
 	float m_far = 100.0f;
 
-
-	const float m_speed = 0.05f;
-	const float m_rotateSensitivity = 0.1f;
+	bool m_bCanMove = false;
 
 	void Orthonormalization();
 public:
@@ -54,4 +55,8 @@ public:
 	void SetAspect(DWORD width, DWORD height);
 	void SetFov(float fovY);
 	void SetEye(Vec3f pos);
+
+	void SetIgnoreInput();
+	void UnsetIgnoreInput();
+	bool CanMove();
 };

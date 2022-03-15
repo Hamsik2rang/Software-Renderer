@@ -14,7 +14,7 @@
 // Global Variables:
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-HINSTANCE g_hInst;                                // current instance
+HINSTANCE g_hInst;                              // current instance
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -23,6 +23,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 Renderer* g_pRenderer;
+Camera* g_pCamera;
 HWND g_hWnd;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -51,9 +52,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 
     g_pRenderer = new Renderer(g_hWnd);
+    g_pCamera = new Camera;
+    g_pRenderer->SetCamera(g_pCamera);
 
     RenderObject* testModel = new RenderObject;
-    testModel->Load("./TestCube.obj");
+    testModel->Load("./african_head.obj");
     g_pRenderer->AddModel(testModel);
     // Main Loop
     while (true)
@@ -69,6 +72,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         {
             g_pRenderer->Render();
         }
+    }
+
+    if (g_pRenderer)
+    {
+        delete g_pRenderer;
+        g_pRenderer = nullptr;
+    }
+    if (g_pCamera)
+    {
+        delete g_pCamera;
+        g_pCamera = nullptr;
     }
 
     return (int) msg.wParam;
@@ -184,6 +198,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             if(g_pRenderer)
 				g_pRenderer->UpdateWindowPos();
+        }
+        break;
+    case WM_RBUTTONUP:
+        {
+            g_pCamera->SetIgnoreInput();
+            InputManager::GetInstance()->ShowCursor();
+        }
+        break;
+    case WM_RBUTTONDOWN:
+        {
+            g_pCamera->UnsetIgnoreInput();
+            InputManager::GetInstance()->HideCursor();
+            InputManager::GetInstance()->SetCursorToCenter();
         }
         break;
     case WM_SIZE:
