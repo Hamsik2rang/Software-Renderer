@@ -147,6 +147,7 @@
     <ClInclude Include="Core\Renderer\DDraw.h" />
     <ClInclude Include="Core\Drawable\Drawable.h" />
     <ClInclude Include="Core\Utility\InputManager.h" />
+    <ClInclude Include="Core\Utility\Random.hpp" />
     <ClInclude Include="Core\Utility\Timer.hpp" />
     <ClInclude Include="Dependencies\stb_image.h" />
     <ClInclude Include="framework.h" />

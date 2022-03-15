@@ -463,7 +463,7 @@ inline Mat4f Projection(float fovY, float aspect, float nDist, float fDist)
 {
 	Mat4f proj(
 		{ 1.0f / (std::tanf(DegreeToRadian(fovY / 2.0f)) * aspect), 0.0f, 0.0f, 0.0f },
-		{ 0.0f, 1.0f / std::tanf(DegreeToRadian(fovY / 2.0f)),0.0f, 0.0f },
+		{ 0.0f, 1.0f / std::tanf(DegreeToRadian(fovY / 2.0f)), 0.0f, 0.0f },
 		{ 0.0f, 0.0f, fDist / (fDist - nDist), nDist * fDist / (fDist - nDist) },
 		{ 0.0f, 0.0f, -1.0f, 0.0f }
 	);

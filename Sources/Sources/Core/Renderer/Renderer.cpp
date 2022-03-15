@@ -1,7 +1,7 @@
 #include "Renderer.h"
 #include "../Math/Math.hpp"
 #include "../Math/Interpolate.hpp"
-
+#include "../Utility/Random.hpp"
 #include <cstring>
 
 Renderer::Renderer(HWND hWnd)
@@ -15,12 +15,21 @@ Renderer::Renderer(HWND hWnd)
 
 	m_pRenderBuffer = new char[m_width * m_height * 4];
 	m_pSwapBuffer = new char[m_width * 4];
+	m_pZBuffer = new float[m_width * m_height];
 
 	m_pInputManager = InputManager::GetInstance();
 	m_pInputManager->SetScreenSize(m_width, m_height);
 	m_pInputManager->SetCursorToCenter();
 
 	memset(m_pRenderBuffer, BACKGROUND_COLOR, m_width * m_height * 4);
+	// initialize z-buffer
+	for (int i = 0; i < m_height; i++)
+	{
+		for (int j = 0; j < m_width; j++)
+		{
+			m_pZBuffer[i * m_width + j] = 1.0f;
+		}
+	}
 
 	Timer::Elapsed();
 }
@@ -41,6 +50,11 @@ Renderer::~Renderer()
 	{
 		delete[] m_pSwapBuffer;
 		m_pSwapBuffer = nullptr;
+	}
+	if (m_pZBuffer)
+	{
+		delete[] m_pZBuffer;
+		m_pZBuffer = nullptr;
 	}
 }
 
@@ -98,7 +112,7 @@ void Renderer::VertexShading()
 		RenderObject* m = new RenderObject;
 		//memcpy(m, v, sizeof(*v));
 		*m = *v;
-		
+		m->m_scale = { 2.0f, 2.0f, 2.0f };
 		////////////////////
 		// 1. Get Model Matrix which transform Local Space to World Space
 		Mat4f model = Model(m);
@@ -114,7 +128,9 @@ void Renderer::VertexShading()
 
 			// Rasterizer 단계를 위한 좌표계 변경(right-hand -> left-hand)
 			// 정점 재정렬도 수행해야 하지만 현재 정점 순서를 신경쓰고 있지 않으므로 제외함.
+			// 뷰 볼륨 좌표가 (-1 ~ 1, -1 ~ 1, 0 ~ -1) 범위에서 (-1 ~ 1, -1 ~ 1, 0 ~ 1)로 변경됨.
 			affine.z *= -1.0f;
+			
 			m->m_vertices[i] = affine;
 		}
 		m_pRasterizerQueue.push_back(m);
@@ -145,6 +161,7 @@ void Renderer::Rasterizer()
 			affine.y /= affine.w;
 			affine.z /= affine.w;
 			affine.w /= affine.w;
+			std::cout << affine.x << " " << affine.y << " " << affine.z << std::endl;
 
 			// simple clipping using z-distance
 			if (affine.z < 0 || affine.z > 1)
@@ -158,7 +175,7 @@ void Renderer::Rasterizer()
 			// 1. Invert y axis
 			viewport[1][1] = -1.0f;
 
-			// Scale to axis size - (1, 1, 0) to (width, height, 1)
+			// Scale to axis size - (1, 1, 1) to (width, height, 1)
 			viewport = Mat4f(
 				{ (float)m_width / 2, 0.0f, 0.0f, 0.0f },
 				{ 0.0f, (float)m_height / 2, 0.0f,  0.0f },
@@ -185,6 +202,8 @@ void Renderer::Rasterizer()
 	}
 	// TODO: change later
 	m_pRasterizerQueue.clear();
+	std::cout << "\n\n\n\n\n\n\n\n\n\n\n" << std::endl;
+
 }
 
 void Renderer::FragmentShading()
@@ -205,6 +224,14 @@ void Renderer::OutputMerging()
 {
 	// Output Merging
 	// 1. z-buffering
+	// Clear z-Buffer
+	for (int i = 0; i < m_height; i++)
+	{
+		for (int j = 0; j < m_width; j++)
+		{
+			m_pZBuffer[i * m_width + j] = 1.0f;
+		}
+	}
 	// 2. alpha blending
 	// 3. z-culling(If you can)
 
@@ -244,8 +271,9 @@ void Renderer::DrawScene()
 				Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v1.x, (int)v1.y), Color(255, 255, 255, 255));
 				Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v2.x, (int)v2.y), Color(255, 255, 255, 255));
 				Line(Vec2i((int)v1.x, (int)v1.y), Vec2i((int)v2.x, (int)v2.y), Color(255, 255, 255, 255));
-#elif
-				Triangle(v0, v1, v2, Color(255, 255, 255, 0));
+#endif
+#ifndef DRAWMODE_WIREFRAME
+				Triangle(v0, v1, v2, Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0));
 #endif
 			}
 		}
@@ -337,7 +365,12 @@ void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 			Vec3f bc = Barycentric(v0, v1, v2, p);
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
 				continue;
-			SetPixel((int)p.x, (int)p.y, color);
+			p.z = bc.x * v0.z + bc.y * v1.z + bc.z * v2.z;
+			if (m_pZBuffer[((int)p.y * m_width) + (int)p.x] > p.z)
+			{
+				m_pZBuffer[(int)p.y * m_width + (int)p.x] = p.z;
+				SetPixel((int)p.x, (int)p.y, color);
+			}
 		}
 	}
 }
@@ -433,4 +466,3 @@ void Renderer::UpdateWindowSize()
 {
 	// TODO: Implement this.
 }
-

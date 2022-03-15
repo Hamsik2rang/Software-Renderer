@@ -56,7 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     g_pRenderer->SetCamera(g_pCamera);
 
     RenderObject* testModel = new RenderObject;
-    testModel->Load("./african_head.obj");
+    testModel->Load("./TestCube.obj");
     g_pRenderer->AddModel(testModel);
     // Main Loop
     while (true)

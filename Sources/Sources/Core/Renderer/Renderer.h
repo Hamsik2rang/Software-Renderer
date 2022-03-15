@@ -14,8 +14,7 @@
 #include <queue>
 #include <cmath>
 
-#define DRAWMODE_WIREFRAME
-
+#define _DRAWMODE_WIREFRAME
 
 class Renderer
 {
@@ -32,6 +31,7 @@ private:
 
 	char* m_pRenderBuffer;
 	char* m_pSwapBuffer;
+	float* m_pZBuffer;
 
 	uint32_t m_width;
 	uint32_t m_height;
