@@ -32,7 +32,7 @@ float* zBuffer;
 int main(int argc, char** argv)
 {
 	TGAImage image(screenWidth, screenHeight, TGAImage::RGB);
-	Model* model = new Model("./Objects/african_head.obj");
+	Model* model = new Model("./Objects/TestCube.obj");
 	hs::Vec3f lightDirection = { 0.0f, 0.0f, -1.0f };
 	
 	if (useZBuffer)
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 	}
 
 	image.flip_vertically(); // I want to have the origin at the left bottom corner of the image
-	image.write_tga_file("../../output_using_z-buffer.tga");
+	image.write_tga_file("../../cube_output_using_z-buffer.tga");
 
 	return 0;
 }

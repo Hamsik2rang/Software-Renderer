@@ -23,6 +23,7 @@ private:
 	const float NDC_MAX_Z{ 1.0f };
 	const float FPS{ 1000.0f / 60.0f };
 	const unsigned char BACKGROUND_COLOR{ 88 };
+	const float MAX_DEPTH{ 1.0f };
 
 	HWND m_hWnd;
 	DDraw* m_pDDraw;
@@ -54,6 +55,8 @@ private:
 	void FragmentShading();
 	void OutputMerging();
 
+
+	Color g_testColor[6];
 public:
 	Renderer(HWND hWnd);
 	~Renderer();
@@ -70,13 +73,15 @@ public:
 
 	// Primitive draw functions
 	void Point(Vec2i v, const Color& color);
-	void Line(Vec2i v0, Vec2i v1, const Color& color);
+	void Line(Vec2i v0, Vec2i v1, const Color& c0, const Color& c1);
 	void Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color);
 	void GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color0, const Color& color1, const Color& color2);
 
 	void SetCamera(Camera* pCamera);
 	void MoveCamera();
 	void RotateCamera();
+
+	void ClearZBuffer();
 
 	void UpdateWindowPos();
 	//TODO: Implement this

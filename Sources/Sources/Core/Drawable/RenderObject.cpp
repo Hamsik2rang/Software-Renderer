@@ -74,5 +74,6 @@ bool RenderObject::Load(std::string filename)
 		<< " normal: " << m_normals.size() 
 		<< " faces: " << m_indices[0].size() 
 		<< "\n";
+
 	return true;
 }

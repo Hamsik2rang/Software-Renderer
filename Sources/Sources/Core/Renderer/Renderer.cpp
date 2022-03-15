@@ -5,7 +5,12 @@
 #include <cstring>
 
 Renderer::Renderer(HWND hWnd)
-	:m_hWnd(hWnd)
+	:m_hWnd(hWnd), g_testColor{ Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
+Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
+Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
+Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
+Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
+Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0)}
 {
 	// Init DirectDraw
 	m_pDDraw = new DDraw;
@@ -22,14 +27,6 @@ Renderer::Renderer(HWND hWnd)
 	m_pInputManager->SetCursorToCenter();
 
 	memset(m_pRenderBuffer, BACKGROUND_COLOR, m_width * m_height * 4);
-	// initialize z-buffer
-	for (int i = 0; i < m_height; i++)
-	{
-		for (int j = 0; j < m_width; j++)
-		{
-			m_pZBuffer[i * m_width + j] = 1.0f;
-		}
-	}
 
 	Timer::Elapsed();
 }
@@ -59,6 +56,7 @@ Renderer::~Renderer()
 }
 
 // 좌하단을 원점으로 렌더링했을 때 버퍼를 뒤집어 일반적인 Viewport 렌더로 변경해주는 함수
+[[deprecated]]
 void Renderer::FilpBuffer()
 {
 	int widthSize = m_width * 4;
@@ -161,14 +159,13 @@ void Renderer::Rasterizer()
 			affine.y /= affine.w;
 			affine.z /= affine.w;
 			affine.w /= affine.w;
-			std::cout << affine.x << " " << affine.y << " " << affine.z << std::endl;
 
 			// simple clipping using z-distance
-			if (affine.z < 0 || affine.z > 1)
+			/*if (affine.z < 0 || affine.z > 1)
 			{
 				isClipped = true;
 				break;
-			}
+			}*/
 			// Viewport Transformation
 			float aspect = m_pCamera->GetAspect();
 			Mat4f viewport = Mat4f::Identity;
@@ -191,9 +188,9 @@ void Renderer::Rasterizer()
 				{ 0.0f, 0.0f, 0.0f, 1.0f }) * viewport;
 
 			affine = viewport * affine;
+			//std::cout << affine.x << " " << affine.y << " " << affine.z << std::endl;
 			// Scan Coversion
 			// ...
-
 		}
 		if (!isClipped)
 		{
@@ -202,8 +199,7 @@ void Renderer::Rasterizer()
 	}
 	// TODO: change later
 	m_pRasterizerQueue.clear();
-	std::cout << "\n\n\n\n\n\n\n\n\n\n\n" << std::endl;
-
+	//std::cout << "\n\n\n\n\n";
 }
 
 void Renderer::FragmentShading()
@@ -223,16 +219,14 @@ void Renderer::FragmentShading()
 void Renderer::OutputMerging()
 {
 	// Output Merging
+	
 	// 1. z-buffering
 	// Clear z-Buffer
-	for (int i = 0; i < m_height; i++)
-	{
-		for (int j = 0; j < m_width; j++)
-		{
-			m_pZBuffer[i * m_width + j] = 1.0f;
-		}
-	}
+	ClearZBuffer();
+
 	// 2. alpha blending
+	
+	
 	// 3. z-culling(If you can)
 
 	// TODO: Implement this
@@ -247,7 +241,9 @@ void Renderer::DrawScene()
 {
 	m_pDDraw->BeginDraw();
 	m_pDDraw->Clear();
+	int colorIndex = 0;
 	//write draw code here.
+	Color rgbColor[3] = { Color(255,0,0,0), Color(0,255,0,0), Color(0,0,255,0) };
 	for (const auto& v : m_pOutputQueue)
 	{
 		if (v->m_stride == 2)
@@ -257,26 +253,28 @@ void Renderer::DrawScene()
 				Vec2i v0{ (int)v->m_vertices[i].x, (int)v->m_vertices[i].y };
 				Vec2i v1{ (int)v->m_vertices[i + 1].x, (int)v->m_vertices[i + 1].y };
 
-				Line(v0, v1, Color(255, 0, 255, 0));
+				//Line(v0, v1, Color(255, 0, 255, 0));
 			}
 		}
 		else if (v->m_stride == 3)
 		{
-			for (int i = 0; i < v->m_indices[0].size(); i++)
+			for (int i = 0; i < 5/*v->m_indices[0].size()*/; i++)
 			{
 				Vec3f v0 = v->m_vertices[v->m_indices[0][i].vertex].AffineToCartesian();
 				Vec3f v1 = v->m_vertices[v->m_indices[1][i].vertex].AffineToCartesian();
 				Vec3f v2 = v->m_vertices[v->m_indices[2][i].vertex].AffineToCartesian();
+				std::cout << v0.z << " " << v1.z << " " << v2.z << std::endl;
 #ifdef DRAWMODE_WIREFRAME
-				Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v1.x, (int)v1.y), Color(255, 255, 255, 255));
-				Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v2.x, (int)v2.y), Color(255, 255, 255, 255));
-				Line(Vec2i((int)v1.x, (int)v1.y), Vec2i((int)v2.x, (int)v2.y), Color(255, 255, 255, 255));
+				Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v1.x, (int)v1.y),Color(255,0,0,0), Color(255, 0, 0, 0));
+				Line(Vec2i((int)v1.x, (int)v1.y), Vec2i((int)v2.x, (int)v2.y), Color(0, 255, 0, 0), Color(0,255,  0, 0));
+				Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v2.x, (int)v2.y), Color(0,0,255,0), Color(0, 0, 255, 0));
 #endif
 #ifndef DRAWMODE_WIREFRAME
-				Triangle(v0, v1, v2, Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0));
+				Triangle(v0, v1, v2, /*g_testColor[i / 2]*/rgbColor[i % 3]);
 #endif
 			}
 		}
+		std::cout << "\n\n\n\n\n";
 	}
 	m_pDDraw->DrawBitmap(0, 0, m_width, m_height, m_pRenderBuffer);
 	// end code.
@@ -292,7 +290,7 @@ void Renderer::Point(Vec2i v, const Color& color)
 	SetPixel(v.x, v.y, color);
 }
 
-void Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
+void Renderer::Line(Vec2i v0, Vec2i v1, const Color& c0, const Color& c1)
 {
 	bool steep = false;
 	if (std::abs(v0.x - v1.x) < std::abs(v0.y - v1.y))
@@ -314,6 +312,8 @@ void Renderer::Line(Vec2i v0, Vec2i v1, const Color& color)
 	int y = v0.y;
 	for (int x = v0.x; x <= v1.x; x++)
 	{
+		auto t = x / v1.x - v0.x;
+		Color color =  c0*t + c1* (1 - t);
 		if (steep)
 		{
 			// For pixel clipping
@@ -347,6 +347,9 @@ void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 	int maxXPos = (int)(v0.x > v1.x ? v0.x > v2.x ? v0.x : v2.x : v1.x > v2.x ? v1.x : v2.x);
 	int maxYPos = (int)(v0.y > v1.y ? v0.y > v2.y ? v0.y : v2.y : v1.y > v2.y ? v1.y : v2.y);
 
+	float maxZPos = std::fmaxf(v0.z, std::fmaxf(v1.z, v2.z));
+	float minZPos = std::fminf(v0.z, std::fminf(v1.z, v2.z));
+
 	for (int y = minYPos; y <= maxYPos; y++)
 	{
 		// for pixel clipping
@@ -361,18 +364,23 @@ void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 			{
 				continue;
 			}
-			Vec3f p = { (float)x, (float)y, 0 };
+			Vec3f p = { (float)x, (float)y, 1 };
 			Vec3f bc = Barycentric(v0, v1, v2, p);
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
 				continue;
 			p.z = bc.x * v0.z + bc.y * v1.z + bc.z * v2.z;
+			
+			// Depth test
 			if (m_pZBuffer[((int)p.y * m_width) + (int)p.x] > p.z)
 			{
+				//std::cout << p.x << " " << p.y << " " << p.z << std::endl;
+				assert(p.z <= maxZPos && p.z >= minZPos);
 				m_pZBuffer[(int)p.y * m_width + (int)p.x] = p.z;
 				SetPixel((int)p.x, (int)p.y, color);
 			}
 		}
 	}
+	return;
 }
 
 void Renderer::GradiantTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color0, const Color& color1, const Color& color2)
@@ -454,6 +462,17 @@ void Renderer::RotateCamera()
 	if (m_pCamera->CanMove())
 	{
 		m_pInputManager->SetCursorToCenter();
+	}
+}
+
+void Renderer::ClearZBuffer()
+{
+	for (int r = 0; r < m_height; r++)
+	{
+		for (int c = 0; c < m_width; c++)
+		{
+			m_pZBuffer[r * m_width + c] = MAX_DEPTH;
+		}
 	}
 }
 
