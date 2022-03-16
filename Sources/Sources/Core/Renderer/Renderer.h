@@ -14,7 +14,7 @@
 #include <queue>
 #include <cmath>
 
-#define _DRAWMODE_WIREFRAME
+#define DRAWMODE_WIREFRAME
 
 class Renderer
 {

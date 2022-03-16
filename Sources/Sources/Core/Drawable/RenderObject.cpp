@@ -30,7 +30,7 @@ bool RenderObject::Load(std::string filename)
 		{
 			std::string type;
 			float vx, vy, vz;
-			iss >> type >> vx >> delim >> vy >> delim >> vz;
+			iss >> type >> vx >>  vy >> vz;
 			m_vertices.push_back({ vx, vy, vz });
 		}
 		// vertex texture
@@ -38,7 +38,7 @@ bool RenderObject::Load(std::string filename)
 		{
 			std::string type;
 			float tx, ty, tz;
-			iss >> type >> tx >> delim >> ty >> delim >> tz;
+			iss >> type >> tx >> ty  >> tz;
 			m_textures.push_back({ tx, ty, tz });
 		}
 		// vertex normal
@@ -46,7 +46,7 @@ bool RenderObject::Load(std::string filename)
 		{
 			std::string type;
 			float nx, ny, nz;
-			iss >> type >> nx >> delim >> ny >> delim >> nz;
+			iss >> type >> nx  >> ny  >> nz;
 			m_normals.push_back({ nx, ny, nz });
 		}
 		// face(index)
