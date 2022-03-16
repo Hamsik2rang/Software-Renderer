@@ -20,5 +20,5 @@ static constexpr Vector3D<T> Barycentric(Vector3D<T> v0, Vector3D<T> v1, Vector3
 	{
 		return Vector3D<T>(-1.0f, -1.0f, -1.0f);
 	}
-	return Vector3D<T>(result.x / result.z, result.y / result.z, 1 - (result.x + result.y) / result.z);
+	return Vector3D<T>(1 - (result.x + result.y) / result.z, result.y / result.z, result.x / result.z);
 }
