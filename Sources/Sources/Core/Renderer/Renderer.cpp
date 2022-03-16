@@ -313,7 +313,7 @@ void Renderer::Line(Vec2i v0, Vec2i v1, const Color& c0, const Color& c1)
 	for (int x = v0.x; x <= v1.x; x++)
 	{
 		auto t = x / v1.x - v0.x;
-		Color color =  c0*t + c1* (1 - t);
+		Color color =  c0 * (float)t + c1 * (float)(1 - t);
 		if (steep)
 		{
 			// For pixel clipping
