@@ -14,15 +14,13 @@
 #include <queue>
 #include <cmath>
 
-#define DRAWMODE_WIREFRAME
-
 class Renderer
 {
 private:
 	const float NDC_MIN_Z{ 0.0f };
 	const float NDC_MAX_Z{ 1.0f };
 	const float FPS{ 1000.0f / 60.0f };
-	const unsigned char BACKGROUND_COLOR{ 88 };
+	const unsigned char BACKGROUND_COLOR{ 4 };
 	const float MAX_DEPTH{ 1.0f };
 
 	HWND m_hWnd;
@@ -54,10 +52,9 @@ private:
 	void Rasterizer();
 	void FragmentShading();
 	void OutputMerging();
-
-
-	Color g_testColor[6];
 public:
+	bool m_bWireFrame = true;
+
 	Renderer(HWND hWnd);
 	~Renderer();
 

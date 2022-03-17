@@ -5,12 +5,7 @@
 #include <cstring>
 
 Renderer::Renderer(HWND hWnd)
-	:m_hWnd(hWnd), g_testColor{ Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
-Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
-Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
-Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
-Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0),
-Color(Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), Random::GetRandomInteger(0, 255), 0)}
+	:m_hWnd(hWnd)
 {
 	// Init DirectDraw
 	m_pDDraw = new DDraw;
@@ -262,14 +257,16 @@ void Renderer::DrawScene()
 				Vec3f v0 = v->m_pBuffer->m_vertices[v->m_pBuffer->m_indices[0][i].vertex].AffineToCartesian();
 				Vec3f v1 = v->m_pBuffer->m_vertices[v->m_pBuffer->m_indices[1][i].vertex].AffineToCartesian();
 				Vec3f v2 = v->m_pBuffer->m_vertices[v->m_pBuffer->m_indices[2][i].vertex].AffineToCartesian();
-#ifdef DRAWMODE_WIREFRAME
-				Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v1.x, (int)v1.y),Color(255,0,0,0), Color(255, 0, 0, 0));
-				Line(Vec2i((int)v1.x, (int)v1.y), Vec2i((int)v2.x, (int)v2.y), Color(0, 255, 0, 0), Color(0,255,  0, 0));
-				Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v2.x, (int)v2.y), Color(0,0,255,0), Color(0, 0, 255, 0));
-#endif
-#ifndef DRAWMODE_WIREFRAME
-				Triangle(v0, v1, v2, rgbColor[i % 3]);
-#endif
+				if (m_bWireFrame)
+				{
+					Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v1.x, (int)v1.y), Color(255, 255, 255, 0), Color(255, 255, 255, 0));
+					Line(Vec2i((int)v1.x, (int)v1.y), Vec2i((int)v2.x, (int)v2.y), Color(255, 255, 255, 0), Color(255, 255, 255, 0));
+					Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v2.x, (int)v2.y), Color(255, 255, 255, 0), Color(255, 255, 255, 0));
+				}
+				else
+				{
+					Triangle(v0, v1, v2, rgbColor[i % 3]);
+				}
 			}
 		}
 	}
@@ -365,8 +362,11 @@ void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 			}
 			Vec3f p = { (float)x, (float)y, 1 };
 			Vec3f bc = Barycentric(v0, v1, v2, p);
+		
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
+			{
 				continue;
+			}
 			p.z = bc.x * v0.z + bc.y * v1.z + bc.z * v2.z;
 			
 			// Depth test

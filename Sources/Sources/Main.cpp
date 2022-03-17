@@ -9,6 +9,7 @@
 #include "./Core/Renderer/Renderer.h"
 #include "./Core/Utility/InputManager.h"
 #include "./Core/Renderer/ObjectManager.h"
+#include "./Core/Utility/Random.hpp"
 
 #define MAX_LOADSTRING 100
 
@@ -37,8 +38,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
-
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_SOURCES, szWindowClass, MAX_LOADSTRING);
@@ -60,10 +59,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     g_pObjectManager  = ObjectManager::GetInstance();
     g_pObjectManager->Load("TestCube.obj");
-    RenderObject* testModel = new RenderObject;
-    testModel->SetBuffer(g_pObjectManager->GetBufferAddress(0));
-    
-    g_pRenderer->AddModel(testModel);
+    g_pObjectManager->Load("african_head.obj");
+
+    std::vector<Vec3f> positions(128);
+    for (int i = 0; i < positions.size(); i++)
+    {
+        positions[i] = { Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-10.0f, 10.0f) };
+    }
+    for (int i = 0; i < positions.size(); i++)
+    {
+		RenderObject* testModel = new RenderObject;
+		testModel->SetBuffer(g_pObjectManager->GetBufferAddress(0));
+		testModel->m_position = positions[i];
+		g_pRenderer->AddModel(testModel);
+    }
     // Main Loop
     while (true)
     {
@@ -94,11 +103,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     return (int) msg.wParam;
 }
 
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
@@ -120,16 +124,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    g_hInst = hInstance; // Store instance handle in our global variable
@@ -147,15 +141,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE: Processes messages for the main window.
-//
-//  WM_COMMAND  - process the application menu
-//  WM_PAINT    - Paint the main window
-//  WM_DESTROY  - post a quit message and return
-//
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -188,6 +173,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_KEYDOWN:
         {
             InputManager::GetInstance()->KeyPress(wParam);
+            if (wParam == 'T')
+            {
+                g_pRenderer->m_bWireFrame ^= true;
+            }
         }
         break;
     case WM_KEYUP:
@@ -235,7 +224,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// Message handler for about box.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
