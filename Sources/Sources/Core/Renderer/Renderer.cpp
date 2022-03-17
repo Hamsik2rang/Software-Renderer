@@ -107,9 +107,8 @@ void Renderer::VertexShading()
 	
 	for (const auto& v : m_pRenderObjects)
 	{
-		RenderObject* m = new RenderObject;
-		//memcpy(m, v, sizeof(*v));
-		*m = *v;
+		RenderObject* m = new RenderObject(*v);
+		
 		m->m_scale = { 2.0f, 2.0f, 2.0f };
 		////////////////////
 		// 1. Get Model Matrix which transform Local Space to World Space
@@ -119,9 +118,9 @@ void Renderer::VertexShading()
 		// 3. Get Projection Matrix which transform Camera Space to Clip Space
 		Mat4f projection = Projection(m_pCamera->GetFovY(), m_pCamera->GetAspect(), m_pCamera->GetNear(), m_pCamera->GetFar());
 
-		for (int i = 0; i < m->m_vertices.size(); i++)
+		for (int i = 0; i < m->m_pBuffer->m_vertices.size(); i++)
 		{
-			auto affine = m->m_vertices[i];
+			auto affine = m->m_pBuffer->m_vertices[i];
 			affine = projection * view * model * affine;
 
 			// Rasterizer ´Ü°è¸¦ À§ÇÑ ÁÂÇ¥°è º¯°æ(right-hand -> left-hand)
@@ -129,7 +128,9 @@ void Renderer::VertexShading()
 			// ºä º¼·ý ÁÂÇ¥°¡ (-1 ~ 1, -1 ~ 1, 0 ~ -1) ¹üÀ§¿¡¼­ (-1 ~ 1, -1 ~ 1, 0 ~ 1)·Î º¯°æµÊ.
 			affine.z *= -1.0f;
 			
-			m->m_vertices[i] = affine;
+
+
+			m->m_pBuffer->m_vertices[i] = affine;
 		}
 		m_pRasterizerQueue.push_back(m);
 	}
@@ -149,9 +150,9 @@ void Renderer::Rasterizer()
 	for (auto& v : m_pRasterizerQueue)
 	{
 		bool isClipped = false;
-		for (int i = 0; i < v->m_vertices.size(); i++)
+		for (int i = 0; i < v->m_pBuffer->m_vertices.size(); i++)
 		{
-			Vec4f& affine = v->m_vertices[i];
+			Vec4f& affine = v->m_pBuffer->m_vertices[i];
 			//...
 
 			// Perspective devision
@@ -188,7 +189,6 @@ void Renderer::Rasterizer()
 				{ 0.0f, 0.0f, 0.0f, 1.0f }) * viewport;
 
 			affine = viewport * affine;
-			//std::cout << affine.x << " " << affine.y << " " << affine.z << std::endl;
 			// Scan Coversion
 			// ...
 		}
@@ -199,7 +199,6 @@ void Renderer::Rasterizer()
 	}
 	// TODO: change later
 	m_pRasterizerQueue.clear();
-	//std::cout << "\n\n\n\n\n";
 }
 
 void Renderer::FragmentShading()
@@ -246,23 +245,23 @@ void Renderer::DrawScene()
 	Color rgbColor[3] = { Color(255,0,0,0), Color(0,255,0,0), Color(0,0,255,0) };
 	for (const auto& v : m_pOutputQueue)
 	{
-		if (v->m_stride == 2)
+		if (v->m_pBuffer->m_stride == 2)
 		{
-			for (int i = 0; i < v->m_vertices.size() / v->m_stride; i++)
+			for (int i = 0; i < v->m_pBuffer->m_vertices.size() / v->m_pBuffer->m_stride; i++)
 			{
-				Vec2i v0{ (int)v->m_vertices[i].x, (int)v->m_vertices[i].y };
-				Vec2i v1{ (int)v->m_vertices[i + 1].x, (int)v->m_vertices[i + 1].y };
+				Vec2i v0{ (int)v->m_pBuffer->m_vertices[i].x, (int)v->m_pBuffer->m_vertices[i].y };
+				Vec2i v1{ (int)v->m_pBuffer->m_vertices[i + 1].x, (int)v->m_pBuffer->m_vertices[i + 1].y };
 
 				Line(v0, v1, Color(255, 255, 255, 0), Color(255, 255, 255, 255));
 			}
 		}
-		else if (v->m_stride == 3)
+		else if (v->m_pBuffer->m_stride == 3)
 		{
-			for (int i = 0; i < v->m_indices[0].size(); i++)
+			for (int i = 0; i < v->m_pBuffer->m_indices[0].size(); i++)
 			{
-				Vec3f v0 = v->m_vertices[v->m_indices[0][i].vertex].AffineToCartesian();
-				Vec3f v1 = v->m_vertices[v->m_indices[1][i].vertex].AffineToCartesian();
-				Vec3f v2 = v->m_vertices[v->m_indices[2][i].vertex].AffineToCartesian();
+				Vec3f v0 = v->m_pBuffer->m_vertices[v->m_pBuffer->m_indices[0][i].vertex].AffineToCartesian();
+				Vec3f v1 = v->m_pBuffer->m_vertices[v->m_pBuffer->m_indices[1][i].vertex].AffineToCartesian();
+				Vec3f v2 = v->m_pBuffer->m_vertices[v->m_pBuffer->m_indices[2][i].vertex].AffineToCartesian();
 #ifdef DRAWMODE_WIREFRAME
 				Line(Vec2i((int)v0.x, (int)v0.y), Vec2i((int)v1.x, (int)v1.y),Color(255,0,0,0), Color(255, 0, 0, 0));
 				Line(Vec2i((int)v1.x, (int)v1.y), Vec2i((int)v2.x, (int)v2.y), Color(0, 255, 0, 0), Color(0,255,  0, 0));

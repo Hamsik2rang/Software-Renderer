@@ -1,17 +1,22 @@
 #pragma once
 
-#include "./Drawable.h"
+#include "./Buffer.h"
 
 #include <string>
 
-class RenderObject : public Drawable
+class RenderObject 
 {
 private:
 
 public:
-	RenderObject();
-	virtual ~RenderObject() override;
+	Buffer* m_pBuffer;
+	Vec3f m_position{ 0.f, 0.f, 0.f };
+	Vec3f m_rotation{ 0.f, 0.f, 0.f };	// degree
+	Vec3f m_scale{ 1.f, 1.f, 1.f };
 
-	bool Load(std::string filename);
+	void SetBuffer(Buffer* pBuffer);
+	RenderObject();
+	RenderObject(RenderObject& r);
+	~RenderObject();
 };
 

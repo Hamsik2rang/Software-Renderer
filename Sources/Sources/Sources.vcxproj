@@ -140,12 +140,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Drawable\Buffer.h" />
     <ClInclude Include="Core\Math\Math.hpp" />
     <ClInclude Include="Core\Math\Matrix.hpp" />
     <ClInclude Include="Core\Renderer\Camera.h" />
     <ClInclude Include="Core\Math\Interpolate.hpp" />
     <ClInclude Include="Core\Renderer\DDraw.h" />
-    <ClInclude Include="Core\Drawable\Drawable.h" />
+    <ClInclude Include="Core\Renderer\ObjectManager.h" />
     <ClInclude Include="Core\Utility\InputManager.h" />
     <ClInclude Include="Core\Utility\Random.hpp" />
     <ClInclude Include="Core\Utility\Timer.hpp" />
@@ -161,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="Core\Renderer\Camera.cpp" />
     <ClCompile Include="Core\Renderer\DDraw.cpp" />
+    <ClCompile Include="Core\Renderer\ObjectManager.cpp" />
     <ClCompile Include="Core\Utility\InputManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Core\Renderer\Renderer.cpp" />

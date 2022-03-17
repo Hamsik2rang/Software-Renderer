@@ -451,11 +451,11 @@ Matrix44<T> GetScale(T x, T y, T z)
 	return scale;
 }
 
-inline Mat4f Model(const Drawable* pDrawable)
+inline Mat4f Model(const RenderObject* pObejct)
 {
-	Mat4f model = GetTransform(pDrawable->m_position.x, pDrawable->m_position.y, pDrawable->m_position.z)
-		* GetRotate(pDrawable->m_rotation.x, pDrawable->m_rotation.y, pDrawable->m_rotation.z)
-		* GetScale(pDrawable->m_scale.x, pDrawable->m_scale.y, pDrawable->m_scale.z);
+	Mat4f model = GetTransform(pObejct->m_position.x, pObejct->m_position.y, pObejct->m_position.z)
+		* GetRotate(pObejct->m_rotation.x, pObejct->m_rotation.y, pObejct->m_rotation.z)
+		* GetScale(pObejct->m_scale.x, pObejct->m_scale.y, pObejct->m_scale.z);
 	return model;
 }
 

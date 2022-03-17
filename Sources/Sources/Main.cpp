@@ -8,6 +8,7 @@
 #include "Main.h"
 #include "./Core/Renderer/Renderer.h"
 #include "./Core/Utility/InputManager.h"
+#include "./Core/Renderer/ObjectManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -24,6 +25,8 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 Renderer* g_pRenderer;
 Camera* g_pCamera;
+ObjectManager* g_pObjectManager;
+
 HWND g_hWnd;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -55,8 +58,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     g_pCamera = new Camera;
     g_pRenderer->SetCamera(g_pCamera);
 
+    g_pObjectManager  = ObjectManager::GetInstance();
+    g_pObjectManager->Load("TestCube.obj");
     RenderObject* testModel = new RenderObject;
-    testModel->Load("./african_head.obj");
+    testModel->SetBuffer(g_pObjectManager->GetBufferAddress(0));
+    
     g_pRenderer->AddModel(testModel);
     // Main Loop
     while (true)
