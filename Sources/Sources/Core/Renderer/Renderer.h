@@ -52,6 +52,7 @@ private:
 	void Rasterizer();
 	void FragmentShading();
 	void OutputMerging();
+	void NewTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color);
 public:
 	bool m_bWireFrame = true;
 

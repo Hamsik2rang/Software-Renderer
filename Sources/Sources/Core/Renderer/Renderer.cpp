@@ -226,6 +226,75 @@ void Renderer::OutputMerging()
 	// TODO: Implement this
 }
 
+void Renderer::NewTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
+{
+	std::vector<Vec3f> vertex;
+	vertex.push_back(v0);
+	vertex.push_back(v1);
+	vertex.push_back(v2);
+	std::sort(vertex.begin(), vertex.end(), [](Vec3f& l, Vec3f& r)->bool {
+		if (l.y == r.y)
+		{
+			return l.x < r.x;
+		}
+		return l.y < r.y;
+		});
+
+	float deltaX = (vertex[2].x - vertex[0].x) / (vertex[2].y - vertex[0].y);
+	vertex.emplace_back(Vec3f(vertex[0].x + deltaX * (vertex[1].y - vertex[0].y), vertex[1].y, 0.0f));
+	std::swap(vertex[3], vertex[2]);
+
+	if (vertex[1].x > vertex[2].x)
+	{
+		std::swap(vertex[1], vertex[2]);
+	}
+	float dxl = (vertex[1].x - vertex[0].x) / (vertex[1].y - vertex[0].y);
+	float dxr = (vertex[2].x - vertex[0].x) / (vertex[2].y - vertex[0].y);
+
+	float sx = vertex[0].x;
+	float ex = vertex[0].x;
+	for (int y = (int)vertex[0].y; y < (int)vertex[1].y; y++)
+	{
+		sx += dxl;
+		ex += dxr;
+		
+		if (y < 0 || y >= m_height)
+		{
+			continue;
+		}
+		for (int x = (int)sx; x <= (int)ex; x++)
+		{
+			if (x < 0 || x >= m_width)
+			{
+				continue;
+			}
+			SetPixel(x, y, color);
+		}
+	}
+
+	dxl = (vertex[3].x - vertex[1].x) / (vertex[3].y - vertex[1].y);
+	dxr = (vertex[3].x - vertex[2].x) / (vertex[3].y - vertex[2].y);
+	sx = vertex[1].x;
+	ex = vertex[2].x;
+	for (int y = (int)vertex[1].y; y <= (int)vertex[3].y; y++)
+	{
+		sx += dxl;
+		ex += dxr;
+		if (y < 0 || y >= m_height)
+		{
+			continue;
+		}
+		for (int x = (int)sx; x <= (int)ex; x++)
+		{
+			if (x < 0 || x >= m_width)
+			{
+				continue;
+			}
+			SetPixel(x, y, color);
+		}
+	}
+}
+
 void Renderer::AddModel(RenderObject* model)
 {
 	m_pRenderObjects.push_back(model);
@@ -265,7 +334,8 @@ void Renderer::DrawScene()
 				}
 				else
 				{
-					Triangle(v0, v1, v2, rgbColor[i % 3]);
+					//Triangle(v0, v1, v2, rgbColor[i % 3]);
+					NewTriangle(v0, v1, v2, rgbColor[i % 3]);
 				}
 			}
 		}
