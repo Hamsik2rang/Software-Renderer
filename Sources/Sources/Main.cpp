@@ -61,16 +61,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     g_pObjectManager->Load("TestCube.obj");
     g_pObjectManager->Load("TestModel.obj");
 
-    std::vector<Vec3f> positions(1);
+    std::vector<Vec3f> positions(100);
     for (int i = 0; i < positions.size(); i++)
     {
-       // positions[i] = { Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-10.0f, 10.0f) };
-        positions[i] = { 0.0f, 0.0f, 0.0f };
+        positions[i] = { Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-10.0f, 10.0f) };
+        //positions[i] = { 0.0f, 0.0f, 0.0f };
     }
     for (int i = 0; i < positions.size(); i++)
     {
 		RenderObject* testModel = new RenderObject;
-		testModel->SetBuffer(g_pObjectManager->GetBufferAddress(1));
+		testModel->SetBuffer(g_pObjectManager->GetBufferAddress(0));
 		testModel->m_position = positions[i];
 		g_pRenderer->AddModel(testModel);
     }
@@ -177,6 +177,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             if (wParam == 'T')
             {
                 g_pRenderer->m_bWireFrame ^= true;
+            }
+            if (wParam == 'Y')
+            {
+                g_pRenderer->m_bPolygonOptimize ^= true;
             }
         }
         break;

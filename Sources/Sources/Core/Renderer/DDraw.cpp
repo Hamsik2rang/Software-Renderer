@@ -134,7 +134,7 @@ void DDraw::CleanupBackBuffer()
 	}
 }
 
-bool DDraw::CalculateClipArea(Vec2i* pSrcStart, Vec2i* pDestStart, Vec2i* pDestSize, Vec2i* pPos, Vec2i* pImageSize)
+bool DDraw::CalculateClipArea(Vec2i* pSrcStart, Vec2i* pDestStart, Vec2i* pDestSize, const Vec2i* pPos, const Vec2i* pImageSize)
 {
 	pDestStart->x = max(pPos->x, 0);
 	pDestStart->y = max(pPos->y, 0);
@@ -304,6 +304,24 @@ void DDraw::CleanUp()
 		m_pDDraw7->Release();
 		m_pDDraw7 = nullptr;
 	}
+}
+
+bool DDraw::BeginGDI(HDC* pHdc)
+{
+	HDC hdc = nullptr;
+
+	HRESULT hr = m_pDDSBack->GetDC(&hdc);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+	*pHdc = hdc;
+	return true;
+}
+
+void DDraw::EndGDI(HDC hdc)
+{
+	m_pDDSBack->ReleaseDC(hdc);
 }
 
 DWORD DDraw::GetWidth() const

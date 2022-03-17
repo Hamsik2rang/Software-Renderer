@@ -33,7 +33,7 @@ public:
 	bool LockBackBuffer(char** ppBits, DWORD* pWidth, DWORD* pHeight, DWORD* pPitch);
 	void UnlockBackBuffer();
 
-	bool CalculateClipArea(Vec2i* srcStart, Vec2i* destStart, Vec2i* destSize, Vec2i* pos, Vec2i* imageSize);
+	bool CalculateClipArea(Vec2i* pSrcStart, Vec2i* pDestStart, Vec2i* pDestSize, const Vec2i* pPos, const Vec2i* pImageSize);
 	bool DrawBitmap(int startX, int startY, int width, int height, char* pBits);
 	bool DrawBitmap(int width, int height, char* pBits);
 
@@ -45,6 +45,9 @@ public:
 	void UpdateWindowSize();
 	void UpdateWindowPos();
 	void CleanUp();
+
+	bool BeginGDI(HDC* pHdc);
+	void EndGDI(HDC hdc);
 
 	// getter, setter
 	DWORD GetWidth() const;

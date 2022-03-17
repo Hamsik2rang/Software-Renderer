@@ -69,7 +69,7 @@ void Renderer::FilpBuffer()
 
 void Renderer::SetPixel(int x, int y, const Color& color)
 {
-	assert(x >= 0 && x < m_width&& y >= 0 && y < m_height);
+	assert(x >= 0 && x < (int)m_width && y >= 0 && y < (int)m_height);
 	memcpy(m_pRenderBuffer + (y * m_width * 4) + x * 4, &color, 4);
 }
 
@@ -262,13 +262,13 @@ void Renderer::NewTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 	{
 		sx += dxl;
 		ex += dxr;
-		if (y < 0 || y >= m_height)
+		if (y < 0 || y >= (int)m_height)
 		{
 			continue;
 		}
 		for (int x = std::max((int)sx, std::min((int)vertex[0].x, (int)vertex[1].x)); x <= std::min((int)ex, std::max((int)vertex[0].x, (int)vertex[2].x)); x++)
 		{
-			if (x < 0 || x >= m_width)
+			if (x < 0 || x >= (int)m_width)
 			{
 				continue;
 			}
@@ -284,13 +284,13 @@ void Renderer::NewTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 	{
 		sx += dxl;
 		ex += dxr;
-		if (y < 0 || y >= m_height)
+		if (y < 0 || y >= (int)m_height)
 		{
 			continue;
 		}
 		for (int x = (int)sx; x <= (int)ex; x++)
 		{
-			if (x < 0 || x >= m_width)
+			if (x < 0 || x >= (int)m_width)
 			{
 				continue;
 			}
@@ -338,8 +338,14 @@ void Renderer::DrawScene()
 				}
 				else
 				{
-					//Triangle(v0, v1, v2, rgbColor[i % 3]);
-					NewTriangle(v0, v1, v2, rgbColor[i % 3]);
+					if(!m_bPolygonOptimize)
+					{
+						Triangle(v0, v1, v2, rgbColor[i % 3]);
+					}
+					else
+					{
+						NewTriangle(v0, v1, v2, rgbColor[i % 3]);
+					}
 				}
 			}
 		}
@@ -423,7 +429,7 @@ void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 	for (int y = minYPos; y <= maxYPos; y++)
 	{
 		// for pixel clipping
-		if (y < 0 || y >= m_height)
+		if (y < 0 || y >= (int)m_height)
 		{
 			continue;
 		}
@@ -539,9 +545,9 @@ void Renderer::RotateCamera()
 
 void Renderer::ClearZBuffer()
 {
-	for (int r = 0; r < m_height; r++)
+	for (int r = 0; r < (int)m_height; r++)
 	{
-		for (int c = 0; c < m_width; c++)
+		for (int c = 0; c < (int)m_width; c++)
 		{
 			m_pZBuffer[r * m_width + c] = MAX_DEPTH;
 		}
