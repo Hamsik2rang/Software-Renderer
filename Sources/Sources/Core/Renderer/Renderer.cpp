@@ -1,8 +1,12 @@
+#define NOMINMAX
+
 #include "Renderer.h"
 #include "../Math/Math.hpp"
 #include "../Math/Interpolate.hpp"
 #include "../Utility/Random.hpp"
 #include <cstring>
+
+
 
 Renderer::Renderer(HWND hWnd)
 	:m_hWnd(hWnd)
@@ -65,7 +69,7 @@ void Renderer::FilpBuffer()
 
 void Renderer::SetPixel(int x, int y, const Color& color)
 {
-	assert(x >= 0 && x < m_width && y >= 0 && y < m_height);
+	assert(x >= 0 && x < m_width&& y >= 0 && y < m_height);
 	memcpy(m_pRenderBuffer + (y * m_width * 4) + x * 4, &color, 4);
 }
 
@@ -99,17 +103,17 @@ void Renderer::VertexShading()
 	/// transform each local objects to objects which is in clip space.
 	/// transformation procedure:
 	/// Local space -> world space -> camera space(view space) -> clip space
-	
+
 	for (const auto& v : m_pRenderObjects)
 	{
 		RenderObject* m = new RenderObject(*v);
-		
+
 		m->m_scale = { 2.0f, 2.0f, 2.0f };
 		////////////////////
 		// 1. Get Model Matrix which transform Local Space to World Space
 		Mat4f model = Model(m);
 		// 2. Get View Matrix which transform World space to Camera Space
-		Mat4f view = LookAt(m_pCamera->GetEye(), m_pCamera->GetEye() - m_pCamera->GetFront(), {0.0f, 1.0f, 0.0f});
+		Mat4f view = LookAt(m_pCamera->GetEye(), m_pCamera->GetEye() - m_pCamera->GetFront(), { 0.0f, 1.0f, 0.0f });
 		// 3. Get Projection Matrix which transform Camera Space to Clip Space
 		Mat4f projection = Projection(m_pCamera->GetFovY(), m_pCamera->GetAspect(), m_pCamera->GetNear(), m_pCamera->GetFar());
 
@@ -122,7 +126,7 @@ void Renderer::VertexShading()
 			// 정점 재정렬도 수행해야 하지만 현재 정점 순서를 신경쓰고 있지 않으므로 제외함.
 			// 뷰 볼륨 좌표가 (-1 ~ 1, -1 ~ 1, 0 ~ -1) 범위에서 (-1 ~ 1, -1 ~ 1, 0 ~ 1)로 변경됨.
 			affine.z *= -1.0f;
-			
+
 
 
 			m->m_pBuffer->m_vertices[i] = affine;
@@ -213,14 +217,13 @@ void Renderer::FragmentShading()
 void Renderer::OutputMerging()
 {
 	// Output Merging
-	
+
 	// 1. z-buffering
-	// Clear z-Buffer
 	ClearZBuffer();
 
 	// 2. alpha blending
-	
-	
+
+
 	// 3. z-culling(If you can)
 
 	// TODO: Implement this
@@ -240,6 +243,7 @@ void Renderer::NewTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 		return l.y < r.y;
 		});
 
+
 	float deltaX = (vertex[2].x - vertex[0].x) / (vertex[2].y - vertex[0].y);
 	vertex.emplace_back(Vec3f(vertex[0].x + deltaX * (vertex[1].y - vertex[0].y), vertex[1].y, 0.0f));
 	std::swap(vertex[3], vertex[2]);
@@ -253,16 +257,16 @@ void Renderer::NewTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 
 	float sx = vertex[0].x;
 	float ex = vertex[0].x;
+	// v0과 v1의 y좌표의 차이가 매우 작을 경우 dxl 또는 dxr의 크기가 매우 커질 수 있어 주사선(scanline)이 튈 수 있음
 	for (int y = (int)vertex[0].y; y < (int)vertex[1].y; y++)
 	{
 		sx += dxl;
 		ex += dxr;
-		
 		if (y < 0 || y >= m_height)
 		{
 			continue;
 		}
-		for (int x = (int)sx; x <= (int)ex; x++)
+		for (int x = std::max((int)sx, std::min((int)vertex[0].x, (int)vertex[1].x)); x <= std::min((int)ex, std::max((int)vertex[0].x, (int)vertex[2].x)); x++)
 		{
 			if (x < 0 || x >= m_width)
 			{
@@ -432,13 +436,13 @@ void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 			}
 			Vec3f p = { (float)x, (float)y, 1 };
 			Vec3f bc = Barycentric(v0, v1, v2, p);
-		
+
 			if (bc.x < 0.0f || bc.x > 1.0f || bc.y < 0.0f || bc.y > 1.0f || bc.z < 0.0f || bc.z > 1.0f)
 			{
 				continue;
 			}
 			p.z = bc.x * v0.z + bc.y * v1.z + bc.z * v2.z;
-			
+
 			// Depth test
 			if (m_pZBuffer[((int)p.y * m_width) + (int)p.x] > p.z)
 			{

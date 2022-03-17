@@ -59,17 +59,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     g_pObjectManager  = ObjectManager::GetInstance();
     g_pObjectManager->Load("TestCube.obj");
-    g_pObjectManager->Load("african_head.obj");
+    g_pObjectManager->Load("TestModel.obj");
 
-    std::vector<Vec3f> positions(128);
+    std::vector<Vec3f> positions(1);
     for (int i = 0; i < positions.size(); i++)
     {
-        positions[i] = { Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-10.0f, 10.0f) };
+       // positions[i] = { Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-20.0f, 20.0f),Random::GetRandomReal(-10.0f, 10.0f) };
+        positions[i] = { 0.0f, 0.0f, 0.0f };
     }
     for (int i = 0; i < positions.size(); i++)
     {
 		RenderObject* testModel = new RenderObject;
-		testModel->SetBuffer(g_pObjectManager->GetBufferAddress(0));
+		testModel->SetBuffer(g_pObjectManager->GetBufferAddress(1));
 		testModel->m_position = positions[i];
 		g_pRenderer->AddModel(testModel);
     }
