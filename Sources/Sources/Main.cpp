@@ -58,8 +58,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     g_pRenderer->SetCamera(g_pCamera);
 
     g_pObjectManager  = ObjectManager::GetInstance();
-    g_pObjectManager->Load("TestCube.obj");
-    g_pObjectManager->Load("TestModel.obj");
+    g_pObjectManager->Load("./Resources/TestCube.obj");
+    g_pObjectManager->Load("./Resources/TestModel.obj");
 
     std::vector<Vec3f> positions(100);
     for (int i = 0; i < positions.size(); i++)
