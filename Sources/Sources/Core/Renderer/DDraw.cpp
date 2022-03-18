@@ -319,6 +319,14 @@ bool DDraw::BeginGDI(HDC* pHdc)
 	return true;
 }
 
+void DDraw::DrawInfo(HDC hdc, WCHAR* text, DWORD len)
+{
+	SetBkMode(hdc, TRANSPARENT);
+	SetTextColor(hdc, RGB(255, 255, 255));
+	TextOut(hdc, 0, 0, text, len);
+	//WriteText(wchar, len, 0, 0, 0xffff0000, hdc);
+}
+
 void DDraw::EndGDI(HDC hdc)
 {
 	m_pDDSBack->ReleaseDC(hdc);

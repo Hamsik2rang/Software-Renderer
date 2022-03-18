@@ -47,8 +47,8 @@ public:
 	void CleanUp();
 
 	bool BeginGDI(HDC* pHdc);
+	void DrawInfo(HDC hdc, WCHAR* text, DWORD len);
 	void EndGDI(HDC hdc);
-
 	// getter, setter
 	DWORD GetWidth() const;
 	DWORD GetHeight() const;

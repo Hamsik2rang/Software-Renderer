@@ -6,10 +6,8 @@
 #include "../Utility/Random.hpp"
 #include <cstring>
 
-
-
 Renderer::Renderer(HWND hWnd)
-	:m_hWnd(hWnd)
+	:m_hWnd(hWnd), m_infoTxt(L""), m_infoTxtLen(0)
 {
 	// Init DirectDraw
 	m_pDDraw = new DDraw;
@@ -78,6 +76,8 @@ void Renderer::Render()
 	float curTime = Timer::Elapsed();
 	m_deltaTime = curTime - m_lastTime;
 	m_lastTime = curTime;
+	swprintf_s(m_infoTxt, L"%d", (int)(1000 / m_deltaTime));
+	m_infoTxtLen = wcslen(m_infoTxt);
 	if (m_pCamera)
 	{
 		MoveCamera();
@@ -92,7 +92,6 @@ void Renderer::Render()
 	{
 		std::cerr << "Camera UnReferenced" << std::endl;
 	}
-
 	DrawScene();
 }
 
@@ -126,9 +125,6 @@ void Renderer::VertexShading()
 			// 정점 재정렬도 수행해야 하지만 현재 정점 순서를 신경쓰고 있지 않으므로 제외함.
 			// 뷰 볼륨 좌표가 (-1 ~ 1, -1 ~ 1, 0 ~ -1) 범위에서 (-1 ~ 1, -1 ~ 1, 0 ~ 1)로 변경됨.
 			affine.z *= -1.0f;
-
-
-
 			m->m_pBuffer->m_vertices[i] = affine;
 		}
 		m_pRasterizerQueue.push_back(m);
@@ -353,10 +349,21 @@ void Renderer::DrawScene()
 	m_pDDraw->DrawBitmap(0, 0, m_width, m_height, m_pRenderBuffer);
 	// end code.
 	m_pDDraw->EndDraw();
+	DrawInfo();
 	m_pDDraw->Blt();
 
 	memset(m_pRenderBuffer, BACKGROUND_COLOR, m_width * m_height * 4);
 	m_pOutputQueue.clear();
+}
+
+void Renderer::DrawInfo()
+{
+	HDC hdc = nullptr;
+	if (m_pDDraw->BeginGDI(&hdc))
+	{
+		m_pDDraw->DrawInfo(hdc, m_infoTxt, m_infoTxtLen);
+		m_pDDraw->EndGDI(hdc);
+	}
 }
 
 void Renderer::Point(Vec2i v, const Color& color)

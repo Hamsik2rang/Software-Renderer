@@ -32,6 +32,9 @@ private:
 	char* m_pSwapBuffer;
 	float* m_pZBuffer;
 
+	WCHAR m_infoTxt[64];
+	DWORD m_infoTxtLen;
+
 	uint32_t m_width;
 	uint32_t m_height;
 	uint8_t m_depth = 1;
@@ -69,6 +72,7 @@ public:
 	void Render();
 	// Blt viewport buffer
 	void DrawScene();
+	void DrawInfo();
 
 	// Primitive draw functions
 	void Point(Vec2i v, const Color& color);
