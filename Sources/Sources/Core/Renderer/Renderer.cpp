@@ -225,76 +225,6 @@ void Renderer::OutputMerging()
 	// TODO: Implement this
 }
 
-void Renderer::NewTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
-{
-	std::vector<Vec3f> vertex;
-	vertex.push_back(v0);
-	vertex.push_back(v1);
-	vertex.push_back(v2);
-	std::sort(vertex.begin(), vertex.end(), [](Vec3f& l, Vec3f& r)->bool {
-		if (l.y == r.y)
-		{
-			return l.x < r.x;
-		}
-		return l.y < r.y;
-		});
-
-
-	float deltaX = (vertex[2].x - vertex[0].x) / (vertex[2].y - vertex[0].y);
-	vertex.emplace_back(Vec3f(vertex[0].x + deltaX * (vertex[1].y - vertex[0].y), vertex[1].y, 0.0f));
-	std::swap(vertex[3], vertex[2]);
-
-	if (vertex[1].x > vertex[2].x)
-	{
-		std::swap(vertex[1], vertex[2]);
-	}
-	float dxl = (vertex[1].x - vertex[0].x) / (vertex[1].y - vertex[0].y);
-	float dxr = (vertex[2].x - vertex[0].x) / (vertex[2].y - vertex[0].y);
-
-	float sx = vertex[0].x;
-	float ex = vertex[0].x;
-	// v0과 v1의 y좌표의 차이가 매우 작을 경우 dxl 또는 dxr의 크기가 매우 커질 수 있어 주사선(scanline)이 튈 수 있음
-	for (int y = (int)vertex[0].y; y < (int)vertex[1].y; y++)
-	{
-		sx += dxl;
-		ex += dxr;
-		if (y < 0 || y >= (int)m_height)
-		{
-			continue;
-		}
-		for (int x = std::max((int)sx, std::min((int)vertex[0].x, (int)vertex[1].x)); x <= std::min((int)ex, std::max((int)vertex[0].x, (int)vertex[2].x)); x++)
-		{
-			if (x < 0 || x >= (int)m_width)
-			{
-				continue;
-			}
-			SetPixel(x, y, color);
-		}
-	}
-
-	dxl = (vertex[3].x - vertex[1].x) / (vertex[3].y - vertex[1].y);
-	dxr = (vertex[3].x - vertex[2].x) / (vertex[3].y - vertex[2].y);
-	sx = vertex[1].x;
-	ex = vertex[2].x;
-	for (int y = (int)vertex[1].y; y <= (int)vertex[3].y; y++)
-	{
-		sx += dxl;
-		ex += dxr;
-		if (y < 0 || y >= (int)m_height)
-		{
-			continue;
-		}
-		for (int x = (int)sx; x <= (int)ex; x++)
-		{
-			if (x < 0 || x >= (int)m_width)
-			{
-				continue;
-			}
-			SetPixel(x, y, color);
-		}
-	}
-}
-
 void Renderer::AddModel(RenderObject* model)
 {
 	m_pRenderObjects.push_back(model);
@@ -393,7 +323,7 @@ void Renderer::Line(Vec2i v0, Vec2i v1, const Color& c0, const Color& c1)
 	int y = v0.y;
 	for (int x = v0.x; x <= v1.x; x++)
 	{
-		// FIX: v0.x 랑 v1.x가 같은 값을 가져서 zero divide가 일어남
+		// TOFIX: v0.x 랑 v1.x가 같은 값을 가져서 zero divide가 일어남
 		/*auto t = (x - v0.x) / dx;
 		Color color =  c0 * (float)t + c1 * (float)(1 - t);*/
 		Color color = c0 * 0.5f + c1 * 0.5f;
@@ -423,6 +353,77 @@ void Renderer::Line(Vec2i v0, Vec2i v1, const Color& c0, const Color& c1)
 	}
 }
 
+void Renderer::NewTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
+{
+	std::vector<Vec3f> vertex;
+	vertex.push_back(v0);
+	vertex.push_back(v1);
+	vertex.push_back(v2);
+	std::sort(vertex.begin(), vertex.end(), [](Vec3f& l, Vec3f& r)->bool {
+		if (l.y == r.y)
+		{
+			return l.x < r.x;
+		}
+		return l.y < r.y;
+		});
+
+
+	float deltaX = (vertex[2].x - vertex[0].x) / (vertex[2].y - vertex[0].y);
+	vertex.emplace_back(Vec3f(vertex[0].x + deltaX * (vertex[1].y - vertex[0].y), vertex[1].y, 0.0f));
+	std::swap(vertex[3], vertex[2]);
+
+	if (vertex[1].x > vertex[2].x)
+	{
+		std::swap(vertex[1], vertex[2]);
+	}
+	float dxl = (vertex[1].x - vertex[0].x) / (vertex[1].y - vertex[0].y);
+	float dxr = (vertex[2].x - vertex[0].x) / (vertex[2].y - vertex[0].y);
+
+	float sx = vertex[0].x;
+	float ex = vertex[0].x;
+	// v0과 v1의 y좌표의 차이가 매우 작을 경우 dxl 또는 dxr의 크기가 매우 커질 수 있어 주사선(scanline)이 튈 수 있음
+	for (int y = (int)vertex[0].y; y < (int)vertex[1].y; y++)
+	{
+		sx += dxl;
+		ex += dxr;
+		if (y < 0 || y >= (int)m_height)
+		{
+			continue;
+		}
+		for (int x = std::max((int)sx, std::min((int)vertex[0].x, (int)vertex[1].x)); x <= std::min((int)ex, std::max((int)vertex[0].x, (int)vertex[2].x)); x++)
+		{
+			if (x < 0 || x >= (int)m_width)
+			{
+				continue;
+			}
+			SetPixel(x, y, color);
+		}
+	}
+
+	dxl = (vertex[3].x - vertex[1].x) / (vertex[3].y - vertex[1].y);
+	dxr = (vertex[3].x - vertex[2].x) / (vertex[3].y - vertex[2].y);
+	sx = vertex[1].x;
+	ex = vertex[2].x;
+	for (int y = (int)vertex[1].y; y <= (int)vertex[3].y; y++)
+	{
+		sx += dxl;
+		ex += dxr;
+		if (y < 0 || y >= (int)m_height)
+		{
+			continue;
+		}
+		for (int x = (int)sx; x <= (int)ex; x++)
+		{
+			if (x < 0 || x >= (int)m_width)
+			{
+				continue;
+			}
+			SetPixel(x, y, color);
+		}
+	}
+}
+
+[[deprecated]]
 void Renderer::Triangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color)
 {
 	int minXPos = (int)(v0.x < v1.x ? v0.x < v2.x ? v0.x : v2.x : v1.x < v2.x ? v1.x : v2.x);

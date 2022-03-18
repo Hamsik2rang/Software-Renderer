@@ -58,7 +58,7 @@ private:
 	void NewTriangle(Vec3f v0, Vec3f v1, Vec3f v2, const Color& color);
 public:
 	bool m_bWireFrame = true;
-	bool m_bPolygonOptimize = false;
+	bool m_bPolygonOptimize = true;
 
 	Renderer(HWND hWnd);
 	~Renderer();
