@@ -5,13 +5,13 @@
 
 
 template <class T>
-static constexpr T Lerp(T v0, T v1, float alpha)
+inline constexpr T Lerp(T v0, T v1, float alpha)
 {
-	return v0 + alpha * (v1 - v0);
+	return v0 + (v1 - v0) * alpha;
 }
 
 template <class T>
-static constexpr Vector3D<T> Barycentric(Vector3D<T> v0, Vector3D<T> v1, Vector3D<T> v2, Vector3D<T> p)
+inline constexpr Vector3D<T> Barycentric(Vector3D<T> v0, Vector3D<T> v1, Vector3D<T> v2, Vector3D<T> p)
 {
 	Vector3D<T> eqx(v2.x - v0.x, v1.x - v0.x, v0.x - p.x);
 	Vector3D<T> eqy(v2.y - v0.y, v1.y - v0.y, v0.y - p.y);
@@ -25,7 +25,7 @@ static constexpr Vector3D<T> Barycentric(Vector3D<T> v0, Vector3D<T> v1, Vector3
 }
 
 template <class T>
-static constexpr Vector3D<T> Bezier(Vector3D<T> v0, Vector3D<T> v1, Vector3D<T> v2, float alpha)
+inline constexpr Vector3D<T> Bezier(Vector3D<T> v0, Vector3D<T> v1, Vector3D<T> v2, float alpha)
 {
 	Vector3D<T> t0 = Lerp(v0, v1, alpha);
 	Vector3D<T> t1 = Lerp(v1, v2, alpha);
@@ -34,7 +34,7 @@ static constexpr Vector3D<T> Bezier(Vector3D<T> v0, Vector3D<T> v1, Vector3D<T> 
 }
 
 template <class T>
-static constexpr Vector3D<T> Bezier(Vector3D<T> v0, Vector3D<T> v1, Vector3D<T> v2, Vector3D<T> v3, float alpha)
+inline constexpr Vector3D<T> Bezier(Vector3D<T> v0, Vector3D<T> v1, Vector3D<T> v2, Vector3D<T> v3, float alpha)
 {
 	Vector3D<T> t00 = Lerp(v0, v1, alpha);
 	Vector3D<T> t01 = Lerp(v1, v2, alpha);
