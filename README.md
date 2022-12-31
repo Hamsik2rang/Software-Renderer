@@ -1,1 +1,1 @@
-# Software-Rasterizer
+# Software-Renderer
